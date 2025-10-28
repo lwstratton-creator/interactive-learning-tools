@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Trivia Challenge</title>
+<style>
+/* Scoped styles to prevent parent page interference */
+.trivia-module {
+  all: initial;
+  display: block;
+  box-sizing: border-box;
+}
+
+.trivia-module *,
+.trivia-module *::before,
+.trivia-module *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.trivia-module {
+  --primary-color: #C41E3A;
+  --secondary-color: #FFD700;
+  --success-color: #0C8918;
+  --error-color: #8B0000;
+  --text-color: #234E52;
+  --bg-light: #F7F9FC;
+  --neutral-color: #FFFFFF;
+  --shadow-soft: 0 4px 6px rgba(139, 0, 0, 0.1);
+  --shadow-hover: 0 6px 8px rgba(139, 0, 0, 0.15);
+  
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 25px;
+  display: block;
+  border: 3px solid var(--primary-color);
+  border-radius: 15px;
+  background: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.trivia-module .section-title {
+  display: block;
+  color: var(--primary-color);
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--primary-color);
+  text-align: center;
+}
+
+.trivia-module .avatar-selection {
+  display: block;
+  text-align: center;
+  padding: 20px;
+}
+
+.trivia-module .avatar-selection.hidden {
+  display: none;
+}
+
+.trivia-module .avatar-prompt {
+  font-size: 1.5em;
+  color: var(--text-color);
+  margin-bottom: 30px;
+  font-weight: bold;
+  display: block;
+  line-height: 1.4;
+}
+
+.trivia-module .avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+
+.trivia-module .avatar-option {
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 4em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.trivia-module .avatar-option:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-hover);
+  background: var(--bg-light);
+}
+
+.trivia-module .avatar-option.selected {
+  border-color: var(--success-color);
+  border-width: 5px;
+  background: rgba(12, 137, 24, 0.1);
+  transform: scale(1.05);
+}
+
+.trivia-module .start-game-button {
+  display: inline-block;
+  padding: 15px 50px;
+  font-size: 1.4em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  background: var(--primary-color);
+  color: white;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.trivia-module .start-game-button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-hover);
+}
+
+.trivia-module .ready-screen {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.trivia-module .ready-screen.show {
+  display: block;
+}
+
+.trivia-module .ready-title {
+  font-size: 2em;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-bottom: 30px;
+  display: block;
+  line-height: 1.3;
+}
+
+.trivia-module .ready-avatars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.trivia-module .ready-player {
+  text-align: center;
+}
+
+.trivia-module .ready-avatar {
+  font-size: 6em;
+  display: block;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+
+.trivia-module .ready-name {
+  font-size: 1.5em;
+  color: var(--text-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1.2;
+}
+
+.trivia-module .countdown-screen {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.trivia-module .countdown-screen.show {
+  display: block;
+}
+
+.trivia-module .countdown-message {
+  font-size: 2em;
+  color: var(--text-color);
+  margin-bottom: 30px;
+  display: block;
+  line-height: 1.4;
+  font-weight: bold;
+}
+
+.trivia-module .countdown-number {
+  font-size: 8em;
+  color: var(--primary-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+}
+
+.trivia-module .countdown-number.pulse {
+  animation: countdownPulse 1s ease-in-out;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.trivia-module .vs-text {
+  font-size: 3em;
+  color: var(--primary-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+}
+
+.trivia-module .round-announcement {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.trivia-module .round-announcement.show {
+  display: block;
+}
+
+.trivia-module .round-title {
+  font-size: 3em;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: block;
+  line-height: 1.2;
+}
+
+.trivia-module .round-subtitle {
+  font-size: 1.5em;
+  color: var(--text-color);
+  margin-bottom: 40px;
+  display: block;
+  line-height: 1.4;
+}
+
+.trivia-module .instructions {
+  display: block;
+  background: var(--bg-light);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  color: #666;
+  border: 2px solid var(--primary-color);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.trivia-module .scoreboard {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0 20px;
+  gap: 15px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.trivia-module .player-score {
+  flex: 1;
+  background: white;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s ease;
+}
+
+.trivia-module .player-score.you {
+  border-color: var(--success-color);
+}
+
+.trivia-module .player-score.opponent {
+  border-color: var(--secondary-color);
+}
+
+.trivia-module .player-score.answered {
+  background: rgba(12, 137, 24, 0.1);
+  border-width: 3px;
+  transform: scale(1.02);
+}
+
+.trivia-module .player-name {
+  font-size: 0.9em;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+  display: block;
+  line-height: 1.2;
+}
+
+.trivia-module .player-avatar {
+  font-size: 1.8em;
+  display: block;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.trivia-module .score-number {
+  font-size: 1.5em;
+  color: var(--primary-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+}
+
+.trivia-module .question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.trivia-module .question-number {
+  font-size: 1.2em;
+  color: var(--text-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1.3;
+}
+
+.trivia-module .timer {
+  font-size: 2em;
+  color: var(--primary-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+}
+
+.trivia-module .timer.warning {
+  color: var(--error-color);
+  animation: pulse 0.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.trivia-module .question-card {
+  background: var(--bg-light);
+  border: 3px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.trivia-module .question-text {
+  font-size: 1.4em;
+  color: var(--text-color);
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: block;
+  line-height: 1.5;
+}
+
+.trivia-module .question-character {
+  font-size: 5em;
+  color: var(--primary-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+  margin: 20px 0;
+}
+
+.trivia-module .question-pinyin {
+  font-size: 1.5em;
+  color: var(--success-color);
+  font-style: italic;
+  display: block;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.trivia-module .options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.trivia-module .option-button {
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  line-height: 1.3;
+}
+
+.trivia-module .option-button:hover:not(.disabled) {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  background: var(--bg-light);
+}
+
+.trivia-module .option-button.correct {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.trivia-module .option-button.incorrect {
+  background: var(--error-color);
+  color: white;
+  border-color: var(--error-color);
+}
+
+.trivia-module .option-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.trivia-module .option-button.selected-multi {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+.trivia-module .feedback {
+  display: none;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.trivia-module .feedback.show {
+  display: block;
+}
+
+.trivia-module .feedback.success {
+  background: rgba(12, 137, 24, 0.2);
+  color: var(--success-color);
+  border: 2px solid var(--success-color);
+}
+
+.trivia-module .feedback.error {
+  background: rgba(139, 0, 0, 0.1);
+  color: var(--error-color);
+  border: 2px solid var(--error-color);
+}
+
+.trivia-module .results-screen {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.trivia-module .results-screen.show {
+  display: block;
+}
+
+.trivia-module .results-emoji {
+  font-size: 6em;
+  display: block;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.trivia-module .results-title {
+  font-size: 2.5em;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: block;
+  line-height: 1.2;
+}
+
+.trivia-module .results-message {
+  font-size: 1.3em;
+  color: var(--text-color);
+  margin-bottom: 30px;
+  display: block;
+  line-height: 1.5;
+}
+
+.trivia-module .final-scores {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 40px 0;
+}
+
+.trivia-module .final-score-card {
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 25px;
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.trivia-module .final-score-card.winner {
+  border-color: var(--secondary-color);
+  border-width: 5px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2));
+  transform: scale(1.05);
+}
+
+.trivia-module .final-avatar {
+  font-size: 4em;
+  display: block;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+
+.trivia-module .final-name {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  display: block;
+  line-height: 1.2;
+}
+
+.trivia-module .final-score {
+  font-size: 3em;
+  color: var(--primary-color);
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+}
+
+.trivia-module .play-again-button {
+  display: inline-block;
+  padding: 15px 40px;
+  font-size: 1.3em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  background: var(--primary-color);
+  color: white;
+  margin-top: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.trivia-module .play-again-button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-hover);
+}
+
+.trivia-module .multi-select-note {
+  font-size: 0.9em;
+  color: var(--error-color);
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+  line-height: 1.3;
+}
+
+.trivia-module .submit-button {
+  display: inline-block;
+  padding: 12px 40px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  background: var(--success-color);
+  color: white;
+  margin-top: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.trivia-module .submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.trivia-module .submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .trivia-module .avatar-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .trivia-module .options-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .trivia-module .final-scores {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="trivia-module">
+  <h1 class="section-title">🎯 Chinese Character Trivia Challenge 🎯</h1>
+  
+  <!-- Avatar Selection -->
+  <div id="avatarSelection" class="avatar-selection">
+    <div class="avatar-prompt">Choose Your Avatar:</div>
+    <div class="avatar-grid">
+      <div class="avatar-option" onclick="selectAvatar('🐼')">🐼</div>
+      <div class="avatar-option" onclick="selectAvatar('🐉')">🐉</div>
+      <div class="avatar-option" onclick="selectAvatar('🦁')">🦁</div>
+      <div class="avatar-option" onclick="selectAvatar('🐯')">🐯</div>
+      <div class="avatar-option" onclick="selectAvatar('🦅')">🦅</div>
+      <div class="avatar-option" onclick="selectAvatar('🐺')">🐺</div>
+      <div class="avatar-option" onclick="selectAvatar('🦊')">🦊</div>
+      <div class="avatar-option" onclick="selectAvatar('🐻')">🐻</div>
+    </div>
+    <button class="start-game-button" onclick="showReadyScreen()" id="startButton" style="opacity: 0.5; cursor: not-allowed;" disabled>Start Game →</button>
+  </div>
+
+  <!-- Ready Screen -->
+  <div id="readyScreen" class="ready-screen">
+    <div class="ready-title">Get Ready!</div>
+    <div class="ready-avatars">
+      <div class="ready-player">
+        <div class="ready-avatar" id="yourAvatarReady">🐼</div>
+        <div class="ready-name">You</div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="ready-player">
+        <div class="ready-avatar">🧑‍🎓</div>
+        <div class="ready-name">Yǔxuān</div>
+      </div>
+    </div>
+    <button class="start-game-button" onclick="startCountdown()">Let's Go!</button>
+  </div>
+
+  <!-- Countdown Screen -->
+  <div id="countdownScreen" class="countdown-screen">
+    <div class="countdown-message">Starting in...</div>
+    <div class="countdown-number" id="countdownNumber">5</div>
+  </div>
+
+  <!-- Round Announcement -->
+  <div id="roundAnnouncement" class="round-announcement">
+    <div class="round-title" id="roundTitle">Round 1</div>
+    <div class="round-subtitle" id="roundSubtitle">Stroke Recognition</div>
+    <button class="start-game-button" onclick="hideRoundAnnouncement()">Start Round →</button>
+  </div>
+
+  <!-- Scoreboard -->
+  <div id="scoreboard" class="scoreboard" style="display: none;">
+    <div class="player-score you" id="yourScoreCard">
+      <div class="player-name">You</div>
+      <div class="player-avatar" id="yourAvatarGame">🐼</div>
+      <div class="score-number" id="yourScore">0</div>
+    </div>
+    <div class="player-score opponent" id="opponentScoreCard">
+      <div class="player-name">Yǔxuān</div>
+      <div class="player-avatar">🧑‍🎓</div>
+      <div class="score-number" id="opponentScore">0</div>
+    </div>
+  </div>
+
+  <!-- Game Section -->
+  <div id="gameSection" style="display: none;">
+    <div class="question-header">
+      <div class="question-number" id="questionNumber">Question 1 of 13</div>
+      <div class="timer" id="timer">12</div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-text" id="questionText">What is this character?</div>
+      <div class="question-character" id="questionCharacter">天</div>
+      <div class="question-pinyin" id="questionPinyin">tiān</div>
+      
+      <div class="options-grid" id="optionsGrid">
+        <!-- Options populated by JavaScript -->
+      </div>
+      
+      <div id="multiSelectNote" class="multi-select-note" style="display: none;">
+        Select 2 answers, then click Submit
+      </div>
+      
+      <button id="submitButton" class="submit-button" style="display: none;" onclick="submitMultiAnswer()" disabled>
+        Submit Answer
+      </button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="resultsScreen" class="results-screen">
+    <div class="results-emoji" id="resultsEmoji">🏆</div>
+    <div class="results-title" id="resultsTitle">You Win!</div>
+    <div class="results-message" id="resultsMessage">Amazing! You beat Yǔxuān!</div>
+    
+    <div class="final-scores">
+      <div class="final-score-card" id="yourFinalCard">
+        <div class="final-avatar" id="yourAvatarFinal">🐼</div>
+        <div class="final-name">You</div>
+        <div class="final-score" id="yourFinalScore">0</div>
+      </div>
+      <div class="final-score-card" id="opponentFinalCard">
+        <div class="final-avatar">🧑‍🎓</div>
+        <div class="final-name">Yǔxuān</div>
+        <div class="final-score" id="opponentFinalScore">0</div>
+      </div>
+    </div>
+
+    <button class="play-again-button" onclick="restartGame()">Play Again!</button>
+  </div>
+</div>
+
+<script>
+let selectedAvatar = null;
+
+function selectAvatar(avatar) {
+  selectedAvatar = avatar;
+  
+  // Update UI
+  document.querySelectorAll('.avatar-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  event.target.classList.add('selected');
+  
+  // Enable start button
+  const startBtn = document.getElementById('startButton');
+  startBtn.style.opacity = '1';
+  startBtn.style.cursor = 'pointer';
+  startBtn.disabled = false;
+}
+
+function showReadyScreen() {
+  if (!selectedAvatar) return;
+  
+  document.getElementById('yourAvatarReady').textContent = selectedAvatar;
+  document.getElementById('avatarSelection').classList.add('hidden');
+  document.getElementById('readyScreen').classList.add('show');
+}
+
+function startCountdown() {
+  document.getElementById('readyScreen').classList.remove('show');
+  document.getElementById('countdownScreen').classList.add('show');
+  
+  // Play sound effect (optional - silent for now)
+  playSound();
+  
+  // Start countdown from 5
+  let countdown = 5;
+  const countdownElement = document.getElementById('countdownNumber');
+  countdownElement.textContent = countdown;
+  countdownElement.classList.add('pulse');
+  
+  const countdownInterval = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+      // Update number and re-trigger animation
+      countdownElement.textContent = countdown;
+      countdownElement.classList.remove('pulse');
+      void countdownElement.offsetWidth; // Force reflow
+      countdownElement.classList.add('pulse');
+    } else {
+      clearInterval(countdownInterval);
+      // Hide countdown, show first round announcement
+      document.getElementById('countdownScreen').classList.remove('show');
+      showRoundAnnouncement(1);
+    }
+  }, 1000);
+}
+
+// Question bank organized by rounds
+const questionBank = {
+  round1: [ // Stroke Recognition
+    {
+      type: 'single',
+      questionText: 'What is the second stroke of this character?',
+      character: '口',
+      pinyin: 'kǒu',
+      correctAnswer: 'héng (一)',
+      options: ['héng (一)', 'shù (丨)', 'piě (丿)', 'nà (㇏)']
+    },
+    {
+      type: 'single',
+      questionText: 'Which strokes appear in this character?',
+      character: '虫',
+      pinyin: 'chóng',
+      correctAnswer: 'shù (丨) and tí (㇀)',
+      options: ['héng (一) and shù (丨)', 'shù (丨) and tí (㇀)', 'piě (丿) and nà (㇏)', 'diǎn (丶) and tí (㇀)']
+    },
+    {
+      type: 'single',
+      questionText: 'What is the first stroke of this character?',
+      character: '木',
+      pinyin: 'mù',
+      correctAnswer: 'héng (一)',
+      options: ['héng (一)', 'shù (丨)', 'piě (丿)', 'nà (㇏)']
+    }
+  ],
+  round2: [ // Stroke Counting
+    {
+      type: 'single',
+      questionText: 'How many strokes in this character?',
+      character: '山',
+      pinyin: 'shān',
+      correctAnswer: '3',
+      options: ['2', '3', '4', '5']
+    },
+    {
+      type: 'single',
+      questionText: 'How many strokes in this character?',
+      character: '水',
+      pinyin: 'shuǐ',
+      correctAnswer: '4',
+      options: ['3', '4', '5', '6']
+    },
+    {
+      type: 'single',
+      questionText: 'How many strokes in this character?',
+      character: '北',
+      pinyin: 'běi',
+      correctAnswer: '5',
+      options: ['4', '5', '6', '7']
+    },
+    {
+      type: 'single',
+  questionText: 'How many <strong> diǎn </strong> strokes are in this character?',
+      character: '汗',
+      pinyin: 'hàn',
+      correctAnswer: '1',
+      options: ['0', '1', '2', '3']
+    }
+  ],
+  round3: [ // Stroke Order Rules
+    {
+      type: 'single',
+      questionText: 'Basic order of writing character is from:',
+      character: '',
+      pinyin: '',
+      correctAnswer: 'left to right',
+      options: ['left to right', 'right to left', 'bottom to top', 'center outward']
+    },
+    {
+      type: 'single',
+      questionText: 'Choose the pair sharing the same first stroke:',
+      character: '',
+      pinyin: '',
+      correctAnswer: '鼻, 鸟',
+      options: ['月, 大', '鸟, 木', '鼻, 鸟', '人, 八']
+    },
+    {
+      type: 'multi',
+      questionText: 'Select TWO characters with "héng first, then shù":',
+      character: '',
+      pinyin: '',
+      correctAnswers: ['十', '下'],
+      options: ['十', '下', '八', '人']
+    },
+    {
+      type: 'single',
+      questionText: 'Which character is written from top to bottom?',
+      character: '',
+      pinyin: '',
+      correctAnswer: '三',
+      options: ['三', '八', '人', '大']
+    },
+    {
+      type: 'single',
+      questionText: 'Which stroke comes first in 人?',
+      character: '人',
+      pinyin: 'rén',
+      correctAnswer: 'piě (丿)',
+      options: ['piě (丿)', 'nà (㇏)', 'héng (一)', 'shù (丨)']
+    },
+    {
+      type: 'single',
+      questionText: 'Which rule applies to 八?',
+      character: '八',
+      pinyin: 'bā',
+      correctAnswer: 'left to right',
+      options: ['left to right', 'top to bottom', 'center first', 'outside first']
+    }
+  ],
+  round4: [ // Character Recognition
+    {
+      type: 'single',
+      questionText: 'What does this character mean?',
+      character: '天',
+      pinyin: 'tiān',
+      correctAnswer: 'sky',
+      options: ['sky', 'bird', 'tree', 'water']
+    },
+    {
+      type: 'single',
+      questionText: 'What does this character mean?',
+      character: '鸟',
+      pinyin: 'niǎo',
+      correctAnswer: 'bird',
+      options: ['sky', 'bird', 'tree', 'water']
+    },
+    {
+      type: 'single',
+      questionText: 'What does this character mean?',
+      character: '木',
+      pinyin: 'mù',
+      correctAnswer: 'tree',
+      options: ['sky', 'bird', 'tree', 'water']
+    }
+  ]
+};
+
+let gameState = {
+  currentRound: 1,
+  currentQuestion: 0,
+  yourScore: 0,
+  opponentScore: 0,
+  questions: [],
+  answeredThisQuestion: false,
+  timerInterval: null,
+  timeLeft: 12,
+  opponentAnswered: false,
+  multiSelectAnswers: []
+};
+
+function showRoundAnnouncement(roundNum) {
+  const roundTitles = {
+    1: 'Round 1:',
+    2: 'Round 2:',
+    3: 'Round 3:',
+    4: 'Round 4:'
+  };
+  
+  const roundSubtitles = {
+    1: 'Stroke Recognition',
+    2: 'Stroke Counting',
+    3: 'Stroke Order Rules',
+    4: 'Character Recognition'
+  };
+  
+  document.getElementById('roundTitle').textContent = roundTitles[roundNum];
+  document.getElementById('roundSubtitle').textContent = roundSubtitles[roundNum];
+  document.getElementById('roundAnnouncement').classList.add('show');
+}
+
+function hideRoundAnnouncement() {
+  document.getElementById('roundAnnouncement').classList.remove('show');
+  document.getElementById('gameSection').style.display = 'block';
+  document.getElementById('scoreboard').style.display = 'flex';
+  
+  // Set avatar in game
+  document.getElementById('yourAvatarGame').textContent = selectedAvatar;
+  
+  // Start the round
+  startRound(gameState.currentRound);
+}
+
+function startRound(roundNum) {
+  const roundKey = `round${roundNum}`;
+  gameState.questions = [...questionBank[roundKey]];
+  gameState.currentQuestion = 0;
+  
+  showQuestion();
+}
+
+function startGame() {
+  gameState = {
+    currentRound: 1,
+    currentQuestion: 0,
+    yourScore: 0,
+    opponentScore: 0,
+    questions: [],
+    answeredThisQuestion: false,
+    timerInterval: null,
+    timeLeft: 12,
+    opponentAnswered: false,
+    multiSelectAnswers: []
+  };
+  
+  document.getElementById('yourScore').textContent = '0';
+  document.getElementById('opponentScore').textContent = '0';
+  
+  showRoundAnnouncement(1);
+}
+
+function showQuestion() {
+  if (gameState.currentQuestion >= gameState.questions.length) {
+    // Move to next round or show results
+    if (gameState.currentRound < 4) {
+      gameState.currentRound++;
+      document.getElementById('gameSection').style.display = 'none';
+      document.getElementById('scoreboard').style.display = 'none';
+      showRoundAnnouncement(gameState.currentRound);
+    } else {
+      showResults();
+    }
+    return;
+  }
+
+  gameState.answeredThisQuestion = false;
+  gameState.opponentAnswered = false;
+  gameState.timeLeft = 12;
+  gameState.multiSelectAnswers = [];
+  
+  // Reset score card highlighting
+  document.getElementById('yourScoreCard').classList.remove('answered');
+  document.getElementById('opponentScoreCard').classList.remove('answered');
+  
+  const question = gameState.questions[gameState.currentQuestion];
+  
+  // Calculate total questions across all rounds
+  const totalQuestions = questionBank.round1.length + questionBank.round2.length + 
+                         questionBank.round3.length + questionBank.round4.length;
+  const completedQuestions = (gameState.currentRound - 1) * 3 + gameState.currentQuestion;
+  
+  // Update question number
+  document.getElementById('questionNumber').textContent = `Question ${completedQuestions + 1} of ${totalQuestions}`;
+  
+  // Display question
+  document.getElementById('questionText').textContent = question.questionText;
+  document.getElementById('questionCharacter').textContent = question.character || '';
+  document.getElementById('questionPinyin').textContent = question.pinyin || '';
+  
+  // Show/hide character display based on question
+  if (question.character) {
+    document.getElementById('questionCharacter').style.display = 'block';
+    document.getElementById('questionPinyin').style.display = 'block';
+  } else {
+    document.getElementById('questionCharacter').style.display = 'none';
+    document.getElementById('questionPinyin').style.display = 'none';
+  }
+  
+  // Generate options
+  generateOptions(question);
+  
+  // Hide feedback
+  document.getElementById('feedback').classList.remove('show');
+  
+  // Handle multi-select UI
+  if (question.type === 'multi') {
+    document.getElementById('multiSelectNote').style.display = 'block';
+    document.getElementById('submitButton').style.display = 'inline-block';
+    document.getElementById('submitButton').disabled = true;
+  } else {
+    document.getElementById('multiSelectNote').style.display = 'none';
+    document.getElementById('submitButton').style.display = 'none';
+  }
+  
+  // Start timer
+  startTimer();
+}
+
+function startTimer() {
+  const timerElement = document.getElementById('timer');
+  timerElement.textContent = gameState.timeLeft;
+  timerElement.classList.remove('warning');
+  
+  // Yǔxuān will answer at random time between 4-9 seconds
+  const liMingAnswerTime = 4 + Math.random() * 5;
+  
+  gameState.timerInterval = setInterval(() => {
+    gameState.timeLeft--;
+    timerElement.textContent = gameState.timeLeft;
+    
+    if (gameState.timeLeft <= 4) {
+      timerElement.classList.add('warning');
+    }
+    
+    // Yǔxuān answers at his designated time
+    if (!gameState.opponentAnswered && gameState.timeLeft <= (12 - liMingAnswerTime)) {
+      liMingAnswer();
+    }
+    
+    if (gameState.timeLeft <= 0) {
+      clearInterval(gameState.timerInterval);
+      if (!gameState.answeredThisQuestion) {
+        timeUp();
+      }
+    }
+  }, 1000);
+}
+
+function generateOptions(question) {
+  const optionsGrid = document.getElementById('optionsGrid');
+  optionsGrid.innerHTML = '';
+  
+  // Shuffle options
+  const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+  
+  // Create buttons
+  shuffledOptions.forEach(option => {
+    const button = document.createElement('div');
+    button.className = 'option-button';
+    button.textContent = option;
+    
+    if (question.type === 'multi') {
+      button.onclick = () => selectMultiAnswer(option, button, question);
+    } else {
+      button.onclick = () => selectAnswer(option, question, button);
+    }
+    
+    optionsGrid.appendChild(button);
+  });
+}
+
+function selectMultiAnswer(option, buttonElement, question) {
+  if (gameState.answeredThisQuestion) return;
+  
+  const index = gameState.multiSelectAnswers.indexOf(option);
+  
+  if (index > -1) {
+    // Deselect
+    gameState.multiSelectAnswers.splice(index, 1);
+    buttonElement.classList.remove('selected-multi');
+  } else {
+    // Select (max 2)
+    if (gameState.multiSelectAnswers.length < 2) {
+      gameState.multiSelectAnswers.push(option);
+      buttonElement.classList.add('selected-multi');
+    }
+  }
+  
+  // Enable submit button if 2 selected
+  document.getElementById('submitButton').disabled = gameState.multiSelectAnswers.length !== 2;
+}
+
+function submitMultiAnswer() {
+  if (gameState.multiSelectAnswers.length !== 2) return;
+  
+  const question = gameState.questions[gameState.currentQuestion];
+  const correctAnswers = question.correctAnswers.sort().join(',');
+  const userAnswers = gameState.multiSelectAnswers.sort().join(',');
+  const isCorrect = correctAnswers === userAnswers;
+  
+  if (isCorrect) {
+    gameState.answeredThisQuestion = true;
+    clearInterval(gameState.timerInterval);
+    
+    // Highlight that you answered
+    document.getElementById('yourScoreCard').classList.add('answered');
+    
+    // Disable all buttons
+    const buttons = document.querySelectorAll('.option-button');
+    buttons.forEach(btn => btn.classList.add('disabled'));
+    
+    // Highlight correct answers
+    buttons.forEach(btn => {
+      if (question.correctAnswers.includes(btn.textContent)) {
+        btn.classList.add('correct');
+      }
+    });
+    
+    gameState.yourScore++;
+    document.getElementById('yourScore').textContent = gameState.yourScore;
+    showFeedback('✨ Correct!', 'success');
+    
+    // If Yǔxuān hasn't answered yet, make him answer immediately
+    if (!gameState.opponentAnswered) {
+      setTimeout(() => {
+        liMingAnswer();
+      }, 500);
+    }
+    
+    // Move to next question
+    setTimeout(() => {
+      gameState.currentQuestion++;
+      showQuestion();
+    }, 3000);
+  } else {
+    // Wrong answer - show feedback and allow retry
+    showFeedback('❌ Try again!', 'error');
+    
+    // Clear selections and allow retry
+    gameState.multiSelectAnswers = [];
+    const buttons = document.querySelectorAll('.option-button');
+    buttons.forEach(btn => {
+      btn.classList.remove('selected-multi');
+    });
+    document.getElementById('submitButton').disabled = true;
+    
+    // Hide feedback after brief moment
+    setTimeout(() => {
+      document.getElementById('feedback').classList.remove('show');
+    }, 800);
+  }
+}
+
+function selectAnswer(option, question, buttonElement) {
+  if (gameState.answeredThisQuestion) return;
+  
+  const isCorrect = option === question.correctAnswer;
+  
+  if (isCorrect) {
+    gameState.answeredThisQuestion = true;
+    clearInterval(gameState.timerInterval);
+    
+    // Highlight that you answered
+    document.getElementById('yourScoreCard').classList.add('answered');
+    
+    // Disable all buttons
+    const buttons = document.querySelectorAll('.option-button');
+    buttons.forEach(btn => btn.classList.add('disabled'));
+    
+    buttonElement.classList.add('correct');
+    gameState.yourScore++;
+    document.getElementById('yourScore').textContent = gameState.yourScore;
+    showFeedback('✨ Correct!', 'success');
+    
+    // If Yǔxuān hasn't answered yet, make him answer immediately
+    if (!gameState.opponentAnswered) {
+      setTimeout(() => {
+        liMingAnswer();
+      }, 500);
+    }
+    
+    // Move to next question
+    setTimeout(() => {
+      gameState.currentQuestion++;
+      showQuestion();
+    }, 3000);
+  } else {
+    // Wrong answer - show briefly then allow retry
+    buttonElement.classList.add('incorrect');
+    showFeedback('❌ Try again!', 'error');
+    
+    // Remove incorrect styling after brief moment
+    setTimeout(() => {
+      buttonElement.classList.remove('incorrect');
+      document.getElementById('feedback').classList.remove('show');
+    }, 800);
+  }
+}
+
+function liMingAnswer() {
+  if (gameState.opponentAnswered) return;
+  
+  gameState.opponentAnswered = true;
+  
+  // Play sound effect
+  playLiMingSound();
+  
+  // Highlight that Yǔxuān answered
+  document.getElementById('opponentScoreCard').classList.add('answered');
+  
+  // Yǔxuān answers with 75% accuracy (competitive but beatable)
+  const liMingCorrect = Math.random() < 0.75;
+  
+  if (liMingCorrect) {
+    gameState.opponentScore++;
+    document.getElementById('opponentScore').textContent = gameState.opponentScore;
+  }
+}
+
+function timeUp() {
+  gameState.answeredThisQuestion = true;
+  
+  // Disable all buttons
+  const buttons = document.querySelectorAll('.option-button');
+  buttons.forEach(btn => btn.classList.add('disabled'));
+  
+  const question = gameState.questions[gameState.currentQuestion];
+  
+  // Highlight correct answer
+  if (question.type === 'multi') {
+    buttons.forEach(btn => {
+      if (question.correctAnswers.includes(btn.textContent)) {
+        btn.classList.add('correct');
+      }
+    });
+    showFeedback('⏰ Time\'s up! The answers were: ' + question.correctAnswers.join(', '), 'error');
+  } else {
+    buttons.forEach(btn => {
+      if (btn.textContent === question.correctAnswer) {
+        btn.classList.add('correct');
+      }
+    });
+    showFeedback('⏰ Time\'s up! The answer was: ' + question.correctAnswer, 'error');
+  }
+  
+  // If Yǔxuān hasn't answered, make him answer
+  if (!gameState.opponentAnswered) {
+    liMingAnswer();
+  }
+  
+  // Move to next question
+  setTimeout(() => {
+    gameState.currentQuestion++;
+    showQuestion();
+  }, 3000);
+}
+
+function showFeedback(message, type) {
+  const feedback = document.getElementById('feedback');
+  feedback.textContent = message;
+  feedback.className = `feedback ${type} show`;
+}
+
+function showResults() {
+  clearInterval(gameState.timerInterval);
+  
+  document.getElementById('gameSection').style.display = 'none';
+  document.getElementById('scoreboard').style.display = 'none';
+  document.getElementById('resultsScreen').classList.add('show');
+  
+  const youWon = gameState.yourScore > gameState.opponentScore;
+  const tie = gameState.yourScore === gameState.opponentScore;
+  
+  document.getElementById('yourFinalScore').textContent = gameState.yourScore;
+  document.getElementById('opponentFinalScore').textContent = gameState.opponentScore;
+  document.getElementById('yourAvatarFinal').textContent = selectedAvatar;
+  
+  if (tie) {
+    document.getElementById('resultsEmoji').textContent = '🤝';
+    document.getElementById('resultsTitle').textContent = "It's a Tie!";
+    document.getElementById('resultsMessage').textContent = 'Great match! You and Yǔxuān are evenly matched!';
+    document.getElementById('yourFinalCard').classList.add('winner');
+    document.getElementById('opponentFinalCard').classList.add('winner');
+  } else if (youWon) {
+    document.getElementById('resultsEmoji').textContent = '🏆';
+    document.getElementById('resultsTitle').textContent = 'You Win!';
+    document.getElementById('resultsMessage').textContent = `Amazing! You beat Yǔxuān ${gameState.yourScore} to ${gameState.opponentScore}!`;
+    document.getElementById('yourFinalCard').classList.add('winner');
+  } else {
+    document.getElementById('resultsEmoji').textContent = '💪';
+    document.getElementById('resultsTitle').textContent = 'Yǔxuān Wins!';
+    document.getElementById('resultsMessage').textContent = `Good effort! Yǔxuān won ${gameState.opponentScore} to ${gameState.yourScore}. Try again!`;
+    document.getElementById('opponentFinalCard').classList.add('winner');
+  }
+}
+
+function restartGame() {
+  document.getElementById('resultsScreen').classList.remove('show');
+  document.getElementById('yourFinalCard').classList.remove('winner');
+  document.getElementById('opponentFinalCard').classList.remove('winner');
+  
+  // Show avatar selection again
+  document.getElementById('avatarSelection').classList.remove('hidden');
+  
+  // Reset selection
+  document.querySelectorAll('.avatar-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  selectedAvatar = null;
+  
+  const startBtn = document.getElementById('startButton');
+  startBtn.style.opacity = '0.5';
+  startBtn.style.cursor = 'not-allowed';
+  startBtn.disabled = true;
+}
+
+function playSound() {
+  // Placeholder for sound effect
+}
+
+function playLiMingSound() {
+  // Placeholder for Yǔxuān answer sound
+}
+</script>
+
+</body>
+</html>
