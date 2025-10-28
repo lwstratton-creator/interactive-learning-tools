@@ -5,6 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stroke Flashcards</title>
 <style>
+/* Back to Main Button */
+.back-to-main {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 20px;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.back-to-main:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.back-to-main svg {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+}
+
+@media (max-width: 480px) {
+  .back-to-main {
+    top: 12px;
+    left: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
 /* Scoped styles to prevent parent page interference */
 .flashcard-module {
   all: initial;
@@ -320,6 +364,13 @@
 </style>
 </head>
 <body>
+<a href="./index.html" class="back-to-main">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M19 12H5M12 19l-7-7 7-7"/>
+  </svg>
+  Back to Tools
+</a>
+
 <div class="flashcard-module">
   <div class="section-title">Stroke Flashcards 📚</div>
   <div class="instructions">
