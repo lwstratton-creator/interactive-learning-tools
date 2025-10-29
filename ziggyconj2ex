@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- Primary language English -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Drills: Dialogue Question Matching (Dropdown)</title> <!-- English Title -->
+    <!-- Style block from the INITIAL MODEL EXAMPLE + Dropdown Styles -->
+    <style>
+        :root {
+            --primary-color: #F2CB05;
+            --secondary-color: #00994D; /* Green for speakers */
+            --accent-color: #C72C27;
+            --text-color: #333;
+            --background-color: #f9f9f9; /* Original light gray bg */
+            --alt-background-color: #fff; /* Original white section bg */
+            --font-family: 'Arial', sans-serif; /* Original font */
+            --highlight-color: rgba(242, 203, 5, 0.2);
+            --ziggy-highlight: #FFDAB9;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+            --option-border: #c8d6e5;
+            --option-correct-bg: #e8f5e9;
+            --option-correct-border: var(--success-color);
+            --option-incorrect-bg: #ffebee;
+            --option-incorrect-border: var(--error-color);
+            --chat-container-bg: #e5ddd5; /* Chat background */
+            --chat-bubble-ashley-bg: #fff; /* White for Ashley */
+            --chat-bubble-mayerli-bg: #dcf8c6; /* Light green for Mayerli */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        .interactive-activity-container {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+
+        .activity-section {
+            margin-bottom: 24px;
+            background-color: var(--alt-background-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .activity-header h2 {
+            color: var(--secondary-color);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .activity-header .header-icon {
+            font-size: 1.8rem;
+        }
+
+        .introduction {
+            background-color: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--secondary-color);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .question-bank-display { /* Display only, not interactive */
+             background-color: #f0fff8;
+             padding: 10px 15px; border-radius: 6px; margin-bottom: 20px;
+             font-size: 0.95em; border: 1px dashed var(--secondary-color);
+             line-height: 1.6;
+        }
+        .question-bank-display h4 { margin-top: 0; margin-bottom: 10px; color: var(--secondary-color); text-align: center; }
+        .question-bank-display ul { list-style-type: none; padding: 0; margin: 0; }
+        .question-bank-display li { margin-bottom: 5px; }
+
+
+        /* Dialogue Container - Chat Area */
+        .dialogue-container {
+            margin-bottom: 24px; padding: 15px; border-radius: 8px;
+            background-color: var(--chat-container-bg); max-height: 600px; overflow-y: auto;
+            border: 1px solid #ccc;
+        }
+        .chat-turn { display: flex; margin-bottom: 12px; max-width: 85%; }
+        .chat-bubble { padding: 10px 15px; border-radius: 15px; line-height: 1.6; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .chat-bubble p { margin: 0; }
+        .chat-bubble .speaker { font-weight: bold; display: block; margin-bottom: 4px; color: inherit; font-size: 0.9em;}
+
+        /* Ashley's turn styles (Left) */
+        .ashley-turn { justify-content: flex-start; margin-right: auto; }
+        .ashley-turn .chat-bubble { background-color: var(--chat-bubble-ashley-bg); border: 1px solid #ddd; border-bottom-left-radius: 5px; }
+        .ashley-turn .speaker { color: var(--accent-color); } /* Use blue for Ashley */
+
+        /* Mayerli's turn styles (Right) */
+        .mayerli-turn { justify-content: flex-end; margin-left: auto; }
+        .mayerli-turn .chat-bubble { background-color: var(--chat-bubble-mayerli-bg); border: 1px solid #badaa4; border-bottom-right-radius: 5px; }
+         .mayerli-turn .speaker { color: var(--secondary-color); text-align: right; } /* Green for Mayerli */
+
+
+        /* Controls group below each relevant Ashley turn */
+        .sentence-controls {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+            margin: 10px 0 5px 0; padding: 10px; border-radius: 6px;
+            position: relative; background-color: #f5f5f5;
+        }
+         .controls-main-area { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex-grow: 1; }
+         /* Hide unused elements */
+         .sentence-context-info { display: none; }
+         .accent-buttons { display: none; }
+
+        /* --- Styling for Dropdown Select --- */
+        .dropdown-highlight { display: inline-block; margin: 0 4px; vertical-align: baseline; }
+        .dropdown-highlight select {
+             padding: 8px 10px; border: 2px solid #ccc; border-radius: 4px;
+             font-size: 1rem; font-family: var(--font-family); background-color: white;
+             min-width: 220px; /* Wider for questions */
+             max-width: 100%;
+             cursor: pointer; transition: border-color 0.3s ease;
+        }
+        .dropdown-highlight select:focus { border-color: var(--primary-color); outline: 2px solid #4D90FE; outline-offset: 1px; }
+        .dropdown-highlight select.correct { border-color: var(--success-color); background-color: #e8f5e9; color: #2e7d32; }
+        .dropdown-highlight select.incorrect { border-color: var(--error-color); background-color: #ffebee; color: #c62828; }
+        .dropdown-highlight select option[value=""] { color: #999; font-style: italic; }
+
+
+        /* Check button */
+        .check-button { /* Reverted to original class name */
+            background-color: var(--secondary-color); color: white; border: none; padding: 8px 16px;
+            border-radius: 4px; cursor: pointer; transition: all 0.3s ease; margin-top: 0;
+            font-size: 1rem; font-weight: normal; margin-left: auto;
+        }
+        .check-button:hover { background-color: #006633; opacity: 0.9; }
+
+
+        /* Hint Styling */
+        .hint-container { position: relative; display: inline-block; margin-left: 8px; vertical-align: middle; }
+        .hint-icon {
+            background: #ffa500; color: white; width: 24px; height: 24px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            font-size: 14px; font-weight: normal; border: none; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .hint-icon:hover { transform: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .hint-content {
+            position: absolute; background: #333; color: white; padding: 10px 14px;
+            border-radius: 4px; font-size: 14px; line-height: 1.6; width: max-content; max-width: 250px;
+            z-index: 100; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+            opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            pointer-events: auto;
+        }
+        .hint-container:focus-within .hint-content, .hint-icon:hover + .hint-content, .hint-icon:focus + .hint-content {
+            opacity: 1; visibility: visible; transform: translateX(-50%);
+        }
+        .hint-content::before {
+            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 8px 6px 0 6px; border-style: solid; border-color: #333 transparent transparent transparent;
+        }
+
+
+        /* Feedback Area below controls */
+        .feedback-message {
+            width: 100%; margin-top: 8px; padding: 8px 10px; border-radius: 4px;
+            font-size: 0.85rem; box-sizing: border-box; order: 10; flex-basis: 100%;
+            min-height: 1.5em; border-left: 3px solid transparent;
+        }
+        .feedback-message.success { background-color: #e8f5e9; color: #2e7d32; border-left-color: var(--success-color); }
+        .feedback-message.error { background-color: #ffebee; color: #c62828; border-left-color: var(--error-color); }
+        .feedback-message .hint-container { margin-left: 0; margin-right: 5px; }
+
+
+        /* Check All Button */
+        .check-all-button {
+            background-color: var(--secondary-color); color: white; border: none; padding: 10px 20px;
+            border-radius: 4px; cursor: pointer; transition: all 0.3s ease; margin: 20px auto;
+            display: block; font-size: 1.1rem; font-weight: normal;
+        }
+        .check-all-button:hover { background-color: #006633; opacity: 0.9; }
+
+
+        /* Grammar Box */
+        .grammar-box {
+            background-color: var(--highlight-color); padding: 16px; border-radius: 8px;
+            margin: 20px 0; border: none; border-left: none;
+        }
+        .grammar-box h3 { color: var(--secondary-color); margin-top: 0; margin-bottom: 16px; font-size: 1.2rem; }
+        .grammar-box ul { margin-bottom: 0; padding-left: 20px; line-height: 1.6; font-size: 1rem; }
+         .grammar-box li { margin-bottom: 8px; }
+
+
+        /* Celebration */
+        .celebration {
+            text-align: center; padding: 20px; background-color: #f8f8f8; border: none;
+            border-radius: 8px; margin-top: 20px; display: none;
+        }
+        .celebration.show { display: block; }
+        .celebration-emoji { font-size: 2.5em; margin-bottom: 10px; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .floating-emoji { animation: float 2s ease-in-out infinite; display: inline-block; margin: 0 5px; }
+
+
+        .ziggy-highlight-text { background-color: var(--ziggy-highlight); padding: 2px 5px; border-radius: 3px; font-weight: bold; color: initial; }
+        .mobile-instructions { display: none; }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+             .interactive-activity-container { padding: 10px; margin: 10px; }
+             .activity-section { padding: 15px; }
+             .activity-header h2 { font-size: 1.4rem; }
+             .chat-turn { max-width: 95%; }
+             .sentence-controls {
+                flex-direction: column; align-items: stretch; margin-left: 0;
+                gap: 10px; padding: 12px; background-color: #f5f5f5;
+             }
+              .controls-main-area { flex-direction: column; align-items: stretch; width: 100%; order: 1; }
+              .dropdown-highlight select { min-width: 150px; width: 100%; }
+              .dropdown-highlight { width: 100%; margin: 0 0 5px 0; } /* Stack dropdown */
+              .check-button { order: 5; margin-left: 0; width: 100%; min-height: unset; }
+              .hint-container { order: 2; align-self: flex-start; margin-top: 5px; margin-left: 0; width: fit-content; }
+              .feedback-message { order: 10; width: 100%; }
+              .check-all-button { width: 100%; font-size: 1.1rem; padding: 10px 20px; }
+              .mobile-instructions { display: block; font-size: .8rem; margin-top: 10px; color: #777; text-align: left; }
+        }
+
+        /* Accessibility */
+         *:focus { outline: none; }
+         button:focus, input:focus, select:focus, .hint-icon:focus {
+              outline: 2px solid #4D90FE; outline-offset: 1px;
+         }
+          @media (forced-colors: active) { .hint-icon:focus { outline: 2px solid ButtonText; } }
+
+    </style>
+    <!-- End of style block -->
+</head>
+<body>
+<div class="interactive-activity-container">
+    <div class="activity-section">
+        <div class="activity-header">
+             <span class="header-icon" role="img" aria-label="Weightlifter emoji">🏋️‍♀️</span>
+            <h2>Practice Drills: Complete the exercise and check with Ziggy if you need help!</h2>
+        </div>
+
+        <div class="introduction">
+            <p>Ashley está transcribiendo otra entrevista que le hizo a una mujer de Nicaragua, pero ha perdido algunas partes.</p>
+             <p><strong>Ayúdala a completarla eligiendo la pregunta correcta para cada espacio en la conversación.</strong></p>
+        </div>
+
+         <!-- Display Question Bank -->
+         <div class="question-bank-display">
+             <h4>Preguntas Posibles:</h4>
+             <ul>
+                 <li>¿Y cuánto tiempo llevan viviendo así?</li>
+                 <li>¿Y qué hacen mientras tanto?</li>
+                 <li>¿A qué te refieres con "vivir en el fin del mundo"?</li>
+                 <li>¿Por qué?</li>
+                 <li>¿Podrías explicarnos un poco más sobre el camión del gobierno?</li>
+             </ul>
+         </div>
+
+        <div class="dialogue-container" id="dialogueContainer">
+            <!-- Dialogue Turn 1 -->
+             <div class="chat-turn ashley-turn">
+                 <div class="chat-bubble">
+                     <span class="speaker">Ashley:</span>
+                     <p>Muchas gracias por su tiempo. Quisiera que me explicara cómo es su situación aquí en Nicaragua?</p>
+                 </div>
+             </div>
+             <!-- Dialogue Turn 2 -->
+             <div class="chat-turn mayerli-turn">
+                  <div class="chat-bubble">
+                     <span class="speaker">Mayerli:</span>
+                     <p>Pues nuestra situación aquí es terrible. Es como vivir en el fin del mundo permanentemente.</p>
+                  </div>
+              </div>
+
+             <!-- Ashley's Question 1 -->
+              <div class="chat-turn ashley-turn">
+                  <div class="chat-bubble">
+                      <span class="speaker">Ashley:</span>
+                      <p>
+                          <span class="dropdown-highlight">
+                              <select id="select-1" data-answer="¿A qué te refieres con “vivir en el fin del mundo”?" aria-label="Select Ashley's first question">
+                                  <option value="" selected>Selecciona una pregunta...</option>
+                                  <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
+                                  <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
+                                  <option value="¿A qué te refieres con “vivir en el fin del mundo”?">¿A qué te refieres con “vivir en el fin del mundo”?</option>
+                                  <option value="¿Por qué?">¿Por qué?</option>
+                                  <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
+                              </select>
+                          </span>
+                      </p>
+                  </div>
+              </div>
+              <!-- Controls for Question 1 -->
+              <div class="sentence-controls" id="group-1">
+                  <div class="controls-main-area">
+                      <button class="check-button" onclick="checkAnswer('select-1')">Check</button>
+                  </div>
+                  <div class="feedback-message" id="feedback-1"></div>
+              </div>
+
+            <!-- Dialogue Turn 4 -->
+             <div class="chat-turn mayerli-turn">
+                  <div class="chat-bubble">
+                     <span class="speaker">Mayerli:</span>
+                     <p>Gracias a las inundaciones y las sequías extremas, ya no podemos cultivar la tierra. Entonces lo único que tenemos para comer es lo que nos da el Gobierno: harina de trigo y leche en polvo.</p>
+                  </div>
+              </div>
+
+             <!-- Ashley's Question 2 -->
+              <div class="chat-turn ashley-turn">
+                   <div class="chat-bubble">
+                       <span class="speaker">Ashley:</span>
+                       <p>
+                           <span class="dropdown-highlight">
+                               <select id="select-2" data-answer="¿Y cuánto tiempo llevan viviendo así?" aria-label="Select Ashley's second question">
+                                   <option value="" selected>Selecciona una pregunta...</option>
+                                   <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
+                                   <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
+                                   <option value="¿A qué te refieres con “vivir en el fin del mundo”?">¿A qué te refieres con “vivir en el fin del mundo”?</option>
+                                   <option value="¿Por qué?">¿Por qué?</option>
+                                   <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
+                               </select>
+                           </span>
+                       </p>
+                   </div>
+               </div>
+                <!-- Controls for Question 2 -->
+               <div class="sentence-controls" id="group-2">
+                   <div class="controls-main-area">
+                       <button class="check-button" onclick="checkAnswer('select-2')">Check</button>
+                   </div>
+                   <div class="feedback-message" id="feedback-2"></div>
+               </div>
+
+            <!-- Dialogue Turn 6 -->
+              <div class="chat-turn mayerli-turn">
+                  <div class="chat-bubble">
+                     <span class="speaker">Mayerli:</span>
+                     <p>Ya llevamos dos años y medio así…nos estamos enfermando ya…</p>
+                  </div>
+              </div>
+
+            <!-- Ashley's Question 3 -->
+              <div class="chat-turn ashley-turn">
+                   <div class="chat-bubble">
+                       <span class="speaker">Ashley:</span>
+                       <p>
+                           <span class="dropdown-highlight">
+                               <select id="select-3" data-answer="¿Por qué?" aria-label="Select Ashley's third question">
+                                   <option value="" selected>Selecciona una pregunta...</option>
+                                   <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
+                                   <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
+                                   <option value="¿A qué te refieres con “vivir en el fin del mundo”?">¿A qué te refieres con “vivir en el fin del mundo”?</option>
+                                   <option value="¿Por qué?">¿Por qué?</option>
+                                   <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
+                               </select>
+                           </span>
+                       </p>
+                   </div>
+               </div>
+                <!-- Controls for Question 3 -->
+                <div class="sentence-controls" id="group-3">
+                    <div class="controls-main-area">
+                        <button class="check-button" onclick="checkAnswer('select-3')">Check</button>
+                    </div>
+                    <div class="feedback-message" id="feedback-3"></div>
+                </div>
+
+             <!-- Dialogue Turn 8 -->
+               <div class="chat-turn mayerli-turn">
+                  <div class="chat-bubble">
+                     <span class="speaker">Mayerli:</span>
+                     <p>Porque antes podíamos comer plátano, frijoles, arroz, frutas y ahora no hay nada… solo harina y leche en polvo…cada vez que el camión del gobierno trae, claro.</p>
+                  </div>
+              </div>
+
+             <!-- Ashley's Question 4 -->
+               <div class="chat-turn ashley-turn">
+                   <div class="chat-bubble">
+                       <span class="speaker">Ashley:</span>
+                        <p>
+                           <span class="dropdown-highlight">
+                               <select id="select-4" data-answer="¿Podrías explicarnos un poco más sobre el camión del gobierno?" aria-label="Select Ashley's fourth question">
+                                   <option value="" selected>Selecciona una pregunta...</option>
+                                   <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
+                                   <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
+                                   <option value="¿A qué te refieres con “vivir en el fin del mundo”?">¿A qué te refieres con “vivir en el fin del mundo”?</option>
+                                   <option value="¿Por qué?">¿Por qué?</option>
+                                   <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
+                               </select>
+                           </span>
+                       </p>
+                   </div>
+               </div>
+                 <!-- Controls for Question 4 -->
+                <div class="sentence-controls" id="group-4">
+                    <div class="controls-main-area">
+                        <button class="check-button" onclick="checkAnswer('select-4')">Check</button>
+                    </div>
+                    <div class="feedback-message" id="feedback-4"></div>
+                </div>
+
+             <!-- Dialogue Turn 10 -->
+               <div class="chat-turn mayerli-turn">
+                  <div class="chat-bubble">
+                     <span class="speaker">Mayerli:</span>
+                     <p>Cada 15 días viene el camión del Gobierno a traer 1 kilo de harina de trigo y un kilo de leche en polvo para cada familia. A veces viene cada mes…</p>
+                  </div>
+              </div>
+
+              <!-- Ashley's Question 5 -->
+               <div class="chat-turn ashley-turn">
+                   <div class="chat-bubble">
+                       <span class="speaker">Ashley:</span>
+                       <p>
+                           <span class="dropdown-highlight">
+                               <select id="select-5" data-answer="¿Y qué hacen mientras tanto?" aria-label="Select Ashley's fifth question">
+                                   <option value="" selected>Selecciona una pregunta...</option>
+                                   <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
+                                   <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
+                                   <option value="¿A qué te refieres con “vivir en el fin del mundo”?">¿A qué te refieres con “vivir en el fin del mundo”?</option>
+                                   <option value="¿Por qué?">¿Por qué?</option>
+                                   <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
+                               </select>
+                           </span>
+                       </p>
+                   </div>
+               </div>
+                <!-- Controls for Question 5 -->
+                <div class="sentence-controls" id="group-5">
+                    <div class="controls-main-area">
+                        <button class="check-button" onclick="checkAnswer('select-5')">Check</button>
+                    </div>
+                    <div class="feedback-message" id="feedback-5"></div>
+                </div>
+
+             <!-- Dialogue Turn 12 -->
+               <div class="chat-turn mayerli-turn">
+                  <div class="chat-bubble">
+                     <span class="speaker">Mayerli:</span>
+                     <p>Pues racionar la comida como si fuera el fin del mundo…</p>
+                  </div>
+              </div>
+
+        </div> <!-- End dialogue-container -->
+
+        <button class="check-all-button" onclick="checkAllAnswers()">Check All Answers</button>
+
+        <div class="celebration" id="celebration">
+            <div class="celebration-emoji">
+                 <span class="floating-emoji" role="img" aria-label="Nicaragua Flag">🏞️🇮</span>
+                 <span class="floating-emoji" role="img" aria-label="Dialogue bubble">💬</span>
+                 <span class="floating-emoji" role="img" aria-label="Check mark button">✅</span>
+            </div>
+            <h2>Excellent work!</h2>
+            <p>You've successfully completed the dialogue!</p>
+        </div>
+
+        <div class="grammar-box">
+            <h3>💡 Remember:</h3>
+             <ul>
+                 <li><code class="ziggy-highlight-text">Podrías</code> is the conditional form of poder (could you).</li>
+                 <li>Use <code class="ziggy-highlight-text">qué</code> for "what" and <code class="ziggy-highlight-text">por qué</code> for "why".</li>
+                 <li><code class="ziggy-highlight-text">Cuánto</code> can be used for time (how long) or quantity (how much).</li>
+                 <li>Pay attention to verb conjugations needed in questions!</li>
+             </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; color: #777; font-size: 0.9rem;">
+            🆘 Need Extra Help? Type <span class="ziggy-highlight-text">Ayuda, Ziggy!</span> and tell Ziggy what you don’t understand.
+            <p class="mobile-instructions">💡 Select the best question to continue the conversation logically.</p>
+        </div>
+    </div> <!-- End activity-section -->
+</div> <!-- End interactive-activity-container -->
+
+<script>
+// Track completed exercises (each select is an exercise)
+const completedExercises = {
+    1: false, 2: false, 3: false, 4: false, 5: false // 5 questions/selects
+};
+const totalExercises = Object.keys(completedExercises).length;
+
+// --- UTILITY FUNCTIONS ---
+function normalizeString(str) {
+    if (typeof str !== 'string') return '';
+    // Normalize quotes and whitespace for comparison
+    return str.trim().toLowerCase().replace(/[“”]/g,'"').replace(/\s+/g, ' ');
+}
+
+// --- FEEDBACK & HINT MANAGEMENT ---
+function clearFeedback(groupId) { // groupId is group-1, group-2 etc.
+    const feedbackArea = document.getElementById(`feedback-${groupId.split('-')[1]}`);
+    if (feedbackArea) {
+        feedbackArea.innerHTML = '';
+        feedbackArea.className = 'feedback-message';
+    }
+    const controlGroup = document.getElementById(groupId);
+    if(controlGroup){
+         const existingHint = controlGroup.querySelector('.hint-container');
+         if (existingHint) existingHint.remove();
+    }
+}
+
+function addFeedbackMessage(groupId, message, type) {
+     const feedbackArea = document.getElementById(`feedback-${groupId.split('-')[1]}`);
+    if (feedbackArea) {
+        feedbackArea.textContent = message; // Use textContent
+        feedbackArea.classList.add(type);
+    }
+}
+
+function addHint(groupId, hintText) {
+    const controlGroup = document.getElementById(groupId);
+    if (!controlGroup || controlGroup.querySelector('.hint-container')) return;
+
+     const feedbackArea = document.getElementById(`feedback-${groupId.split('-')[1]}`);
+     if (feedbackArea && !feedbackArea.classList.contains('error')) {
+          feedbackArea.classList.add('error');
+     }
+
+    const hintContainer = document.createElement('span');
+    hintContainer.className = 'hint-container';
+    const button = document.createElement('button');
+    button.className = 'hint-icon'; button.textContent = '?';
+    button.setAttribute('type', 'button'); button.setAttribute('aria-label', 'Show hint');
+    const hintContent = document.createElement('div');
+    hintContent.className = 'hint-content'; hintContent.setAttribute('role', 'tooltip');
+    const tooltipId = `hint-tooltip-${groupId}-${Math.random().toString(36).substring(2, 9)}`;
+    hintContent.id = tooltipId; hintContent.textContent = hintText; // English hint
+    button.setAttribute('aria-describedby', tooltipId);
+    hintContainer.appendChild(button); hintContainer.appendChild(hintContent);
+
+    const mainControls = controlGroup.querySelector('.controls-main-area') || controlGroup;
+     const checkButton = mainControls.querySelector('.check-button');
+     if (checkButton) {
+         checkButton.parentNode.insertBefore(hintContainer, checkButton.nextSibling);
+     } else {
+         mainControls.appendChild(hintContainer);
+     }
+}
+
+// --- CORE CHECKING LOGIC ---
+function checkAnswer(selectId) { // Changed parameter to selectId
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    const exerciseNumber = selectId.split('-')[1]; // Get number from select ID
+    const groupId = `group-${exerciseNumber}`;
+    const feedbackAreaId = `feedback-${exerciseNumber}`;
+    clearFeedback(groupId);
+
+    const selectedValue = select.value;
+    const correctAnswer = select.getAttribute('data-answer');
+
+    select.classList.remove('correct', 'incorrect'); // Reset style
+
+    if (!selectedValue) {
+        addHint(groupId, 'Which question makes the most sense following the previous statement?');
+        select.focus();
+        select.classList.add('incorrect');
+        addFeedbackMessage(groupId, 'Please select a question.', 'error');
+        return;
+    }
+
+    // Normalize for comparison
+    if (normalizeString(selectedValue) === normalizeString(correctAnswer)) {
+        select.classList.add('correct');
+        completedExercises[exerciseNumber] = true;
+        addFeedbackMessage(groupId, 'Correct!', 'success');
+        checkAllCompleted();
+    } else {
+        select.classList.add('incorrect');
+        completedExercises[exerciseNumber] = false;
+        let errorMessage = "That question doesn't quite fit the flow here.";
+        let hintText = "Read Mayerli's previous statement again. What would be a logical follow-up question for Ashley to ask?";
+        // Give more specific hints based on which question it is
+        if(exerciseNumber === '1') hintText = "Mayerli just said something dramatic ('vivir en el fin del mundo'). What would you ask to understand that better?";
+        else if(exerciseNumber === '2') hintText = "Mayerli explained *why* things are bad (can't grow food). What's a logical question about the duration of this situation?";
+        else if(exerciseNumber === '3') hintText = "Mayerli mentioned getting sick. What simple question asks for the reason?";
+        else if(exerciseNumber === '4') hintText = "Mayerli mentioned the government truck. What question asks for more details about that truck?";
+        else if(exerciseNumber === '5') hintText = "Mayerli described the infrequent food delivery. What question asks about how they manage *between* deliveries?";
+
+        addFeedbackMessage(groupId, errorMessage, 'error');
+        addHint(groupId, hintText);
+    }
+}
+
+function checkAllCompleted() {
+    const allDone = Object.values(completedExercises).every(value => value === true);
+    const celebrationDiv = document.getElementById('celebration');
+    if (celebrationDiv) {
+        celebrationDiv.classList.toggle('show', allDone);
+    }
+}
+
+function checkAllAnswers() {
+    let isCorrectOverall = true;
+    for (let i = 1; i <= totalExercises; i++) {
+         checkAnswer(`select-${i}`); // Check each select dropdown
+         if (!completedExercises[i]) {
+              isCorrectOverall = false;
+         }
+    }
+    checkAllCompleted(); // Update celebration status
+}
+
+// --- INITIALIZATION & EVENT LISTENERS ---
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('.dropdown-highlight select');
+
+    selects.forEach(select => {
+        const selectId = select.id;
+        const controlsGroup = select.closest('.correction-controls') || select.closest('.sentence-controls'); // Find parent controls
+
+        select.addEventListener('focus', function() {
+            lastFocusedInputId = this.id; // Track focus on select elements too
+        });
+
+        // Event Listener: User typing clears feedback for THIS input
+        select.addEventListener('change', function() {
+            this.classList.remove('correct', 'incorrect');
+            const groupId = `group-${this.id.split('-')[1]}`;
+            clearFeedback(groupId); // Clear feedback & hint for this specific correction
+
+            const currentExerciseNumber = this.id.split('-')[1];
+             if (completedExercises[currentExerciseNumber]) {
+                 completedExercises[currentExerciseNumber] = false;
+             }
+            const celebrationDiv = document.getElementById('celebration');
+             if (celebrationDiv) celebrationDiv.classList.remove('show');
+        });
+
+        // Optionally, add keydown listener for Enter if desired, though less common for selects
+        select.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkAnswer(this.id); // Check the current select on Enter
+            }
+        });
+
+    });
+});
+</script>
+</body>
+</html>
