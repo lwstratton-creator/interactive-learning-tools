@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandarin Passport Challenge</title>
+    <!-- Link to Poppins font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Start of Mandarin Passport Challenge Widget -->
+<div id="mandarin-passport-widget-container">
+  <style>
+    /* Scoped styles for the Mandarin Passport Challenge Widget */
+    #mandarin-passport-widget-container {
+      /* Color variables */
+      --mandarin-theme: #fc373d;
+      --brand-color: #051c2c;
+      --lp-primary-1: #ff4712;
+      --lp-primary-2: #ffae00;
+      --lp-secondary: #009fd4;
+      --text-light: #ffffff;
+      --text-dark: #333333;
+      --feedback-correct: #28a745;
+      --feedback-incorrect: #dc3545;
+      --feedback-try-again: #ffae00;
+      --passport-bg: #f5f5dc;
+      --passport-ink: #3d5a80;
+      --passport-fail: #8B0000;
+
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, var(--brand-color) 0%, #0a2a40 100%);
+      color: var(--text-light);
+      padding: 25px; /* Increased overall padding slightly */
+      border-radius: 10px;
+      max-width: 600px;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 1em auto;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      overflow: hidden; /* Important for containing absolutely positioned elements */
+      position: relative;
+    }
+
+    /* --- Start Screen --- */
+     #mandarin-passport-widget-container #mpw-start-screen { 
+       text-align: center; 
+       padding: 10px 0 25px;  /* Added more breathing space */
+     }
+     #mandarin-passport-widget-container #mpw-start-screen h2.mpw-main-title {
+        font-family: 'Poppins', sans-serif; 
+        color: var(--lp-primary-1); 
+        font-size: 2.8rem;
+        font-weight: 700; 
+        margin-top: 0.8em; /* Increased top margin for breathing space */
+        margin-bottom: 0.4em;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+     }
+      #mandarin-passport-widget-container #mpw-start-screen .mpw-subtitle {
+        font-family: 'Poppins', sans-serif; 
+        color: var(--lp-primary-2); 
+        font-size: 1.9rem;
+        font-weight: 700; 
+        margin-top: 0.2em;  /* Added a little space */
+        margin-bottom: 0.8em;  /* Added more space below subtitle */
+     }
+     #mandarin-passport-widget-container #mpw-start-screen .mpw-globe-container {
+         position: relative;
+         width: 4rem;
+         height: 4rem;
+         margin: 0.5em auto 0.8em auto;
+         perspective: 1200px;
+     }
+     
+     #mandarin-passport-widget-container #mpw-start-screen .mpw-emoji-large {
+         display: block; 
+         font-size: 4rem;
+         position: absolute;
+         top: 0;
+         left: 50%;
+         transform: translateX(-50%);
+         text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+         backface-visibility: hidden;
+     }
+     
+     #mandarin-passport-widget-container #mpw-start-screen .mpw-globe-americas {
+         animation: mpw-rotate-americas 8s linear infinite;
+     }
+     
+     #mandarin-passport-widget-container #mpw-start-screen .mpw-globe-asia {
+         animation: mpw-rotate-asia 8s linear infinite;
+     }
+     #mandarin-passport-widget-container #mpw-start-screen p.mpw-intro-guide {
+         font-size: 1.2rem; /* Slightly larger */
+         font-weight: bold; 
+         color: var(--lp-secondary);
+         margin-bottom: 2em;  /* Increased space below intro guide */
+         margin-top: 1em;  /* Added space above intro guide */
+     }
+     #mandarin-passport-widget-container #mpw-start-button {
+       background-color: var(--lp-secondary); 
+       font-size: 1.3rem; /* Slightly larger */
+       padding: 16px 30px; /* Larger button */
+       margin-top: 30px; /* More space above button */
+       font-weight: bold;
+       letter-spacing: 0.5px;
+    }
+    #mandarin-passport-widget-container #mpw-start-button:hover,
+    #mandarin-passport-widget-container #mpw-start-button:focus {
+        background-color: #007ba7; 
+        transform: scale(1.03);
+    }
+    #mandarin-passport-widget-container #mpw-start-button:active { 
+        transform: scale(0.97); 
+    }
+
+    /* --- General Elements --- */
+    #mandarin-passport-widget-container h3 { color: var(--mandarin-theme); text-align: center; margin-bottom: 1em; }
+    #mandarin-passport-widget-container p { line-height: 1.6; margin-bottom: 1em; font-size: 1rem; }
+    #mandarin-passport-widget-container .mpw-screen { display: none; animation: mpw-fadeIn 0.5s ease-in-out; }
+    #mandarin-passport-widget-container .mpw-screen.mpw-active { display: block; }
+    #mandarin-passport-widget-container .mpw-button {
+      display: block; width: 100%; padding: 12px 20px; margin: 10px 0; font-size: 1rem; font-weight: bold;
+      color: var(--text-light); background-color: var(--lp-primary-1); border: none; border-radius: 5px;
+      cursor: pointer; transition: background-color 0.3s ease, transform 0.1s ease; text-align: center; box-sizing: border-box;
+    }
+    #mandarin-passport-widget-container .mpw-button:hover,
+    #mandarin-passport-widget-container .mpw-button:focus { background-color: var(--lp-primary-2); outline: none; }
+    #mandarin-passport-widget-container .mpw-button:active { transform: scale(0.98); }
+
+    /* --- Question Screen --- */
+    #mandarin-passport-widget-container #mpw-timer {
+      font-size: 1.2rem; font-weight: bold; color: var(--lp-primary-2); text-align: right; margin-bottom: 10px;
+      padding: 5px 10px; background-color: rgba(0,0,0,0.2); border-radius: 5px; min-height: 1.5em;
+    }
+    #mandarin-passport-widget-container #mpw-timer.mpw-low-time { color: var(--mandarin-theme); animation: mpw-pulse 1s infinite; }
+    #mandarin-passport-widget-container #mpw-question-area {
+      background-color: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;
+    }
+    #mandarin-passport-widget-container #mpw-question-text {
+      font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: var(--lp-primary-2);
+    }
+    #mandarin-passport-widget-container #mpw-question-text strong { color: var(--text-light); }
+    #mandarin-passport-widget-container #mpw-options-list { list-style: none; padding: 0; margin: 0; }
+    #mandarin-passport-widget-container .mpw-option-button {
+      display: block; width: 100%; padding: 10px 15px; margin-bottom: 8px; font-size: 1rem; color: var(--brand-color);
+      background-color: var(--text-light); border: 2px solid transparent; border-radius: 5px; cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease; text-align: left; box-sizing: border-box;
+    }
+    #mandarin-passport-widget-container .mpw-option-button:hover:not(:disabled),
+    #mandarin-passport-widget-container .mpw-option-button:focus:not(:disabled) { background-color: #f0f0f0; border-color: var(--lp-primary-2); outline: none; }
+    #mandarin-passport-widget-container .mpw-option-button.mpw-correct { background-color: var(--feedback-correct); color: var(--text-light); border-color: var(--feedback-correct); font-weight: bold; }
+    #mandarin-passport-widget-container .mpw-option-button.mpw-incorrect { background-color: var(--feedback-incorrect); color: var(--text-light); border-color: var(--feedback-incorrect); opacity: 0.6; cursor: not-allowed; }
+    #mandarin-passport-widget-container .mpw-option-button:disabled { cursor: not-allowed; }
+    #mandarin-passport-widget-container .mpw-option-button.mpw-correct:disabled,
+    #mandarin-passport-widget-container .mpw-option-button.mpw-incorrect:disabled { opacity: 1; &.mpw-incorrect { opacity: 0.6; } }
+
+    /* --- Next Button (Using Visibility) --- */
+    #mandarin-passport-widget-container #mpw-next-button {
+        /* Inherit general .mpw-button styles */
+        visibility: hidden; /* Use visibility instead of display */
+        /* Calculate min-height based on button padding, font size, line height */
+        /* Example: (12px padding top + 12px padding bottom + ~22px font/line-height) = 46px */
+        min-height: 46px; /* Or adjust as needed to match actual button height */
+        /* Ensure margin is consistent whether hidden or visible */
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    #mandarin-passport-widget-container #mpw-next-button.mpw-visible {
+        visibility: visible;
+    }
+
+    /* --- Inline Feedback (Try Again) --- */
+    #mandarin-passport-widget-container #mpw-feedback-inline { margin-top: 15px; padding: 10px; border-radius: 5px; font-weight: bold; text-align: center; display: none; color: var(--text-light); min-height: 1.5em; }
+    #mandarin-passport-widget-container #mpw-feedback-inline.mpw-try-again { background-color: var(--feedback-try-again); color: var(--brand-color); display: block; }
+
+    /* --- Pop-up Feedback (Correct) --- */
+    #mandarin-passport-widget-container #mpw-feedback-popup {
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%) scale(0); 
+        background-color: var(--feedback-correct); 
+        color: var(--text-light); 
+        padding: 30px 45px; 
+        border-radius: 15px; 
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); 
+        text-align: center; 
+        font-size: 1.6rem; 
+        font-weight: bold; 
+        z-index: 1001; 
+        display: flex; 
+        flex-direction: column; /* Changed to column for multiple lines of text */
+        justify-content: center; 
+        align-items: center; 
+        opacity: 0; 
+        pointer-events: none;
+        transition: opacity 0.3s ease-out; /* Smooth fade out when hiding */
+        line-height: 1.5; /* Better line spacing */
+        min-width: 280px; /* Ensure minimum width for content */
+        /* Animation applied via class */
+    }
+    #mandarin-passport-widget-container #mpw-feedback-popup.mpw-showing {
+        opacity: 1; pointer-events: auto; animation: mpw-firecrackerBurst 0.5s ease-out forwards;
+        /* Ensure scale is 1 after animation */
+        transform: translate(-50%, -50%) scale(1);
+    }
+    #mandarin-passport-widget-container #mpw-feedback-popup.mpw-hiding {
+        opacity: 0; /* Start fading out */
+        pointer-events: none;
+        animation: mpw-flyOff 0.4s ease-in forwards;
+    }
+
+
+    /* --- Passport Stamp Page --- */
+    #mandarin-passport-widget-container .mpw-passport-page { 
+      background-color: var(--passport-bg); 
+      color: var(--text-dark); 
+      padding: 25px; 
+      border-radius: 8px; 
+      border: 1px solid #ccc; 
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1); 
+      position: relative;
+      text-align: center; /* Ensure all content is centered by default */
+    }
+    #mandarin-passport-widget-container .mpw-passport-page h3 { 
+      font-family: 'Poppins', sans-serif; 
+      color: var(--brand-color); 
+      margin-bottom: 15px; 
+      font-size: 1.5rem; 
+      text-align: center; 
+      border-bottom: 2px solid var(--passport-ink); 
+      padding-bottom: 8px; 
+    }
+    #mandarin-passport-widget-container .mpw-stamp { 
+      border: 5px double var(--passport-ink); 
+      border-radius: 50%; 
+      width: 160px; /* Slightly larger */
+      height: 160px; /* Slightly larger */
+      margin: 20px auto; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      text-align: center; 
+      color: var(--passport-ink); 
+      background-color: rgba(255, 255, 255, 0.6); 
+      transform: rotate(-10deg); 
+      animation: mpw-stampAnimation 0.8s ease-out; 
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      position: relative; /* Added for text positioning */
+      overflow: hidden; /* Ensuring text doesn't overflow */
+    }
+    #mandarin-passport-widget-container .mpw-stamp.mpw-failed { 
+      border-color: var(--passport-fail); 
+      color: var(--passport-fail); 
+      transform: rotate(5deg); 
+    }
+    #mandarin-passport-widget-container .mpw-stamp-icon { 
+      font-size: 3.5rem; 
+      margin-bottom: 8px; /* More space below icon */
+    }
+    #mandarin-passport-widget-container .mpw-stamp-text { 
+      font-family: 'Poppins', sans-serif; 
+      font-weight: 700; 
+      font-size: 0.9rem; 
+      line-height: 1.3; /* Increased line height */
+      text-transform: uppercase; 
+      max-width: 90%; /* Prevent overflow */
+      word-wrap: break-word; /* Allow words to break */
+    }
+    #mandarin-passport-widget-container .mpw-stamp-module { 
+      font-size: 0.8rem; 
+      font-weight: 400; 
+      margin-top: 3px; /* Added space between texts */
+      max-width: 90%; /* Prevent overflow */
+    }
+    #mandarin-passport-widget-container .mpw-completion-message { 
+      font-style: normal; 
+      margin: 30px auto 1.5em; /* Center horizontally with auto margins */
+      text-align: center; 
+      font-size: 1.1rem; 
+      color: var(--brand-color); 
+      line-height: 1.8; /* Increased line height for better readability */
+      max-width: 90%; /* Ensure text doesn't stretch too wide */
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.2); /* Subtle background */
+      padding: 15px; /* Added padding all around */
+      display: block; /* Ensure block display */
+      width: 80%; /* Control width */
+      position: relative; /* Establish positioning context */
+      left: 50%; /* Move to center */
+      transform: translateX(-50%); /* Precisely center */
+    }
+    #mandarin-passport-widget-container .mpw-completion-message strong { 
+      color: var(--mandarin-theme); 
+    }
+
+    /* --- Animations --- */
+    @keyframes mpw-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    /* Animation for Americas globe */
+    @keyframes mpw-rotate-americas {
+      0%, 5% { transform: translateX(-50%) rotateY(0deg); opacity: 1; }
+      45%, 55% { transform: translateX(-50%) rotateY(180deg); opacity: 0; }
+      95%, 100% { transform: translateX(-50%) rotateY(360deg); opacity: 1; }
+    }
+    
+    /* Animation for Asia globe */
+    @keyframes mpw-rotate-asia {
+      0%, 5% { transform: translateX(-50%) rotateY(180deg); opacity: 0; }
+      45%, 55% { transform: translateX(-50%) rotateY(0deg); opacity: 1; }
+      95%, 100% { transform: translateX(-50%) rotateY(-180deg); opacity: 0; }
+    }
+    
+    /* Pop-up appear animation */
+    @keyframes mpw-firecrackerBurst {
+        0% { transform: translate(-50%, -50%) scale(0); opacity: 0; border-radius: 50%; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.8); }
+        70% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; border-radius: 25px; box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0.3); }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+    }
+    /* Pop-up hide animation */
+    @keyframes mpw-flyOff {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-70%, -150%) scale(0.4) rotate(-15deg);
+            opacity: 0;
+        }
+    }
+    @keyframes mpw-stampAnimation { /* Stamp appear */
+        0% { transform: scale(2) rotate(-30deg); opacity: 0; } 60% { transform: scale(0.9) rotate(5deg); opacity: 1; }
+        80% { transform: scale(1.05) rotate(-12deg); } 100% { transform: scale(1) rotate(-10deg); opacity: 1; }
+    }
+     @keyframes mpw-pulse { /* Timer pulse */
+         0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; }
+     }
+
+    /* --- Mobile Responsiveness --- */
+    @media (max-width: 480px) {
+       #mandarin-passport-widget-container { padding: 20px; }
+       #mandarin-passport-widget-container #mpw-start-screen h2.mpw-main-title { font-size: 2.2rem; margin-bottom: 0.3em; }
+       #mandarin-passport-widget-container #mpw-start-screen .mpw-subtitle { font-size: 1.5rem; margin-bottom: 0.4em; }
+       #mandarin-passport-widget-container #mpw-start-screen .mpw-globe-container { 
+          height: 3.5rem;
+          width: 3.5rem;
+          margin: 0.3em auto 0.5em auto;
+       }
+       #mandarin-passport-widget-container #mpw-start-screen .mpw-emoji-large { font-size: 3.5rem; }
+       #mandarin-passport-widget-container #mpw-start-screen p.mpw-intro-guide { font-size: 1.1rem; margin-bottom: 1.5em; }
+       #mandarin-passport-widget-container #mpw-start-button { font-size: 1.1rem; padding: 12px 20px; margin-top: 15px; }
+       #mandarin-passport-widget-container h3 { font-size: 1.1rem; }
+       #mandarin-passport-widget-container .mpw-passport-page h3 { font-size: 1.3rem; }
+       #mandarin-passport-widget-container .mpw-button { padding: 10px 15px; font-size: 0.95rem; }
+       #mandarin-passport-widget-container #mpw-next-button { min-height: 42px; /* Adjust if needed */ }
+       #mandarin-passport-widget-container #mpw-question-text { font-size: 1rem; }
+       #mandarin-passport-widget-container .mpw-option-button { padding: 8px 12px; font-size: 0.9rem; }
+       #mandarin-passport-widget-container #mpw-timer { font-size: 1rem; }
+       #mandarin-passport-widget-container .mpw-stamp { width: 130px; height: 130px; }
+       #mandarin-passport-widget-container .mpw-stamp-icon { font-size: 2.8rem; }
+       #mandarin-passport-widget-container .mpw-stamp-text { font-size: 0.8rem; }
+       #mandarin-passport-widget-container .mpw-stamp-module { font-size: 0.7rem; }
+       #mandarin-passport-widget-container .mpw-completion-message { 
+          font-size: 0.95rem; 
+          line-height: 1.6; 
+          padding: 12px;
+          max-width: 95%;
+          width: 90%; /* Increase width on mobile for better text flow */
+       }
+       #mandarin-passport-widget-container #mpw-feedback-popup { 
+          font-size: 1.2rem; 
+          padding: 15px 20px; 
+          width: 80%; 
+          min-width: 250px;
+       }
+    }
+
+  </style>
+
+  <!-- HTML Structure -->
+  <div id="mpw-start-screen" class="mpw-screen mpw-active">
+    <h2 class="mpw-main-title">JOURNEYS</h2>
+    <div class="mpw-globe-container">
+      <span class="mpw-emoji-large mpw-globe-americas">🌎</span>
+      <span class="mpw-emoji-large mpw-globe-asia">🌏</span>
+    </div>
+    <h3 class="mpw-subtitle">Passport Challenge</h3>
+    <p class="mpw-intro-guide">Nǐ hǎo! It's Li Ming (Xiao Ming)! Let's talk about music and sounds! 🎵 </p>
+    <button id="mpw-start-button" class="mpw-button">🚀 Let's Go!</button>
+  </div>
+
+  <div id="mpw-question-screen" class="mpw-screen">
+     <div id="mpw-timer">Time Left: 2:00</div>
+    <div id="mpw-question-area">
+        <p id="mpw-question-text"><strong>Li Ming asks:</strong> [Question text goes here]</p>
+        <ul id="mpw-options-list"></ul>
+    </div>
+    <div id="mpw-feedback-inline" role="alert" aria-live="assertive"></div>
+    <!-- Next button starts hidden via CSS rule -->
+    <button id="mpw-next-button" class="mpw-button">Next Question ▶️</button>
+  </div>
+
+  <div id="mpw-completion-screen" class="mpw-screen">
+    <div class="mpw-passport-page">
+        <h3>Journeys Passport Control</h3>
+        <div id="mpw-stamp-area"></div>
+        <p id="mpw-completion-message">[Completion message placeholder]</p>
+        <button id="mpw-restart-button" class="mpw-button">🔄 Review Again?</button>
+    </div>
+  </div>
+
+  <!-- Pop-up Feedback Element -->
+   <div id="mpw-feedback-popup" role="alert" aria-live="assertive"></div>
+
+
+  <script>
+    // Scoped JavaScript
+    (function() {
+      // Variable declarations
+      const widgetContainer = document.getElementById('mandarin-passport-widget-container'); if (!widgetContainer) return; const startScreen = widgetContainer.querySelector('#mpw-start-screen'); const questionScreen = widgetContainer.querySelector('#mpw-question-screen'); const completionScreen = widgetContainer.querySelector('#mpw-completion-screen'); const startButton = widgetContainer.querySelector('#mpw-start-button'); const nextButton = widgetContainer.querySelector('#mpw-next-button'); const restartButton = widgetContainer.querySelector('#mpw-restart-button'); const questionTextEl = widgetContainer.querySelector('#mpw-question-text'); const optionsListEl = widgetContainer.querySelector('#mpw-options-list'); const feedbackInlineEl = widgetContainer.querySelector('#mpw-feedback-inline'); const feedbackPopupEl = widgetContainer.querySelector('#mpw-feedback-popup'); const timerEl = widgetContainer.querySelector('#mpw-timer'); const stampAreaEl = widgetContainer.querySelector('#mpw-stamp-area'); const completionMessageEl = widgetContainer.querySelector('#mpw-completion-message');
+      // Configuration
+      const quizTimeLimit = 120; const lowTimeThreshold = 30; const completionEmoji = '🐉'; const popupAppearDuration = 500; const popupFlyOffDuration = 400; const popupVisibleDuration = 1200;
+// Replace the current quizData array with this:
+const quizData = [
+  {
+    question: "When I talk about listening to my favorite music on a rainy day, what's the Mandarin word for 'song'?",
+    options: ["Yīnyuè", "Gē", "Yǎnchàng", "Shēngyīn"],
+    correctAnswer: "Gē"
+  },
+  {
+    question: "When I say I'm feeling 'fàng sōng' today, how am I feeling?",
+    options: ["Excited", "Tired", "Relaxed", "Hungry"],
+    correctAnswer: "Relaxed"
+  },
+  {
+    question: "What music style is 'shuō chàng' that my friend Zhao Lin enjoys?",
+    options: ["Classical", "Pop", "Rap", "Jazz"],
+    correctAnswer: "Rap"
+  },
+  {
+    question: "What music genre is 'yáo gǔn' that Zhao Lin likes to listen to?",
+    options: ["Country", "Rock and roll", "Hip hop", "Electronic"],
+    correctAnswer: "Rock and roll"
+  },
+  {
+    question: "When I describe bird sounds as 'hǎo tīng', what am I saying about them?",
+    options: ["Very loud", "Pleasant to hear", "Too noisy", "Rarely heard"],
+    correctAnswer: "Pleasant to hear"
+  },
+  {
+    question: "What is the Mandarin word for 'concert' that I'm excited to attend at Jiuzhai valley?",
+    options: ["Yǎnchàng huì", "Gē huì", "Yīnyuè jiā", "Biǎoyǎn"],
+    correctAnswer: "Yǎnchàng huì"
+  },
+  {
+    question: "What does 'Zhēn bàng' mean when I compliment your work?",
+    options: ["Keep trying", "Almost there", "Truly excellent", "Well done"],
+    correctAnswer: "Truly excellent"
+  },
+  {
+    question: "What's the Mandarin word for 'excellent' that I asked you about?",
+    options: ["Hǎo", "Kù", "Bàng", "Zhēn"],
+    correctAnswer: "Bàng"
+  }
+];
+      // State Variables
+      let currentQuestionIndex = 0; let shuffledQuestions = []; let timerInterval = null; let timeLeft = quizTimeLimit; let challengeCompletedSuccessfully = false; let feedbackTimeout = null;
+
+      // --- Utility & Timer Functions ---
+      function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
+      function formatTime(seconds) { const minutes = Math.floor(seconds / 60); const remainingSeconds = seconds % 60; return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`; }
+      function updateTimerDisplay() { timerEl.textContent = `Time Left: ${formatTime(timeLeft)}`; if (timeLeft <= lowTimeThreshold && timeLeft > 0) { timerEl.classList.add('mpw-low-time'); } else { timerEl.classList.remove('mpw-low-time'); } if (timeLeft <= 0) { timerEl.textContent = "Time's Up! 땡!"; timerEl.classList.remove('mpw-low-time'); } }
+      function startTimer() { clearInterval(timerInterval); timeLeft = quizTimeLimit; challengeCompletedSuccessfully = false; updateTimerDisplay(); timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); if(questionScreen.classList.contains('mpw-active')) { endChallenge(true); }}}, 1000); }
+      function pauseTimer() { clearInterval(timerInterval); }
+      function resumeTimer() { if (timeLeft <= 0) return; clearInterval(timerInterval); timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); if(questionScreen.classList.contains('mpw-active')) { endChallenge(true); }}}, 1000); }
+
+      // --- Feedback Functions ---
+       function showPopupFeedback(message) {
+           clearTimeout(feedbackTimeout); // Clear any previous hide timeout
+           feedbackPopupEl.innerHTML = message;
+           feedbackPopupEl.classList.remove('mpw-hiding'); // Ensure hiding animation isn't active
+           feedbackPopupEl.classList.add('mpw-showing'); // Add class to trigger appear animation
+
+           // Set timeout to hide it automatically if next isn't clicked
+           feedbackTimeout = setTimeout(() => {
+               hidePopupFeedback();
+           }, popupVisibleDuration);
+       }
+
+       function hidePopupFeedback() {
+            clearTimeout(feedbackTimeout); // Clear auto-hide timeout
+            feedbackPopupEl.classList.remove('mpw-showing'); // Remove showing class (will trigger fade-out via transition)
+       }
+
+       function triggerPopupFlyOff(callback) {
+           clearTimeout(feedbackTimeout); // Prevent auto-hide during fly-off
+           if (feedbackPopupEl.classList.contains('mpw-showing')) {
+                feedbackPopupEl.classList.remove('mpw-showing'); // Remove appear animation class
+                feedbackPopupEl.classList.add('mpw-hiding'); // Add fly-off animation class
+
+                // Execute callback after animation duration
+                setTimeout(() => {
+                    feedbackPopupEl.classList.remove('mpw-hiding'); // Clean up class
+                    if (callback) callback(); // Call next step
+                }, popupFlyOffDuration);
+           } else {
+                // If popup wasn't showing, execute callback immediately
+                if (callback) callback();
+           }
+       }
+
+       function showInlineFeedback(message) {
+           feedbackInlineEl.textContent = message; feedbackInlineEl.className = 'mpw-feedback-inline mpw-try-again'; feedbackInlineEl.style.display = 'block';
+       }
+
+       function hideAllFeedback() {
+            feedbackInlineEl.style.display = 'none';
+            hidePopupFeedback();
+            feedbackPopupEl.classList.remove('mpw-hiding'); // Ensure hiding class is fully removed
+       }
+
+      // --- Quiz Logic Functions ---
+      function loadQuestion() {
+          hideAllFeedback(); // Use combined hide function
+          nextButton.classList.remove('mpw-visible'); // Hide next button using class
+
+          const currentQuestion = shuffledQuestions[currentQuestionIndex];
+          questionTextEl.innerHTML = `<strong>Li Ming asks:</strong> ${currentQuestion.question}`;
+          optionsListEl.innerHTML = '';
+          currentQuestion.options.forEach((option) => {
+             const li = document.createElement('li'); const button = document.createElement('button'); button.textContent = option; button.classList.add('mpw-option-button');
+             button.onclick = () => selectAnswer(button, option, currentQuestion.correctAnswer, optionsListEl); li.appendChild(button); optionsListEl.appendChild(li);
+          });
+      }
+
+      function selectAnswer(button, selectedOption, correctAnswer, optionsList) {
+        if (button.classList.contains('mpw-incorrect') || button.classList.contains('mpw-correct')) { return; }
+        feedbackInlineEl.style.display = 'none';
+
+        if (selectedOption === correctAnswer) {
+            pauseTimer(); button.classList.add('mpw-correct');
+            // Added Chinese praise "Excellent!" (Tài hǎole!)
+            showPopupFeedback("🎉 Correct! Great Job! 🎉<br><span style='font-size: 0.8em; display: block; margin-top: 8px;'>太好了! (Tài hǎole!)</span>");
+
+            const allOptionButtons = optionsList.querySelectorAll('.mpw-option-button');
+            allOptionButtons.forEach(btn => { btn.disabled = true; if (btn !== button && !btn.classList.contains('mpw-incorrect')) { btn.style.opacity = '0.6'; } });
+
+            setTimeout(() => {
+                if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                   nextButton.classList.add('mpw-visible');
+                   if(timeLeft > 0) resumeTimer();
+                } else {
+                   // Added Chinese phrase "Congratulations!" (Gōngxǐ nǐ!)
+                   showPopupFeedback("🏆 Challenge Complete! 🏆<br><span style='font-size: 0.8em; display: block; margin-top: 8px;'>恭喜你! (Gōngxǐ nǐ!)</span>");
+                   challengeCompletedSuccessfully = true;
+                   setTimeout(() => endChallenge(false), popupVisibleDuration + 200);
+                }
+            }, popupAppearDuration - 100);
+
+        } else {
+            button.classList.add('mpw-incorrect'); button.disabled = true;
+            showInlineFeedback(`🤔 Hmm, not quite. Try another option!`);
+        }
+      }
+      
+      function nextQuestion() {
+          // 1. Hide the next button immediately
+          nextButton.classList.remove('mpw-visible');
+
+          // 2. Trigger the pop-up fly-off animation and load question in callback
+          triggerPopupFlyOff(() => {
+              currentQuestionIndex++;
+              loadQuestion();
+          });
+      }
+
+      // --- Challenge End Functions ---
+function createStampHTML(isSuccess) { 
+  // First create the Module 8 dragon stamp
+  const stampClass = isSuccess ? 'mpw-stamp' : 'mpw-stamp mpw-failed'; 
+  const stampIcon = isSuccess ? '🐉' : '❌'; 
+  const stampTextTop = isSuccess ? 'PASSPORT STAMP' : 'CHALLENGE FAILED'; 
+  const stampTextBottom = isSuccess ? 'Mandarin 2 Module 8' : 'Time Ran Out'; 
+  
+  let stampHTML = `<div class="${stampClass}"><div class="mpw-stamp-icon">${stampIcon}</div><div class="mpw-stamp-text">${stampTextTop}</div><div class="mpw-stamp-module">${stampTextBottom}</div></div>`;
+  
+  // If successful, add the special Hongbao course completion stamp below
+  if (isSuccess) {
+    stampHTML += `
+      <div class="mpw-stamp" style="margin-top: 30px; background-color: rgba(255, 200, 200, 0.6); border-color: #d4232b;">
+        <div class="mpw-stamp-icon">🧧</div>
+        <div class="mpw-stamp-text">COURSE COMPLETE</div>
+        <div class="mpw-stamp-module">Mandarin 2 </div>
+      </div>
+      <p style="text-align: center; color: var(--lp-primary-1); font-weight: bold; margin-top: 15px;">Congratulations on completing Mandarin 2!</p>
+    `;
+  }
+  
+  return stampHTML;
+}
+   
+function endChallenge(timeRanOut) { 
+    clearInterval(timerInterval); 
+    questionScreen.classList.remove('mpw-active'); 
+    completionScreen.classList.add('mpw-active'); 
+    const success = challengeCompletedSuccessfully && !timeRanOut; 
+    stampAreaEl.innerHTML = createStampHTML(success); 
+    
+if (success) { 
+  completionMessageEl.innerHTML = `<strong>Li Ming says:</strong><br>"Zhēn bàng! Excellent!<br>You earned your <strong>Mandarin 2 Hongbao stamp!</strong><br>Congratulations on completing Mandarin 2! Now you can talk about music and express opinions in Mandarin!" 🎉🧧<br><br><span style="font-size: 1.2em; font-weight: bold; color: var(--lp-primary-1); display: block; text-align: center;">非常好! (Fēicháng hǎo!)</span>`; 
+} else if (timeRanOut) { 
+  completionMessageEl.innerHTML = `<strong>Li Ming says:</strong><br>"哎呀 (Āiyā - Oh no)! Time ran out!<br>Even Mao Mao knows good music takes time to appreciate!<br>Try again! Jiā yóu!" 😟`; 
+}
+    
+    setTimeout(() => { 
+        const stampElement = stampAreaEl.querySelector('.mpw-stamp'); 
+        if (stampElement) { 
+            stampElement.style.animation = 'none'; 
+            stampElement.offsetHeight; 
+            stampElement.style.animation = null; 
+            stampElement.style.transform = success ? 'rotate(-10deg)' : 'rotate(5deg)'; 
+        }
+    }, 50); 
+}
+
+      // --- Initialization Functions ---
+      function startChallenge() { 
+          currentQuestionIndex = 0; 
+          shuffledQuestions = shuffleArray([...quizData]); 
+          hideAllFeedback(); 
+          startScreen.classList.remove('mpw-active'); 
+          completionScreen.classList.remove('mpw-active'); 
+          questionScreen.classList.add('mpw-active'); 
+          startTimer(); 
+          loadQuestion(); 
+      }
+      
+      function restartChallenge() { 
+          completionScreen.classList.remove('mpw-active'); 
+          startScreen.classList.add('mpw-active'); 
+          hideAllFeedback(); 
+          timerEl.textContent = `Time Left: ${formatTime(quizTimeLimit)}`; 
+          timerEl.classList.remove('mpw-low-time'); 
+      }
+
+      // --- Event Listeners ---
+      startButton.addEventListener('click', startChallenge); 
+      nextButton.addEventListener('click', nextQuestion); 
+      restartButton.addEventListener('click', restartChallenge);
+    })(); // IIFE
+  </script>
+</div>
+<!-- End of Mandarin Passport Challenge Widget -->
+
+</body>
+</html>
+
