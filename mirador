@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Mirador Pyramid Discovery</title>
+    <style>
+        /* Scoped styles with a specific class prefix to avoid conflicts */
+        .mirador-slideshow-wrapper {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .mirador-slideshow-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* El Mirador-inspired color palette - jungle greens and ancient golds */
+        .mirador-slideshow-container {
+            --jungle-green: #2c5f2d;
+            --deep-forest: #1a4a1c;
+            --ancient-gold: #ffd700;
+            --warm-amber: #d4af37;
+            --sky-light: #f0f8ff;
+            --stone-brown: #8b7355;
+            
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(44, 95, 45, 0.15);
+            background: linear-gradient(135deg, #f0f8ff 0%, #e8f5e8 100%);
+        }
+        
+        .mirador-slideshow-header {
+            background: linear-gradient(135deg, #2c5f2d, #1a4a1c);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+        }
+        
+        .mirador-mySlides {
+            display: none;
+            width: 100%;
+            background: #ffffff;
+        }
+        
+        .mirador-slide-image-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 60%;
+            overflow: hidden;
+            position: relative;
+            background: #f8f9fa;
+        }
+        
+        .mirador-slide-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #f8f9fa;
+        }
+        
+        .mirador-content-container {
+            padding: 24px;
+            background-color: #ffffff;
+        }
+        
+        .mirador-slide-title {
+            color: #2c5f2d;
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .mirador-slide-subtitle {
+            color: #1a4a1c;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .mirador-slide-description {
+            color: #4A4A4A;
+            font-size: 1rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .mirador-highlight-fact {
+            background: linear-gradient(135deg, #fff8dc, #f0e68c);
+            border: 2px solid #ffd700;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .mirador-highlight-fact-label {
+            color: #8b7355;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .mirador-highlight-fact-text {
+            color: #704214;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        /* Navigation buttons */
+        .mirador-prev, .mirador-next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            border-radius: 0 8px 8px 0;
+            user-select: none;
+            background: linear-gradient(135deg, rgba(44, 95, 45, 0.8), rgba(26, 74, 28, 0.8));
+            z-index: 10;
+            border: none;
+        }
+        
+        .mirador-next {
+            right: 0;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .mirador-prev {
+            left: 0;
+        }
+        
+        .mirador-prev:hover, .mirador-next:hover {
+            background: linear-gradient(135deg, #2c5f2d, #1a4a1c);
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .mirador-prev:focus, .mirador-next:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+        
+        /* Dots navigation */
+        .mirador-dots-container {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+        }
+        
+        .mirador-dot {
+            height: 16px;
+            width: 16px;
+            margin: 0 6px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .mirador-active-dot, .mirador-dot:hover {
+            background-color: #ffffff;
+            transform: scale(1.2);
+            border-color: #1a4a1c;
+        }
+        
+        /* Counter display */
+        .mirador-counter {
+            padding: 8px 12px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Attribution section */
+        .mirador-attribution-section {
+            background: #F5F5F5;
+            border-top: 1px solid #E0E0E0;
+            position: relative;
+        }
+        
+        .mirador-attribution-toggle {
+            background: linear-gradient(135deg, #2c5f2d, #1a4a1c);
+            color: #ffffff;
+            border: none;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .mirador-attribution-toggle:hover {
+            background: linear-gradient(135deg, #1a4a1c, #0f3015);
+        }
+        
+        .mirador-attribution-toggle:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+        
+        .mirador-attribution-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #fffdf5;
+            border-top: 1px solid #E0E0E0;
+        }
+        
+        .mirador-attribution-content.expanded {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .mirador-attribution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+        
+        .mirador-attribution-item {
+            background: #ffffff;
+            border: 1px solid #E5E5E5;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .mirador-attribution-title {
+            color: #2c5f2d;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .mirador-attribution-details {
+            color: #1a4a1c;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        
+        .mirador-attribution-details strong {
+            color: #0f3015;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .mirador-attribution-details .author {
+            color: #8b7355;
+            margin-bottom: 2px;
+        }
+        
+        .mirador-attribution-details em {
+            color: #704214;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+        
+        .mirador-attribution-link {
+            color: #ffd700;
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            padding: 4px 8px;
+            border: 1px solid #ffd700;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .mirador-attribution-link:hover {
+            background-color: #ffd700;
+            color: #1a4a1c;
+        }
+        
+        .mirador-attribution-link:focus {
+            outline: 2px solid #ffd700;
+            outline-offset: 2px;
+        }
+        
+        /* Fade animation */
+        .mirador-fade {
+            animation-name: mirador-fade-keyframes;
+            animation-duration: 0.8s;
+        }
+        
+        @keyframes mirador-fade-keyframes {
+            from {opacity: 0.4} 
+            to {opacity: 1}
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .mirador-content-container {
+                padding: 20px;
+            }
+            
+            .mirador-prev, .mirador-next {
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .mirador-slide-image-container {
+                padding-bottom: 65%;
+            }
+            
+            .mirador-attribution-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .mirador-slideshow-header {
+                padding: 16px;
+                font-size: 1.1rem;
+            }
+            
+            .mirador-content-container {
+                padding: 16px;
+            }
+            
+            .mirador-prev, .mirador-next {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .mirador-slide-image-container {
+                padding-bottom: 70%;
+            }
+            
+            .mirador-attribution-grid {
+                padding: 12px;
+            }
+            
+            .mirador-attribution-item {
+                padding: 10px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .mirador-slideshow-wrapper *,
+            .mirador-slideshow-wrapper *::before,
+            .mirador-slideshow-wrapper *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                transition-delay: 0ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mirador-slideshow-wrapper">
+        <div class="mirador-slideshow-container">
+            <div class="mirador-slideshow-header">
+                🌍 El Mirador: The Hidden Giant of Guatemala 🏛️
+            </div>
+            
+            <!-- Slide 1: La Danta Pyramid -->
+            <div class="mirador-mySlides mirador-fade">
+                <div class="mirador-counter">1 / 4</div>
+                <div class="mirador-slide-image-container">
+                    <img class="mirador-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Guatemala_1828_-_La_Danta_at_the_Mayan_site_of_El_Mirador_%284272305705%29.jpg/640px-Guatemala_1828_-_La_Danta_at_the_Mayan_site_of_El_Mirador_%284272305705%29.jpg" alt="La Danta pyramid at El Mirador">
+                </div>
+                <div class="mirador-content-container">
+                    <h3 class="mirador-slide-title">Meet La Danta</h3>
+                    <div class="mirador-slide-subtitle">🏛️ The Tallest Pre-Columbian Pyramid</div>
+                    <div class="mirador-slide-description">
+                        This is La Danta, the main pyramid at El Mirador. Built by the Maya people over 2,000 years ago, it's taller than a 40-story building and was constructed entirely by hand - no machines, cranes, or trucks!
+                    </div>
+                    <div class="mirador-highlight-fact">
+                        <div class="mirador-highlight-fact-label">
+                            <span aria-hidden="true">🏗️</span>
+                            Amazing fact:
+                        </div>
+                        <div class="mirador-highlight-fact-text">La Danta is taller than many modern skyscrapers, yet it was built using only human hands and simple tools!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: Aerial View -->
+            <div class="mirador-mySlides mirador-fade">
+                <div class="mirador-counter">2 / 4</div>
+                <div class="mirador-slide-image-container">
+                    <img class="mirador-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/El_Mirador_3.jpg/640px-El_Mirador_3.jpg" alt="Aerial view of El Mirador complex">
+                </div>
+                <div class="mirador-content-container">
+                    <h3 class="mirador-slide-title">Hidden by Nature</h3>
+                    <div class="mirador-slide-subtitle">🌿 Secret in the Jungle</div>
+                    <div class="mirador-slide-description">
+                        From above, you can see how the thick jungle canopy kept this incredible city hidden for centuries. The Maya built an entire complex of buildings around the main pyramid - scientists think thousands of people once lived here!
+                    </div>
+                    <div class="mirador-highlight-fact">
+                        <div class="mirador-highlight-fact-label">
+                            <span aria-hidden="true">🌳</span>
+                            Discovery fact:
+                        </div>
+                        <div class="mirador-highlight-fact-text">The thick jungle of Guatemala kept this structure secret until archaeologists found it using special technology that can "see" through trees!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Archaeological Work -->
+            <div class="mirador-mySlides mirador-fade">
+                <div class="mirador-counter">3 / 4</div>
+                <div class="mirador-slide-image-container">
+                    <img class="mirador-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/El_Mirador_5.jpg/640px-El_Mirador_5.jpg" alt="Archaeological excavation at El Mirador">
+                </div>
+                <div class="mirador-content-container">
+                    <h3 class="mirador-slide-title">Uncovering Ancient Secrets</h3>
+                    <div class="mirador-slide-subtitle">🔍 Archaeological Discovery</div>
+                    <div class="mirador-slide-description">
+                        Archaeologists (people who study ancient civilizations) work carefully to uncover the secrets of this ancient city. The discovery of El Mirador has become very important in understanding Maya civilization and how people lived over 2,000 years ago.
+                    </div>
+                    <div class="mirador-highlight-fact">
+                        <div class="mirador-highlight-fact-label">
+                            <span aria-hidden="true">🔬</span>
+                            Research fact:
+                        </div>
+                        <div class="mirador-highlight-fact-text">Scientists believe El Mirador was the center of a major city where people came for religion, politics, and trade!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Jaguar Paw Temple -->
+            <div class="mirador-mySlides mirador-fade">
+                <div class="mirador-counter">4 / 4</div>
+                <div class="mirador-slide-image-container">
+                    <img class="mirador-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Jaguar_Paw_Temple_%28structure_34%29%2C_Mirador_-_%28greg-willis.com%29_-_panoramio_-_Greg_Willis.jpg/640px-Jaguar_Paw_Temple_%28structure_34%29%2C_Mirador_-_%28greg-willis.com%29_-_panoramio_-_Greg_Willis.jpg" alt="Jaguar Paw Temple at El Mirador">
+                </div>
+                <div class="mirador-content-container">
+                    <h3 class="mirador-slide-title">More Amazing Structures</h3>
+                    <div class="mirador-slide-subtitle">🐆 The Jaguar Paw Temple</div>
+                    <div class="mirador-slide-description">
+                        This is the Jaguar Paw Temple, another incredible structure at El Mirador. The Maya were master builders who created these monuments to show their incredible skills and honor their beliefs. What do you think they used this temple for?
+                    </div>
+                    <div class="mirador-highlight-fact">
+                        <div class="mirador-highlight-fact-label">
+                            <span aria-hidden="true">🏛️</span>
+                            Think about it:
+                        </div>
+                        <div class="mirador-highlight-fact-text">How do the buildings in your community show what's important to your culture? What do they tell us about your beliefs and values?</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next and previous buttons -->
+            <button class="mirador-prev" onclick="miradorChangeSlide(-1)" aria-label="Previous slide">&#10094;</button>
+            <button class="mirador-next" onclick="miradorChangeSlide(1)" aria-label="Next slide">&#10095;</button>
+            
+            <!-- Dots navigation -->
+            <div class="mirador-dots-container">
+                <span class="mirador-dot" onclick="miradorCurrentSlide(1)" aria-label="La Danta pyramid"></span>
+                <span class="mirador-dot" onclick="miradorCurrentSlide(2)" aria-label="Aerial view"></span>
+                <span class="mirador-dot" onclick="miradorCurrentSlide(3)" aria-label="Archaeological work"></span>
+                <span class="mirador-dot" onclick="miradorCurrentSlide(4)" aria-label="Jaguar Paw Temple"></span>
+            </div>
+            
+            <!-- Attribution Section -->
+            <div class="mirador-attribution-section">
+                <button class="mirador-attribution-toggle" onclick="toggleMiradorAttribution()" aria-expanded="false" aria-controls="miradorAttributionContent">
+                    <span aria-hidden="true">📸</span>
+                    View Image Sources
+                </button>
+                <div class="mirador-attribution-content" id="miradorAttributionContent">
+                    <div class="mirador-attribution-grid">
+                        <div class="mirador-attribution-item">
+                            <div class="mirador-attribution-title">Slide 1: La Danta Pyramid</div>
+                            <div class="mirador-attribution-details">
+                                <strong>Guatemala 1828 - La Danta at the Mayan site of El Mirador</strong>
+                                <div class="author">by Dennis G. Jarvis</div>
+                                <em>Creative Commons Attribution-Share Alike 2.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Guatemala_1828_-_La_Danta_at_the_Mayan_site_of_El_Mirador_%284272305705%29.jpg/640px-Guatemala_1828_-_La_Danta_at_the_Mayan_site_of_El_Mirador_%284272305705%29.jpg" class="mirador-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                        <div class="mirador-attribution-item">
+                            <div class="mirador-attribution-title">Slide 2: Aerial View Complex</div>
+                            <div class="mirador-attribution-details">
+                                <strong>El Mirador 3.jpg</strong>
+                                <div class="author">by Geoff Gallice from Gainesville</div>
+                                <em>Creative Commons Attribution 2.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/El_Mirador_3.jpg/640px-El_Mirador_3.jpg" class="mirador-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                        <div class="mirador-attribution-item">
+                            <div class="mirador-attribution-title">Slide 3: Archaeological Excavation</div>
+                            <div class="mirador-attribution-details">
+                                <strong>El Mirador 5.jpg</strong>
+                                <div class="author">by Geoff Gallice from Gainesville</div>
+                                <em>Creative Commons Attribution 2.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/El_Mirador_5.jpg/640px-El_Mirador_5.jpg" class="mirador-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                        <div class="mirador-attribution-item">
+                            <div class="mirador-attribution-title">Slide 4: Jaguar Paw Temple</div>
+                            <div class="mirador-attribution-details">
+                                <strong>Jaguar Paw Temple (structure 34), Mirador</strong>
+                                <div class="author">by Greg Willis</div>
+                                <em>Creative Commons Attribution-Share Alike 3.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Jaguar_Paw_Temple_%28structure_34%29%2C_Mirador_-_%28greg-willis.com%29_-_panoramio_-_Greg_Willis.jpg/640px-Jaguar_Paw_Temple_%28structure_34%29%2C_Mirador_-_%28greg-willis.com%29_-_panoramio_-_Greg_Willis.jpg" class="mirador-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Use IIFE to scope all variables and functions to avoid global conflicts
+        (function() {
+            let miradorSlideIndex = 1;
+            
+            // Function to initialize the slideshow
+            function initMiradorSlideshow() {
+                showMiradorSlides(miradorSlideIndex);
+                
+                // Add keyboard event listener for navigation
+                document.addEventListener('keydown', function(e) {
+                    // Only respond to keyboard events if the slideshow is in the viewport
+                    const slideshowElement = document.querySelector('.mirador-slideshow-container');
+                    if (slideshowElement) {
+                        const rect = slideshowElement.getBoundingClientRect();
+                        const isInViewport = rect.top < window.innerHeight && rect.bottom >= 0;
+                        
+                        if (isInViewport) {
+                            if (e.key === 'ArrowLeft') {
+                                miradorChangeSlide(-1);
+                            } else if (e.key === 'ArrowRight') {
+                                miradorChangeSlide(1);
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Next/previous controls function
+            window.miradorChangeSlide = function(n) {
+                showMiradorSlides(miradorSlideIndex += n);
+            }
+            
+            // Thumbnail image controls function
+            window.miradorCurrentSlide = function(n) {
+                showMiradorSlides(miradorSlideIndex = n);
+            }
+            
+            // Attribution toggle function
+            window.toggleMiradorAttribution = function() {
+                const attributionContent = document.getElementById('miradorAttributionContent');
+                const button = document.querySelector('.mirador-attribution-toggle');
+                const isExpanded = attributionContent.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    attributionContent.classList.remove('expanded');
+                    button.innerHTML = '<span aria-hidden="true">📸</span> View Image Sources';
+                    button.setAttribute('aria-expanded', 'false');
+                } else {
+                    attributionContent.classList.add('expanded');
+                    button.innerHTML = '<span aria-hidden="true">📸</span> Hide Image Sources';
+                    button.setAttribute('aria-expanded', 'true');
+                }
+            }
+            
+            // Function to display the current slide
+            function showMiradorSlides(n) {
+                let i;
+                let slides = document.getElementsByClassName("mirador-mySlides");
+                let dots = document.getElementsByClassName("mirador-dot");
+                
+                // Loop back to the first slide if at the end
+                if (n > slides.length) {miradorSlideIndex = 1}
+                
+                // Go to the last slide if going back from the first slide
+                if (n < 1) {miradorSlideIndex = slides.length}
+                
+                // Hide all slides
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                
+                // Remove active class from all dots
+                for (i = 0; i < dots.length; i++) {
+                    dots[i].className = dots[i].className.replace(" mirador-active-dot", "");
+                }
+                
+                // Show the current slide and activate the corresponding dot
+                if (slides[miradorSlideIndex-1]) {
+                    slides[miradorSlideIndex-1].style.display = "block";
+                }
+                if (dots[miradorSlideIndex-1]) {
+                    dots[miradorSlideIndex-1].className += " mirador-active-dot";
+                }
+            }
+            
+            // Initialize the slideshow when the content is loaded
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                initMiradorSlideshow();
+            } else {
+                document.addEventListener('DOMContentLoaded', initMiradorSlideshow);
+            }
+        })();
+    </script>
+</body>
+</html>
