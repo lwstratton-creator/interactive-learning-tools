@@ -3,460 +3,931 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stroke Flashcards</title>
+<title>Basic Stroke Practice</title>
 <style>
-/* Back to Main Button */
-.back-to-main {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 11px 20px;
-  background: #ffffff;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 15px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.back-to-main:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.back-to-main svg {
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-}
-
-@media (max-width: 480px) {
-  .back-to-main {
-    top: 12px;
-    left: 12px;
-    padding: 8px 14px;
-    font-size: 13px;
-  }
-}
-
-/* Scoped styles to prevent parent page interference */
-.flashcard-module {
+/* Complete isolation from parent styles */
+#stroke-practice-app {
   all: initial;
   display: block;
+  font-family: Arial, sans-serif;
+  background: #F7F9FC;
+  padding: 20px;
 }
 
-.flashcard-module * {
-  all: unset;
+#stroke-practice-app *,
+#stroke-practice-app *::before,
+#stroke-practice-app *::after {
   box-sizing: border-box;
 }
 
-.flashcard-module {
-  --primary-color: #C41E3A;
-  --secondary-color: #FFD700;
-  --success-color: #0C8918;
-  --text-color: #234E52;
-  --bg-light: #F7F9FC;
-  --neutral-color: #FFFFFF;
-  --shadow-soft: 0 4px 6px rgba(139, 0, 0, 0.1);
-  --shadow-hover: 0 6px 8px rgba(139, 0, 0, 0.15);
-  
-  font-family: Arial, sans-serif;
-  max-width: 900px;
+#stroke-practice-app .app-container {
+  max-width: 800px;
   margin: 0 auto;
-  padding: 25px;
-  display: block;
-  border: 3px solid var(--primary-color);
-  border-radius: 15px;
   background: white;
-  box-shadow: var(--shadow-soft);
+  border-radius: 15px;
+  padding: 25px;
+  border: 3px solid #C41E3A;
+  box-shadow: 0 4px 6px rgba(139, 0, 0, 0.1);
 }
 
-.flashcard-module .section-title {
-  display: block;
-  color: var(--primary-color);
-  font-size: 1.8em;
-  font-weight: bold;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 3px solid var(--primary-color);
-  text-align: center;
-}
-
-.flashcard-module .instructions {
-  display: block;
-  background: var(--bg-light);
+/* Current Stroke Info Section */
+#stroke-practice-app .current-stroke-info {
+  background: #FFF9E6;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 2px solid #FFD700;
   margin-bottom: 20px;
-  font-size: 1.2em;
-  color: #666;
-  border: 2px solid var(--primary-color);
+  margin-top: 0;
   text-align: center;
-  line-height: 1.5;
 }
 
-.flashcard-module .flashcard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin: 20px 0;
+#stroke-practice-app .stroke-name {
+  color: #C41E3A;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  font-family: Arial, sans-serif;
 }
 
-.flashcard-module .flashcard {
-  perspective: 1000px;
-  height: 220px;
-  cursor: pointer;
-  display: block;
+#stroke-practice-app .stroke-direction-text {
+  display: inline-block;
+  padding: 8px 16px;
+  background: white;
+  border: 2px solid #C41E3A;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #C41E3A;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
 }
 
-.flashcard-module .flashcard-inner {
+/* Canvas Section */
+#stroke-practice-app .canvas-section {
+  position: relative;
+  background: white;
+  border: 3px solid #C41E3A;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(139, 0, 0, 0.1);
+}
+
+#stroke-practice-app .canvas-wrapper {
   position: relative;
   width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-  display: block;
+  height: 400px;
+  background: 
+    linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+    linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+  background-size: 50% 50%;
+  background-position: center;
 }
 
-.flashcard-module .flashcard.flipped .flashcard-inner {
-  transform: rotateY(180deg);
-}
-
-.flashcard-module .card-front,
-.flashcard-module .card-back {
+#stroke-practice-app canvas {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+#stroke-practice-app #guideCanvas {
+  z-index: 1;
+}
+
+#stroke-practice-app #userCanvas {
+  z-index: 2;
+}
+
+/* Feedback Section */
+#stroke-practice-app .feedback-box {
+  text-align: center;
+  padding: 12px;
+  margin: 0 0 15px 0;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  display: none;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .feedback-box.show {
+  display: block;
+}
+
+#stroke-practice-app .feedback-box.success {
+  background: #D4EDDA;
+  color: #0C8918;
+  border: 2px solid #0C8918;
+}
+
+#stroke-practice-app .feedback-box.error {
+  background: #F8D7DA;
+  color: #C41E3A;
+  border: 2px solid #C41E3A;
+}
+
+#stroke-practice-app .feedback-box.info {
+  background: #FFF9E6;
+  color: #92400e;
+  border: 2px solid #FFD700;
+}
+
+/* Controls Section */
+#stroke-practice-app .controls-section {
   display: flex;
-  flex-direction: column;
+  gap: 10px;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-  box-shadow: var(--shadow-soft);
-  border: 3px solid var(--primary-color);
-  padding: 15px;
-  overflow: hidden;
+  margin-bottom: 20px;
 }
 
-.flashcard-module .card-front {
+#stroke-practice-app .control-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+#stroke-practice-app .control-btn:active {
+  transform: translateY(0);
+}
+
+#stroke-practice-app .btn-clear {
+  background: #6b7280;
+}
+
+#stroke-practice-app .btn-clear:hover {
+  background: #4b5563;
+}
+
+#stroke-practice-app .btn-hint {
+  background: #FFD700;
+  color: #333;
+}
+
+#stroke-practice-app .btn-hint:hover {
+  background: #E6C200;
+}
+
+#stroke-practice-app .btn-next {
+  background: #C41E3A;
+}
+
+#stroke-practice-app .btn-next:hover {
+  background: #A01830;
+}
+
+#stroke-practice-app .control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+#stroke-practice-app .control-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: #9ca3af;
+}
+
+/* Stroke Selector Section */
+#stroke-practice-app .stroke-selector-section {
+  margin-bottom: 20px;
+}
+
+#stroke-practice-app .selector-title {
+  color: #C41E3A;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .stroke-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+#stroke-practice-app .stroke-card {
+  padding: 15px 10px;
+  border: 3px solid #C41E3A;
   background: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(139, 0, 0, 0.1);
 }
 
-.flashcard-module .card-back {
-  background: var(--bg-light);
-  transform: rotateY(180deg);
+#stroke-practice-app .stroke-card:hover {
+  background: #FFE5E5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(139, 0, 0, 0.15);
 }
 
-.flashcard-module .card-character {
-  font-size: 4em;
-  color: var(--primary-color);
-  margin-bottom: 5px;
-  line-height: 1;
+#stroke-practice-app .stroke-card.active {
+  background: #C41E3A;
+  color: white;
+}
+
+#stroke-practice-app .stroke-character {
+  font-size: 36px;
   display: block;
-}
-
-.flashcard-module .card-stroke {
-  font-size: 5em;
-  color: var(--primary-color);
-  margin-bottom: 10px;
+  margin: 0 0 6px 0;
   line-height: 1;
-  display: block;
+  color: #C41E3A;
+  font-family: Arial, sans-serif;
 }
 
-.flashcard-module .card-image {
-  font-size: 3.5em;
-  margin-bottom: 8px;
-  line-height: 1;
-  display: block;
+#stroke-practice-app .stroke-card.active .stroke-character {
+  color: white;
 }
 
-.flashcard-module .card-icon {
-  font-size: 3em;
-  margin-bottom: 10px;
-  line-height: 1;
-  display: block;
-}
-
-.flashcard-module .card-title {
-  font-size: 1.4em;
-  color: var(--primary-color);
+#stroke-practice-app .stroke-pinyin-text {
+  font-size: 14px;
   font-weight: bold;
   display: block;
-  line-height: 1.3;
+  margin: 0 0 3px 0;
+  color: #0C8918;
+  font-family: Arial, sans-serif;
 }
 
-.flashcard-module .card-info-back {
-  background: var(--bg-light);
-  padding: 15px 12px;
+#stroke-practice-app .stroke-card.active .stroke-pinyin-text {
+  color: #FFD700;
 }
 
-.flashcard-module .card-explanation {
-  font-size: 0.85em;
-  color: var(--text-color);
+#stroke-practice-app .stroke-english {
+  font-size: 11px;
+  opacity: 0.8;
   display: block;
-  line-height: 1.3;
-  margin-bottom: 10px;
+  color: #234E52;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+#stroke-practice-app .stroke-card.active .stroke-english {
+  color: white;
+  opacity: 1;
+}
+
+/* Examples Section */
+#stroke-practice-app .examples-section {
+  background: #FFF9E6;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #FFD700;
   text-align: center;
 }
 
-.flashcard-module .card-example {
+#stroke-practice-app .examples-title {
+  color: #C41E3A;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .examples-chars {
+  font-size: 28px;
+  color: #C41E3A;
+  font-weight: bold;
+  letter-spacing: 12px;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+/* Completion checkmark on stroke cards */
+#stroke-practice-app .completion-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  background: #0C8918;
+  color: white;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 3px;
-}
-
-.flashcard-module .example-char {
-  font-size: 2em;
-  color: var(--primary-color);
-  display: block;
-  line-height: 1;
-}
-
-.flashcard-module .example-arrow {
-  font-size: 1.2em;
-  color: var(--text-color);
-  display: block;
-  line-height: 1;
-}
-
-.flashcard-module .example-pinyin {
-  font-size: 1.4em;
-  color: var(--success-color);
+  justify-content: center;
+  font-size: 16px;
   font-weight: bold;
-  display: block;
-  line-height: 1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.flashcard-module .card-pinyin {
-  font-size: 1.3em;
-  color: var(--success-color);
-  margin: 5px 0;
+/* Review Page Styles */
+#stroke-practice-app .review-page {
+  display: none !important;
+  text-align: center;
+}
+
+#stroke-practice-app .review-page.show {
+  display: block !important;
+}
+
+#stroke-practice-app .practice-page {
+  display: block !important;
+}
+
+#stroke-practice-app .practice-page.hide {
+  display: none !important;
+}
+
+#stroke-practice-app .celebration-header {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  padding: 30px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  border: 3px solid #C41E3A;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#stroke-practice-app .celebration-title {
+  font-size: 36px;
+  color: #C41E3A;
+  margin: 0 0 15px 0;
   font-weight: bold;
-  display: block;
-  line-height: 1.2;
+  font-family: Arial, sans-serif;
 }
 
-.flashcard-module .card-meaning {
-  font-size: 1.1em;
-  color: var(--text-color);
-  display: block;
-  line-height: 1.2;
+#stroke-practice-app .celebration-subtitle {
+  font-size: 20px;
+  color: #234E52;
+  margin: 0;
+  font-weight: 600;
+  font-family: Arial, sans-serif;
 }
 
-/* Responsive Design */
+#stroke-practice-app .review-strokes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+#stroke-practice-app .review-stroke-card {
+  background: white;
+  border: 3px solid #0C8918;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+#stroke-practice-app .review-stroke-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#stroke-practice-app .review-stroke-character {
+  font-size: 72px;
+  color: #C41E3A;
+  margin: 0 0 10px 0;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .review-stroke-name {
+  font-size: 18px;
+  color: #C41E3A;
+  margin: 0 0 5px 0;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .review-stroke-pinyin {
+  font-size: 16px;
+  color: #0C8918;
+  margin: 0 0 5px 0;
+  font-weight: 600;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .review-stroke-direction {
+  font-size: 14px;
+  color: #234E52;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+#stroke-practice-app .review-checkmark {
+  font-size: 32px;
+  color: #0C8918;
+  margin-top: 10px;
+}
+
+#stroke-practice-app .btn-practice-again {
+  background: #C41E3A;
+  padding: 15px 40px;
+  font-size: 18px;
+}
+
+#stroke-practice-app .btn-practice-again:hover {
+  background: #A01830;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+}
+
+#stroke-practice-app .confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
-  .flashcard-module {
+  #stroke-practice-app {
+    padding: 10px;
+  }
+  
+  #stroke-practice-app .app-container {
     padding: 15px;
   }
-
-  .flashcard-module .flashcard-grid {
+  
+  #stroke-practice-app .stroke-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
   }
-
-  .flashcard-module .section-title {
-    font-size: 1.5em;
-  }
-
-  .flashcard-module .flashcard {
-    height: 200px;
-  }
-
-  .flashcard-module .card-character {
-    font-size: 3em;
-  }
-
-  .flashcard-module .card-stroke {
-    font-size: 4em;
-  }
-
-  .flashcard-module .card-image {
-    font-size: 2.8em;
-  }
-
-  .flashcard-module .card-icon {
-    font-size: 2.5em;
-  }
-
-  .flashcard-module .card-title {
-    font-size: 1.1em;
-  }
-
-  .flashcard-module .card-explanation {
-    font-size: 0.8em;
-  }
-
-  .flashcard-module .example-char {
-    font-size: 1.8em;
-  }
-
-  .flashcard-module .example-arrow {
-    font-size: 1em;
-  }
-
-  .flashcard-module .example-pinyin {
-    font-size: 1.2em;
-  }
-
-  .flashcard-module .card-pinyin {
-    font-size: 1.1em;
-  }
-
-  .flashcard-module .card-meaning {
-    font-size: 1em;
-  }
-}
-
-@media (max-width: 480px) {
-  .flashcard-module .flashcard-grid {
+  
+  #stroke-practice-app .review-strokes-grid {
     grid-template-columns: 1fr;
-  }
-
-  .flashcard-module .flashcard {
-    height: 180px;
-  }
-
-  .flashcard-module .card-character {
-    font-size: 2.8em;
-  }
-
-  .flashcard-module .card-stroke {
-    font-size: 3.5em;
-  }
-
-  .flashcard-module .card-image {
-    font-size: 2.5em;
-  }
-
-  .flashcard-module .card-icon {
-    font-size: 2.2em;
-  }
-
-  .flashcard-module .card-title {
-    font-size: 1.1em;
-  }
-
-  .flashcard-module .card-explanation {
-    font-size: 0.85em;
-  }
-
-  .flashcard-module .example-char {
-    font-size: 1.8em;
-  }
-
-  .flashcard-module .example-pinyin {
-    font-size: 1.3em;
   }
 }
 </style>
 </head>
 <body>
-<a href="./index.html" class="back-to-main">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-  Back to Tools
-</a>
 
-<div class="flashcard-module">
-  <div class="section-title">Stroke Flashcards 📚</div>
-  <div class="instructions">
-    👉 Click each card to learn about strokes
-  </div>
-  
-  <div class="flashcard-grid">
-    <div class="flashcard info-card" onclick="flipCard(this)">
-      <div class="flashcard-inner">
-        <div class="card-front">
-          <div class="card-icon">✏️</div>
-          <div class="card-title">What is a Stroke?</div>
+<div id="stroke-practice-app">
+  <div class="app-container">
+    <!-- Practice Page -->
+    <div id="practicePage" class="practice-page">
+      <!-- Current Stroke Info -->
+      <div class="current-stroke-info">
+        <h2 class="stroke-name" id="currentStrokeName">Héng (一) - Horizontal Stroke</h2>
+        <span class="stroke-direction-text" id="currentStrokeDirection">Draw from left to right →</span>
+        <div style="margin-top: 10px; font-size: 14px; color: #666; font-weight: 600;">
+          💡 Trace the stroke from Green 🟢 → Yellow 🟡 → Red 🔴
         </div>
-        <div class="card-back card-info-back">
-          <div class="card-explanation">A stroke is a line that is used to make up Chinese characters. They can be straight, diagonal, or with a turn.</div>
-          <div class="card-example">
-            <div class="example-char">大</div>
-            <div class="example-arrow">↓</div>
-            <div class="example-pinyin">3 strokes</div>
-          </div>
+      </div>
+      
+      <!-- Canvas Section -->
+      <div class="canvas-section">
+        <div class="canvas-wrapper">
+          <canvas id="guideCanvas"></canvas>
+          <canvas id="userCanvas"></canvas>
         </div>
+      </div>
+      
+      <!-- Feedback Box -->
+      <div id="feedbackBox" class="feedback-box"></div>
+      
+      <!-- Controls -->
+      <div class="controls-section">
+        <button class="control-btn btn-clear" onclick="clearCanvas()">Clear</button>
+        <button class="control-btn btn-hint" onclick="showHint()">Show Hint</button>
+        <button class="control-btn btn-next" id="nextStrokeBtn" onclick="nextStroke()" disabled>Next Stroke</button>
+      </div>
+      
+      <!-- Examples -->
+      <div class="examples-section">
+        <p class="examples-title" id="examplesTitle">Characters using Héng:</p>
+        <p class="examples-chars" id="examplesChars">一 二 三 十</p>
       </div>
     </div>
 
-    <div class="flashcard" onclick="flipCard(this)">
-      <div class="flashcard-inner">
-        <div class="card-front">
-          <div class="card-stroke">一</div>
-          <div class="card-meaning">Horizontal</div>
-        </div>
-        <div class="card-back">
-          <div class="card-stroke">一</div>
-          <div class="card-pinyin">héng</div>
-          <div class="card-meaning">horizontal stroke</div>
-        </div>
+    <!-- Review Page -->
+    <div id="reviewPage" class="review-page">
+      <div class="celebration-header">
+        <h1 class="celebration-title">🎊 太棒了！Good Job! 🎊</h1>
+        <p class="celebration-subtitle">You've mastered all 4 basic Chinese strokes!</p>
       </div>
-    </div>
 
-    <div class="flashcard" onclick="flipCard(this)">
-      <div class="flashcard-inner">
-        <div class="card-front">
-          <div class="card-stroke">丨</div>
-          <div class="card-meaning">Vertical</div>
+      <div class="review-strokes-grid">
+        <div class="review-stroke-card">
+          <div class="review-stroke-character">一</div>
+          <div class="review-stroke-name">Héng (一)</div>
+          <div class="review-stroke-pinyin">Horizontal</div>
+          <div class="review-stroke-direction">Left to Right →</div>
+          <div class="review-checkmark">✓</div>
         </div>
-        <div class="card-back">
-          <div class="card-stroke">丨</div>
-          <div class="card-pinyin">shù</div>
-          <div class="card-meaning">vertical stroke</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="flashcard" onclick="flipCard(this)">
-      <div class="flashcard-inner">
-        <div class="card-front">
-          <div class="card-stroke">丿</div>
-          <div class="card-meaning">Left-falling</div>
+        <div class="review-stroke-card">
+          <div class="review-stroke-character">丨</div>
+          <div class="review-stroke-name">Shù (丨)</div>
+          <div class="review-stroke-pinyin">Vertical</div>
+          <div class="review-stroke-direction">Top to Bottom ↓</div>
+          <div class="review-checkmark">✓</div>
         </div>
-        <div class="card-back">
-          <div class="card-stroke">丿</div>
-          <div class="card-pinyin">piě</div>
-          <div class="card-meaning">left-falling stroke</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="flashcard" onclick="flipCard(this)">
-      <div class="flashcard-inner">
-        <div class="card-front">
-          <div class="card-stroke">㇏</div>
-          <div class="card-meaning">Right-falling</div>
+        <div class="review-stroke-card">
+          <div class="review-stroke-character">丿</div>
+          <div class="review-stroke-name">Piě (丿)</div>
+          <div class="review-stroke-pinyin">Left-falling</div>
+          <div class="review-stroke-direction">Top Right to Bottom Left ↙</div>
+          <div class="review-checkmark">✓</div>
         </div>
-        <div class="card-back">
-          <div class="card-stroke">㇏</div>
-          <div class="card-pinyin">nà</div>
-          <div class="card-meaning">right-falling stroke</div>
+
+        <div class="review-stroke-card">
+          <div class="review-stroke-character">㇏</div>
+          <div class="review-stroke-name">Nà (㇏)</div>
+          <div class="review-stroke-pinyin">Right-falling</div>
+          <div class="review-stroke-direction">Top Left to Bottom Right ↘</div>
+          <div class="review-checkmark">✓</div>
         </div>
       </div>
+
+      <button class="control-btn btn-practice-again" onclick="resetPractice()">Practice Again</button>
     </div>
   </div>
 </div>
 
 <script>
-function flipCard(card) {
-  card.classList.toggle('flipped');
+const strokes = {
+  heng: {
+    character: '一',
+    fullName: 'Héng (一) - Horizontal Stroke',
+    direction: 'Draw from left to right →',
+    pinyin: 'Héng',
+    english: 'Horizontal',
+    path: {
+      start: [0.28, 0.48],
+      end: [0.82, 0.48]
+    },
+    hint: '💡 Start on the left side, draw straight across to the right →',
+    exampleText: 'Characters using Héng:',
+    examples: '一 二 三 十'
+  },
+  shu: {
+    character: '丨',
+    fullName: 'Shù (丨) - Vertical Stroke',
+    direction: 'Draw from top to bottom ↓',
+    pinyin: 'Shù',
+    english: 'Vertical',
+    path: {
+      start: [0.50, 0.24],
+      end: [0.50, 0.76]
+    },
+    hint: '💡 Start at the top center, draw straight down to the bottom ↓',
+    exampleText: 'Characters using Shù:',
+    examples: '十 中 山 川'
+  },
+  pie: {
+    character: '丿',
+    fullName: 'Piě (丿) - Left-falling Stroke',
+    direction: 'Draw from top-right to bottom-left ↙',
+    pinyin: 'Piě',
+    english: 'Left-falling',
+    path: {
+      start: [0.58, 0.28],
+      end: [0.30, 0.76]
+    },
+    hint: '💡 Start at the top right, sweep diagonally down to the bottom left ↙',
+    exampleText: 'Characters using Piě:',
+    examples: '人 八 大 天'
+  },
+  na: {
+    character: '㇏',
+    fullName: 'Nà (㇏) - Right-falling Stroke',
+    direction: 'Draw from top-left to bottom-right ↘',
+    pinyin: 'Nà',
+    english: 'Right-falling',
+    path: {
+      start: [0.30, 0.30],
+      end: [0.70, 0.72]
+    },
+    hint: '💡 Start at the top left, sweep diagonally down to the bottom right ↘',
+    exampleText: 'Characters using Nà:',
+    examples: '人 大 木 水'
+  }
+};
+
+let currentStroke = 'heng';
+let guideCanvas, userCanvas, guideCtx, userCtx;
+let canvasWidth, canvasHeight;
+let isDrawing = false;
+let userPath = [];
+let successCount = 0;
+let animationFrameId = null;
+let completedStrokes = new Set();
+
+function init() {
+  guideCanvas = document.getElementById('guideCanvas');
+  userCanvas = document.getElementById('userCanvas');
+  guideCtx = guideCanvas.getContext('2d');
+  userCtx = userCanvas.getContext('2d');
+  
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
+  setupEventListeners();
+  drawGuide();
+  updateStrokeInfo();
 }
+
+function resizeCanvas() {
+  const wrapper = document.querySelector('#stroke-practice-app .canvas-wrapper');
+  canvasWidth = wrapper.offsetWidth;
+  canvasHeight = wrapper.offsetHeight;
+  
+  guideCanvas.width = canvasWidth;
+  guideCanvas.height = canvasHeight;
+  userCanvas.width = canvasWidth;
+  userCanvas.height = canvasHeight;
+  
+  drawGuide();
+}
+
+function setupEventListeners() {
+  userCanvas.addEventListener('mousedown', startDrawing);
+  userCanvas.addEventListener('mousemove', draw);
+  userCanvas.addEventListener('mouseup', stopDrawing);
+  userCanvas.addEventListener('mouseout', stopDrawing);
+  
+  userCanvas.addEventListener('touchstart', handleTouch);
+  userCanvas.addEventListener('touchmove', handleTouch);
+  userCanvas.addEventListener('touchend', stopDrawing);
+}
+
+function handleTouch(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+    clientX: touch.clientX,
+    clientY: touch.clientY
+  });
+  userCanvas.dispatchEvent(mouseEvent);
+}
+
+function startDrawing(e) {
+  isDrawing = true;
+  const rect = userCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / canvasWidth;
+  const y = (e.clientY - rect.top) / canvasHeight;
+  userPath = [{ x, y, time: Date.now() }];
+  hideFeedback();
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  
+  const rect = userCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / canvasWidth;
+  const y = (e.clientY - rect.top) / canvasHeight;
+  
+  const now = Date.now();
+  userPath.push({ x, y, time: now });
+  
+  userCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  
+  if (userPath.length < 2) return;
+  
+  for (let i = 1; i < userPath.length; i++) {
+    const p1 = userPath[i - 1];
+    const p2 = userPath[i];
+    
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const timeDiff = p2.time - p1.time || 1;
+    const speed = distance / timeDiff;
+    
+    const minWidth = 6;
+    const maxWidth = 16;
+    const lineWidth = Math.max(minWidth, Math.min(maxWidth, maxWidth - speed * 800));
+    
+    userCtx.strokeStyle = '#C41E3A';
+    userCtx.lineWidth = lineWidth;
+    userCtx.lineCap = 'round';
+    userCtx.lineJoin = 'round';
+    
+    userCtx.beginPath();
+    userCtx.moveTo(p1.x * canvasWidth, p1.y * canvasHeight);
+    userCtx.lineTo(p2.x * canvasWidth, p2.y * canvasHeight);
+    userCtx.stroke();
+  }
+}
+
+function stopDrawing() {
+  if (isDrawing && userPath.length > 5) {
+    checkStrokeAutomatically();
+  }
+  isDrawing = false;
+}
+
+function drawGuide() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+  
+  guideCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  
+  const stroke = strokes[currentStroke];
+  const path = stroke.path;
+  
+  const gradient = guideCtx.createLinearGradient(
+    path.start[0] * canvasWidth, 
+    path.start[1] * canvasHeight,
+    path.end[0] * canvasWidth, 
+    path.end[1] * canvasHeight
+  );
+  gradient.addColorStop(0, '#10b981');
+  gradient.addColorStop(0.5, '#ffc107');
+  gradient.addColorStop(1, '#C41E3A');
+  
+  guideCtx.fillStyle = gradient;
+  guideCtx.font = 'bold ' + (canvasHeight * 0.7) + 'px Arial';
+  guideCtx.textAlign = 'center';
+  guideCtx.textBaseline = 'middle';
+  guideCtx.fillText(stroke.character, canvasWidth / 2, canvasHeight / 2);
+}
+
+function updateStrokeInfo() {
+  const stroke = strokes[currentStroke];
+  document.getElementById('currentStrokeName').textContent = stroke.fullName;
+  document.getElementById('currentStrokeDirection').textContent = stroke.direction;
+  document.getElementById('examplesTitle').textContent = stroke.exampleText;
+  document.getElementById('examplesChars').textContent = stroke.examples;
+}
+
+function selectStroke(strokeKey) {
+  currentStroke = strokeKey;
+  successCount = 0;
+  clearCanvas();
+  drawGuide();
+  updateStrokeInfo();
+  hideFeedback();
+  
+  // Disable Next button if this stroke hasn't been completed yet
+  const nextBtn = document.getElementById('nextStrokeBtn');
+  if (nextBtn) {
+    nextBtn.disabled = !completedStrokes.has(strokeKey);
+  }
+}
+
+function checkStrokeAutomatically() {
+  if (userPath.length < 5) return;
+  
+  const stroke = strokes[currentStroke];
+  const expectedPath = stroke.path;
+  
+  const start = userPath[0];
+  const end = userPath[userPath.length - 1];
+  
+  const startDist = distance(start, {x: expectedPath.start[0], y: expectedPath.start[1]});
+  const endDist = distance(end, {x: expectedPath.end[0], y: expectedPath.end[1]});
+  
+  const startMatch = startDist < 0.20;
+  const endMatch = endDist < 0.20;
+  
+  const directionCorrect = checkDirection(userPath, expectedPath);
+  
+  if (startMatch && endMatch && directionCorrect) {
+    const wasAlreadyCompleted = completedStrokes.has(currentStroke);
+    
+    if (!wasAlreadyCompleted) {
+      completedStrokes.add(currentStroke);
+      
+      // Enable Next Stroke button
+      const nextBtn = document.getElementById('nextStrokeBtn');
+      if (nextBtn) {
+        nextBtn.disabled = false;
+      }
+      
+      const progress = completedStrokes.size;
+      
+      if (progress === 1) {
+        showFeedback('很好! (Very good!) 1/4 strokes complete ✨', 'success');
+      } else if (progress === 2) {
+        showFeedback('太棒了! (Excellent!) 2/4 strokes complete 🌟', 'success');
+      } else if (progress === 3) {
+        showFeedback('完美! (Perfect!) 3/4 strokes complete 🎯', 'success');
+      } else if (progress === 4) {
+        showFeedback('🎊 Amazing! All 4 basic strokes mastered! 🎊', 'success');
+        // Show review page after a brief delay
+        setTimeout(() => {
+          showReviewPage();
+        }, 2000);
+      }
+    } else {
+      showFeedback('很好! (Very good!) Great stroke! ✓', 'success');
+    }
+  } else if (!startMatch) {
+    showFeedback('Start at the correct position - check the hint! ⭐', 'error');
+  } else if (!directionCorrect) {
+    showFeedback('Draw in the correct direction - check the hint! ⭐', 'error');
+  } else {
+    showFeedback('Try to reach the end position - check the hint! ⭐', 'error');
+  }
+}
+
+function checkDirection(path, expectedPath) {
+  if (path.length < 2) return false;
+  
+  const userStart = path[0];
+  const userEnd = path[path.length - 1];
+  
+  const userDx = userEnd.x - userStart.x;
+  const userDy = userEnd.y - userStart.y;
+  
+  const expectedDx = expectedPath.end[0] - expectedPath.start[0];
+  const expectedDy = expectedPath.end[1] - expectedPath.start[1];
+  
+  const dotProduct = userDx * expectedDx + userDy * expectedDy;
+  
+  return dotProduct > 0.05;
+}
+
+function distance(p1, p2) {
+  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
+
+function clearCanvas() {
+  userCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  userPath = [];
+  hideFeedback();
+}
+
+function showHint() {
+  const stroke = strokes[currentStroke];
+  showFeedback(stroke.hint, 'info');
+  // Hint stays visible - no timeout
+}
+
+function nextStroke() {
+  const strokeKeys = Object.keys(strokes);
+  const currentIndex = strokeKeys.indexOf(currentStroke);
+  const nextIndex = (currentIndex + 1) % strokeKeys.length;
+  selectStroke(strokeKeys[nextIndex]);
+}
+
+function showFeedback(message, type) {
+  const feedback = document.getElementById('feedbackBox');
+  feedback.textContent = message;
+  feedback.className = 'feedback-box show ' + type;
+}
+
+function hideFeedback() {
+  const feedback = document.getElementById('feedbackBox');
+  feedback.classList.remove('show');
+}
+
+function showReviewPage() {
+  document.getElementById('practicePage').classList.add('hide');
+  document.getElementById('reviewPage').classList.add('show');
+  createConfetti();
+}
+
+function resetPractice() {
+  // Reset all completed strokes
+  completedStrokes.clear();
+  
+  // Go back to first stroke
+  selectStroke('heng');
+  
+  // Hide review page, show practice page
+  document.getElementById('reviewPage').classList.remove('show');
+  document.getElementById('practicePage').classList.remove('hide');
+}
+
+function createConfetti() {
+  const colors = ['#FFD700', '#C41E3A', '#0C8918', '#FFA500', '#FF69B4'];
+  const confettiCount = 50;
+  
+  for (let i = 0; i < confettiCount; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animation = `confetti-fall ${2 + Math.random() * 2}s linear`;
+      
+      document.querySelector('#stroke-practice-app .app-container').appendChild(confetti);
+      
+      setTimeout(() => confetti.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+window.addEventListener('load', init);
 </script>
+
 </body>
 </html>
