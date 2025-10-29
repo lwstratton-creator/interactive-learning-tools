@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Pachamanca Experience</title>
+</head>
+<body>
+<!-- Everything is contained within this shadowDOM-like isolation -->
+<div id="pachamanca-root" style="all: initial; font-family: system-ui, sans-serif;">
+  <div style="contain: content; isolation: isolate;">
+    <style>
+      /* All styles scoped to this specific container */
+      #pachamanca-container * {
+        all: unset;
+        box-sizing: border-box;
+      }
+      
+      #pachamanca-container {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: #f9f5e9;
+        color: #333;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        background-image: 
+          linear-gradient(45deg, rgba(139, 69, 19, 0.05) 25%, transparent 25%),
+          linear-gradient(-45deg, rgba(139, 69, 19, 0.05) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, rgba(139, 69, 19, 0.05) 75%),
+          linear-gradient(-45deg, transparent 75%, rgba(139, 69, 19, 0.05) 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      }
+      
+      #pachamanca-container h2 {
+        display: block;
+        text-align: center;
+        color: #8d4925;
+        margin: 0 0 20px 0;
+        font-size: 1.8rem;
+        font-weight: bold;
+      }
+      
+      #pachamanca-container h3 {
+        display: block;
+        color: #8d4925;
+        margin: 0 0 10px 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      
+      #pachamanca-container p {
+        display: block;
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+      
+      /* Progress Bar */
+      #pachamanca-container .progress-container {
+        display: block;
+        width: 100%;
+        background-color: #e0d5c1;
+        border-radius: 10px;
+        margin: 20px 0;
+        height: 12px;
+        overflow: hidden;
+      }
+      
+      #pachamanca-container .progress-bar {
+        display: block;
+        height: 100%;
+        background-color: #a04413;
+        width: 0%;
+        transition: width 0.5s ease;
+        border-radius: 10px;
+      }
+      
+      /* Instructions Section */
+      #pachamanca-container .instructions {
+        display: block;
+        background-color: #f0e6d2;
+        border-left: 4px solid #a04413;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      
+      #pachamanca-container .instructions p {
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+      
+      /* Step Controls */
+      #pachamanca-container .step-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+      }
+      
+      /* Buttons */
+      #pachamanca-container .btn {
+        display: inline-block;
+        background-color: #8d4925;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      
+      #pachamanca-container .btn:hover {
+        background-color: #a04413;
+        transform: translateY(-2px);
+      }
+      
+      /* Cooking Area */
+      #pachamanca-container .cooking-area {
+        display: block;
+        background-color: #c0986b;
+        height: 220px;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+      }
+      
+      #pachamanca-container .ground {
+        display: block;
+        background-color: #c0986b;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+      }
+      
+      #pachamanca-container .pit {
+        display: block;
+        background-color: #8d4925;
+        width: 70%;
+        height: 60%;
+        border-radius: 50% 50% 0 0;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        box-shadow: inset 0 10px 20px rgba(0,0,0,0.3);
+        transition: all 0.5s ease;
+      }
+      
+      #pachamanca-container .stones-container,
+      #pachamanca-container .ingredients-container,
+      #pachamanca-container .cover-container,
+      #pachamanca-container .fire-animation {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        display: none;
+      }
+      
+      #pachamanca-container .stones-container {
+        bottom: 20%;
+      }
+      
+      #pachamanca-container .ingredients-container {
+        bottom: 35%;
+      }
+      
+      #pachamanca-container .cover-container {
+        width: 100%;
+        bottom: 50%;
+        overflow: hidden;
+      }
+      
+      #pachamanca-container .fire-animation {
+        bottom: 15%;
+      }
+      
+      /* Ingredient Selection */
+      #pachamanca-container .ingredient-section {
+        display: block;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+      
+      #pachamanca-container .ingredient-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      
+      #pachamanca-container .ingredient {
+        display: flex;
+        flex-direction: column;
+        background-color: #f0e6d2;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        text-align: center;
+        gap: 5px;
+      }
+      
+      #pachamanca-container .ingredient-emoji {
+        font-size: 24px;
+        display: block;
+      }
+      
+      #pachamanca-container .ingredient-name {
+        font-size: 14px;
+        display: block;
+      }
+      
+      #pachamanca-container .ingredient:hover {
+        background-color: #e6c9a8;
+      }
+      
+      #pachamanca-container .ingredient-selected {
+        background-color: #c75a12;
+        color: white;
+      }
+      
+      /* Selected Ingredients Display */
+      #pachamanca-container .selected-display {
+        display: block;
+        background-color: #f0e6d2;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      
+      /* Completion Message */
+      #pachamanca-container .completion-message {
+        display: block;
+        background-color: #f0e6d2;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+      }
+      
+      /* Final Result */
+      #pachamanca-container .final-result {
+        display: block;
+        margin: 20px auto;
+        max-width: 300px;
+        text-align: center;
+      }
+      
+ #pachamanca-container .pachamanca-plate {
+  display: flex;
+  background-color: #e6c9a8;
+  width: 350px; /* Increased from 280px to fit all ingredients */
+  height: 280px; /* Increased from 220px for more space */
+  margin: 0 auto 15px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+
+      
+    #pachamanca-container .plate-greens {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+}
+      
+     #pachamanca-container .top-greens,
+#pachamanca-container .bottom-greens {
+  grid-column: 1 / span 8;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#pachamanca-container .left-greens,
+#pachamanca-container .right-greens {
+  grid-column: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+}
+
+#pachamanca-container .top-greens {
+  grid-row: 1;
+}
+
+#pachamanca-container .bottom-greens {
+  grid-row: 6;
+}
+
+#pachamanca-container .left-greens {
+  grid-row: 2 / span 4;
+  grid-column: 1;
+}
+
+#pachamanca-container .right-greens {
+  grid-row: 2 / span 4;
+  grid-column: 8;
+}
+
+#pachamanca-container .green-item {
+  font-size: 18px;
+  display: block;
+}
+      
+    #pachamanca-container .plate-center {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 90%; /* Increased from 85% */
+  height: 90%; /* Increased from 85% */
+  z-index: 2;
+  background-color: rgba(230, 201, 168, 0.5);
+  border-radius: 8px;
+  padding: 10px;
+}
+      
+#pachamanca-container .ingredient-item {
+  display: inline-block;
+  margin: 5px; /* Slightly reduced from 6px to pack more ingredients */
+  font-size: 28px; /* Slightly reduced from 30px */
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+      
+      #pachamanca-container .ingredient-item:hover {
+        transform: scale(1.2);
+      }
+      
+      /* Success Message Overlay */
+      #pachamanca-container .success-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      
+      #pachamanca-container .success-message {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      
+      /* Tooltip */
+      #pachamanca-container .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+      
+      #pachamanca-container .tooltip-text {
+        visibility: hidden;
+        width: 200px;
+        background-color: rgba(51, 51, 51, 0.95);
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 14px;
+        pointer-events: none;
+      }
+      
+      #pachamanca-container .tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
+      
+      /* Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes flicker {
+        0% { opacity: 1; }
+        25% { opacity: 0.8; }
+        50% { opacity: 0.9; }
+        75% { opacity: 0.7; }
+        100% { opacity: 1; }
+      }
+      
+      #pachamanca-container .flame-animation {
+        animation: flicker 0.5s infinite alternate;
+      }
+      
+      @keyframes floatLeaves {
+        0% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-5px) rotate(5deg); }
+        100% { transform: translateY(0) rotate(0deg); }
+      }
+      
+      #pachamanca-container .leaves-animation {
+        display: inline-block;
+        animation: floatLeaves 2s infinite ease-in-out;
+      }
+      
+     /* Responsive Design */
+      @media (max-width: 600px) {
+        #pachamanca-container {
+          padding: 15px;
+          border-radius: 8px;
+        }
+        
+        #pachamanca-container h2 {
+          font-size: 1.6rem;
+        }
+        
+        #pachamanca-container .cooking-area {
+          height: 180px;
+        }
+        
+        #pachamanca-container .ingredient-grid {
+          grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+          gap: 8px;
+        }
+
+      @keyframes highlightPlate {
+  0% { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+  50% { box-shadow: 0 4px 20px rgba(199, 90, 18, 0.4); }
+  100% { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+}
+      @media (max-width: 400px) {
+        #pachamanca-container .ingredient-grid {
+          grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+          gap: 6px;
+        }
+        
+   @media (max-width: 400px) {
+  #pachamanca-container .pachamanca-plate {
+    width: 250px;
+    height: 200px;
+  }
+  
+   #pachamanca-container .ingredient-item {
+    font-size: 22px;
+    margin: 3px;
+  }
+}
+    </style>
+    
+    <div id="pachamanca-container">
+      <h2>Make Your Pachamanca 🍲</h2>
+      
+      <!-- Progress Bar -->
+      <div class="progress-container" aria-label="Progress through cooking steps">
+        <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+      </div>
+      
+      <!-- Instructions Section - Removed the "Did you know" section -->
+      <div class="instructions">
+        <h3>Instructions:</h3>
+        <p id="instruction">Step 1: Dig a hole for your Pachamanca</p>
+        <div id="current-step" class="step-controls">
+          <button id="dig-button" class="btn" aria-label="Dig a hole for the Pachamanca">
+            Dig Hole ⛏️
+          </button>
+        </div>
+      </div>
+      
+      <!-- Cooking Area Visualization -->
+      <div class="cooking-area">
+        <div class="ground"></div>
+        <div id="pit" class="pit"></div>
+        <div id="stones-container" class="stones-container">
+          <span style="font-size: 24px;">🪨 🪨 🪨 🪨 🪨 🪨 🪨 🪨 🪨 🪨 🪨</span>
+        </div>
+        <div id="ingredients-container" class="ingredients-container">
+          <span id="ingredients-display" style="font-size: 24px;">🥩 🥔 🌽 🌿</span>
+        </div>
+        <div id="cover-container" class="cover-container">
+          <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+            <span class="leaves-animation" style="font-size: 24px; animation-delay: 0s;">🍃 🍃 🍃 🍃 🍃</span>
+            <span class="leaves-animation" style="font-size: 24px; animation-delay: 0.3s;">🍃 🍃 🍃 🍃 🍃</span>
+            <span class="leaves-animation" style="font-size: 24px; animation-delay: 0.6s;">🍃 🍃 🍃 🍃 🍃</span>
+            <span class="leaves-animation" style="font-size: 24px; animation-delay: 0.1s;">🍃 🍃 🍃 🍃 🍃</span>
+          </div>
+        </div>
+        <div id="fire-animation" class="fire-animation">
+          <span class="flame-animation" style="font-size: 24px;">🔥 🔥 🔥 🔥 🔥 🔥 🔥 🔥</span>
+        </div>
+      </div>
+      
+      <!-- Ingredient Selection Panel -->
+      <div id="ingredient-selection" class="ingredient-section">
+        <h3>Select Your Ingredients:</h3>
+        <div class="ingredient-grid">
+          <!-- Traditional ingredients with Spanish names and tooltips -->
+          <div class="ingredient tooltip" data-ingredient="🥩 Res">
+            <span class="ingredient-emoji">🥩</span>
+            <span class="ingredient-name">Res</span>
+            <span class="tooltip-text">Beef - A common protein in highland Pachamanca</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🍗 Pollo">
+            <span class="ingredient-emoji">🍗</span>
+            <span class="ingredient-name">Pollo</span>
+            <span class="tooltip-text">Chicken - Often marinated in local herbs</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🥩 Cordero">
+            <span class="ingredient-emoji">🥩</span>
+            <span class="ingredient-name">Cordero</span>
+            <span class="tooltip-text">Lamb - Traditional protein in Andean Pachamanca</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🥓 Chancho">
+            <span class="ingredient-emoji">🥓</span>
+            <span class="ingredient-name">Chancho</span>
+            <span class="tooltip-text">Pork - Often used in valley region preparations</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🥔 Papas">
+            <span class="ingredient-emoji">🥔</span>
+            <span class="ingredient-name">Papas</span>
+            <span class="tooltip-text">Potatoes - Peru has over 3,800 varieties!</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🍠 Camote">
+            <span class="ingredient-emoji">🍠</span>
+            <span class="ingredient-name">Camote</span>
+            <span class="tooltip-text">Sweet Potato - Adds natural sweetness</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🌽 Choclo">
+            <span class="ingredient-emoji">🌽</span>
+            <span class="ingredient-name">Choclo</span>
+            <span class="tooltip-text">Corn - Large-kernel Andean corn variety</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🥕 Zanahorias">
+            <span class="ingredient-emoji">🥕</span>
+            <span class="ingredient-name">Zanahorias</span>
+            <span class="tooltip-text">Carrots - Add color and sweetness</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🎃 Zapallo">
+            <span class="ingredient-emoji">🎃</span>
+            <span class="ingredient-name">Zapallo</span>
+            <span class="tooltip-text">Squash - Traditional Andean vegetable</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🌶️ Ají">
+            <span class="ingredient-emoji">🌶️</span>
+            <span class="ingredient-name">Ají</span>
+            <span class="tooltip-text">Peruvian chili peppers for heat</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🥬 Huacatay">
+            <span class="ingredient-emoji">🥬</span>
+            <span class="ingredient-name">Huacatay</span>
+            <span class="tooltip-text">Black mint - Essential Andean herb</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🌿 Hierbas">
+            <span class="ingredient-emoji">🌿</span>
+            <span class="ingredient-name">Hierbas</span>
+            <span class="tooltip-text">Aromatic herbs like chincho, muña & paico</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🧄 Ajo">
+            <span class="ingredient-emoji">🧄</span>
+            <span class="ingredient-name">Ajo</span>
+            <span class="tooltip-text">Garlic - Used in marinades</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🧅 Cebollas">
+            <span class="ingredient-emoji">🧅</span>
+            <span class="ingredient-name">Cebollas</span>
+            <span class="tooltip-text">Onions - Often slow-cooked whole</span>
+          </div>
+          <div class="ingredient tooltip" data-ingredient="🫘 Habas">
+            <span class="ingredient-emoji">🫘</span>
+            <span class="ingredient-name">Habas</span>
+            <span class="tooltip-text">Fava beans - Traditional Andean legume</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Selected Ingredients Display -->
+      <div id="selected-ingredients" class="selected-display">
+        <h3>Your Selected Ingredients:</h3>
+        <div id="selection-display" style="min-height: 24px;"></div>
+      </div>
+      
+      <!-- Completion Message with Enhanced Final Result -->
+      <div id="completion-message" class="completion-message">
+        <h3>¡Tu Pachamanca está lista! 🎉</h3>
+        <p style="font-size: 18px; font-weight: bold; color: #c75a12;">¡Buen provecho!</p>
+        
+        <div class="final-result">
+          <div id="pachamanca-plate" class="pachamanca-plate">
+            <div class="plate-greens">
+              <span>🌿</span><span>🍃</span><span>🌿</span><span>🍃</span>
+              <span>🍃</span><span>🌿</span><span>🍃</span><span>🌿</span>
+              <span>🌿</span><span>🍃</span><span>🌿</span><span>🍃</span>
+              <span>🍃</span><span>🌿</span><span>🍃</span><span>🌿</span>
+            </div>
+            <!-- Ingredient emojis will be added here -->
+          </div>
+          <p>Your traditional Peruvian earth oven meal is ready to enjoy!</p>
+        </div>
+        
+        <button onclick="resetCooking()" class="btn" style="margin-top: 15px;">Make Another Pachamanca</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // IIFE to keep variables scoped and prevent pollution of global namespace
+  (function() {
+    // Variables for the cooking process
+    let step = 1;
+    let selectedIngredients = [];
+    const totalSteps = 5;
+    
+    // Get DOM elements - ensure we're using document scope correctly
+    const container = document.getElementById('pachamanca-container');
+    const digButton = container.querySelector('#dig-button');
+    const instructionText = container.querySelector('#instruction');
+    const currentStepDiv = container.querySelector('#current-step');
+    const pit = container.querySelector('#pit');
+    const stonesContainer = container.querySelector('#stones-container');
+    const ingredientsContainer = container.querySelector('#ingredients-container');
+    const coverContainer = container.querySelector('#cover-container');
+    const fireAnimation = container.querySelector('#fire-animation');
+    const selectionDisplay = container.querySelector('#selection-display');
+    const ingredientsDisplay = container.querySelector('#ingredients-display');
+    const completionMessage = container.querySelector('#completion-message');
+    const progressBar = container.querySelector('#progress-bar');
+    const pachamancaPlate = container.querySelector('#pachamanca-plate');
+    
+    // Update progress bar
+    function updateProgress(currentStep) {
+      const percentage = (currentStep / totalSteps) * 100;
+      progressBar.style.width = percentage + '%';
+      progressBar.setAttribute('aria-valuenow', percentage);
+    }
+    
+    // Set up ingredient selection - make sure it's visible on page load
+    const ingredientSection = container.querySelector('#ingredient-selection');
+    ingredientSection.style.display = 'block';
+    
+    // Define the selectIngredient function
+    window.selectIngredient = function(element) {
+      // Toggle selected state
+      if (element.classList.contains('ingredient-selected')) {
+        element.classList.remove('ingredient-selected');
+        
+        // Remove from selected ingredients
+        const index = selectedIngredients.indexOf(element.getAttribute('data-ingredient'));
+        if (index !== -1) {
+          selectedIngredients.splice(index, 1);
+        }
+      } else {
+        element.classList.add('ingredient-selected');
+        
+        // Add to selected ingredients
+        selectedIngredients.push(element.getAttribute('data-ingredient'));
+      }
+      
+      // Update the selection display
+      updateSelectionDisplay();
+    };
+    
+    let hasShownIngredientsInfo = false;
+
+    function updateSelectionDisplay() {
+      if (selectedIngredients.length === 0) {
+        selectionDisplay.textContent = 'No ingredients selected';
+      } else {
+        selectionDisplay.textContent = selectedIngredients.join(', ');
+      }
+      
+      // Also update the ingredients display in the cooking pit
+      if (selectedIngredients.length === 0) {
+        ingredientsDisplay.textContent = '🥩 🥔 🌽 🌿';
+      } else {
+        // Extract just the emojis
+        const emojis = selectedIngredients
+          .map(item => item.split(' ')[0])
+          .join(' ');
+        ingredientsDisplay.textContent = emojis;
+      }
+      
+      // Show selected ingredients section when ingredients are selected
+      if (selectedIngredients.length > 0 && !hasShownIngredientsInfo) {
+        container.querySelector('#selected-ingredients').style.display = 'block';
+        container.querySelector('#selected-ingredients').style.animation = 'fadeIn 0.5s';
+        hasShownIngredientsInfo = true;
+      } else if (selectedIngredients.length === 0) {
+        container.querySelector('#selected-ingredients').style.display = 'none';
+        hasShownIngredientsInfo = false;
+      }
+    }
+    
+   // Replace the updateFinalDisplay function with this enhanced version
+function updateFinalDisplay() {
+  // Clear previous content
+  pachamancaPlate.innerHTML = '';
+  
+  // Create the border of greens (enhanced perimeter decoration)
+  const greensLayer = document.createElement('div');
+  greensLayer.className = 'plate-greens';
+  
+  // Create top row of greens
+  const topRow = document.createElement('div');
+  topRow.className = 'top-greens';
+  let topGreens = '';
+  for (let i = 0; i < 8; i++) {
+    topGreens += `<span class="green-item">${i % 2 === 0 ? '🌿' : '🍃'}</span>`;
+  }
+  topRow.innerHTML = topGreens;
+  
+  // Create bottom row of greens
+  const bottomRow = document.createElement('div');
+  bottomRow.className = 'bottom-greens';
+  let bottomGreens = '';
+  for (let i = 0; i < 8; i++) {
+    bottomGreens += `<span class="green-item">${i % 2 === 0 ? '🍃' : '🌿'}</span>`;
+  }
+  bottomRow.innerHTML = bottomGreens;
+  
+  // Create left column of greens
+  const leftCol = document.createElement('div');
+  leftCol.className = 'left-greens';
+  let leftGreens = '';
+  for (let i = 0; i < 4; i++) {
+    leftGreens += `<span class="green-item">${i % 2 === 0 ? '🌿' : '🍃'}</span>`;
+  }
+  leftCol.innerHTML = leftGreens;
+  
+  // Create right column of greens
+  const rightCol = document.createElement('div');
+  rightCol.className = 'right-greens';
+  let rightGreens = '';
+  for (let i = 0; i < 4; i++) {
+    rightGreens += `<span class="green-item">${i % 2 === 0 ? '🍃' : '🌿'}</span>`;
+  }
+  rightCol.innerHTML = rightGreens;
+  
+  // Add all greens to the container
+  greensLayer.appendChild(topRow);
+  greensLayer.appendChild(bottomRow);
+  greensLayer.appendChild(leftCol);
+  greensLayer.appendChild(rightCol);
+  
+  pachamancaPlate.appendChild(greensLayer);
+  
+  // Create a center container for ingredients
+  const centerContainer = document.createElement('div');
+  centerContainer.className = 'plate-center';
+  pachamancaPlate.appendChild(centerContainer);
+  
+  if (selectedIngredients.length === 0) {
+    // Default ingredients if none selected
+    const defaultIngredients = ['🥩', '🥔', '🌽', '🌿', '🍠', '🌶️'];
+    defaultIngredients.forEach(emoji => {
+      const span = document.createElement('span');
+      span.className = 'ingredient-item';
+      span.textContent = emoji;
+      centerContainer.appendChild(span);
+    });
+  } else {
+    // Add selected ingredients to center of plate
+    // Dynamic sizing - if too many ingredients, make them smaller
+    let fontSize = '28px';
+    if (selectedIngredients.length > 10) {
+      fontSize = '25px';
+    }
+    if (selectedIngredients.length > 12) {
+      fontSize = '22px';
+    }
+    
+    selectedIngredients.forEach(ingredient => {
+      const emoji = ingredient.split(' ')[0]; // Get just the emoji
+      const span = document.createElement('span');
+      span.className = 'ingredient-item';
+      span.textContent = emoji;
+      
+      // Apply dynamic sizing for many ingredients
+      if (selectedIngredients.length > 10) {
+        span.style.fontSize = fontSize;
+        span.style.margin = '3px';
+      }
+      
+      centerContainer.appendChild(span);
+    });
+  }
+}
+    
+    // Dig hole button click
+    digButton.addEventListener('click', function() {
+      // Show the pit with animation
+      pit.style.display = 'block';
+      pit.style.animation = 'fadeIn 0.5s';
+      
+      // Update progress
+      step = 2;
+      updateProgress(step);
+      
+      // Update instruction
+      instructionText.textContent = 'Step 2: Add stones to the bottom of the pit';
+      
+      // Change the button
+      currentStepDiv.innerHTML = '<button id="add-stones-button" class="btn" aria-label="Add stones to the pit">Add Stones 🪨</button>';
+      
+      // Add event listener to the new button
+      container.querySelector('#add-stones-button').addEventListener('click', addStones);
+    });
+    
+    // Add stones function
+    function addStones() {
+      // Show the stones
+      stonesContainer.style.display = 'block';
+      
+      // Update progress
+      step = 3;
+      updateProgress(step);
+      
+      // Update instruction
+      instructionText.textContent = 'Step 3: Select and add your ingredients';
+      
+      // Keep ingredient section visible throughout the experience
+      ingredientSection.style.display = 'block';
+      ingredientSection.style.animation = 'fadeIn 0.5s';
+      
+      // Change the button
+      currentStepDiv.innerHTML = '<button id="add-ingredients-button" class="btn" aria-label="Add selected ingredients to the pit">Add Ingredients 🍲</button>';
+      
+      // Add event listener to the new button
+      container.querySelector('#add-ingredients-button').addEventListener('click', addIngredients);
+    }
+    
+    // Add ingredients function
+    function addIngredients() {
+      // Ensure at least one ingredient is selected
+      if (selectedIngredients.length === 0) {
+        // Create a more accessible error message
+        const errorMsg = document.createElement('div');
+        errorMsg.style.color = '#d32f2f';
+        errorMsg.style.padding = '10px';
+        errorMsg.style.marginTop = '10px';
+        errorMsg.style.backgroundColor = 'rgba(211, 47, 47, 0.1)';
+        errorMsg.style.borderRadius = '5px';
+        errorMsg.textContent = "Please select at least one ingredient for your Pachamanca!";
+        
+        // Remove any existing error message
+        const existingError = currentStepDiv.querySelector('.error-message');
+        if (existingError) existingError.remove();
+        
+        errorMsg.className = 'error-message';
+        currentStepDiv.appendChild(errorMsg);
+        
+        // Focus on the ingredient section for better accessibility
+        ingredientSection.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      
+      // Show the ingredients
+      ingredientsContainer.style.display = 'block';
+      
+      // Update progress
+      step = 4;
+      updateProgress(step);
+      
+      // Update instruction
+      instructionText.textContent = 'Step 4: Cover with leaves to trap heat';
+      
+      // Change the button
+      currentStepDiv.innerHTML = '<button id="add-cover-button" class="btn" aria-label="Cover the ingredients with leaves">Add Cover 🍃</button>';
+      
+      // Add event listener to the new button
+      container.querySelector('#add-cover-button').addEventListener('click', addCover);
+    }
+    
+    // Add cover function
+    function addCover() {
+      // Show the cover
+      coverContainer.style.display = 'block';
+      
+      // Update progress
+      step = 5;
+      updateProgress(step);
+      
+      // Update instruction
+      instructionText.textContent = 'Step 5: Light the fire to heat the stones';
+      
+      // Change the button
+      currentStepDiv.innerHTML = '<button id="light-fire-button" class="btn" aria-label="Light the fire to cook">Light Fire 🔥</button>';
+      
+      // Add event listener to the new button
+      container.querySelector('#light-fire-button').addEventListener('click', lightFire);
+    }
+    
+    function lightFire() {
+      // Show the fire animation with flickering effect
+      fireAnimation.style.display = 'block';
+      
+      // Update progress to completion
+      updateProgress(totalSteps);
+      
+      // Update the instruction
+      instructionText.textContent = 'Your Pachamanca is cooking...';
+      
+      // Change the button to show cooking in progress
+      currentStepDiv.innerHTML = '<div style="background-color: #c75a12; color: white; padding: 10px 15px; border-radius: 5px; text-align: center; font-size: 16px;">Cooking in progress... ⏱️</div>';
+      
+      // After a delay, complete the cooking
+      setTimeout(function() {
+        // Hide the fire
+        fireAnimation.style.display = 'none';
+        
+        // Show completion message with animation
+        setTimeout(function() {
+          // Update the final visualization based on selected ingredients
+          updateFinalDisplay();
+          
+          // Hide the current step
+          currentStepDiv.innerHTML = '';
+          instructionText.textContent = '';
+          
+          // Create and show success message popup
+          const successMessage = document.createElement('div');
+          successMessage.className = 'success-overlay';
+          successMessage.innerHTML = `
+            <div class="success-message">
+              <h2 style="color: #c75a12; margin-top: 0;">¡Tu Pachamanca está lista!</h2>
+              <p style="font-size: 24px; margin: 15px 0;">🎉 ¡Buen provecho! 🎉</p>
+              <button class="btn" style="background-color: #8d4925;">See Your Meal</button>
+            </div>
+          `;
+          
+          container.appendChild(successMessage);
+          
+          // Add event listener to close the popup and show the meal
+         successMessage.querySelector('button').addEventListener('click', function() {
+  successMessage.remove();
+  // Show completion message
+  completionMessage.style.display = 'block';
+  completionMessage.style.animation = 'fadeIn 0.8s';
+  
+  // Add auto-scroll to the meal section
+  setTimeout(function() {
+    // Smooth scroll to the completion message
+    completionMessage.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+    
+    // Optional: highlight the plate with a subtle pulsing animation
+    const plate = pachamancaPlate;
+    plate.style.animation = 'none'; // Reset any existing animations
+    void plate.offsetWidth; // Trigger reflow to restart animation
+    plate.style.animation = 'highlightPlate 1.5s ease';
+  }, 100); // Small delay to ensure the element is visible before scrolling
+});
+        }, 1000);
+      }, 3000);
+    }
+    
+    // Reset the cooking process
+    window.resetCooking = function() {
+      // Reset variables
+      step = 1;
+      
+      // Reset the progress bar
+      updateProgress(step);
+      
+      // Reset the UI
+      pit.style.display = 'none';
+      stonesContainer.style.display = 'none';
+      ingredientsContainer.style.display = 'none';
+      coverContainer.style.display = 'none';
+      fireAnimation.style.display = 'none';
+      completionMessage.style.display = 'none';
+      
+      // Reset the instruction and button
+      instructionText.textContent = 'Step 1: Dig a hole for your Pachamanca';
+      currentStepDiv.innerHTML = '<button id="dig-button" class="btn" aria-label="Dig a hole for the Pachamanca">Dig Hole ⛏️</button>';
+      
+      // Re-add event listener to dig button
+      container.querySelector('#dig-button').addEventListener('click', function() {
+        // Show the pit
+        pit.style.display = 'block';
+        
+        // Update progress
+        step = 2;
+        updateProgress(step);
+        
+        // Update to next step
+        instructionText.textContent = 'Step 2: Add stones to the bottom of the pit';
+        
+        // Change the button
+        currentStepDiv.innerHTML = '<button id="add-stones-button" class="btn" aria-label="Add stones to the pit">Add Stones 🪨</button>';
+        
+        // Add event listener to the new button
+        container.querySelector('#add-stones-button').addEventListener('click', addStones);
+      });
+      
+      // Hide and reset ingredient selection
+      ingredientSection.style.display = 'block';
+      container.querySelector('#selected-ingredients').style.display = 'none';
+      
+      // Clear selected ingredients
+      selectedIngredients = [];
+      const allIngredients = container.querySelectorAll('.ingredient');
+      allIngredients.forEach(ing => {
+        ing.classList.remove('ingredient-selected');
+      });
+      
+      // Update selection display
+      updateSelectionDisplay();
+    };
+    
+    // Configure click event handlers explicitly for all ingredients
+    const ingredients = container.querySelectorAll('.ingredient');
+    ingredients.forEach(function(ingredient) {
+      ingredient.addEventListener('click', function() {
+        selectIngredient(this);
+      });
+      
+      // Add keyboard accessibility
+      ingredient.setAttribute('tabindex', '0');
+      ingredient.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          selectIngredient(this);
+          e.preventDefault();
+        }
+      });
+    });
+    
+    // Initialize selection display
+    updateSelectionDisplay();
+    
+    // Initialize progress bar
+    updateProgress(step);
+    
+    // Make sure ingredient selection is visible by default
+    ingredientSection.style.display = 'block';
+  })();
+</script>
+</body>
+</html>
