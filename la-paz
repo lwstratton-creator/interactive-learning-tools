@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life in La Paz, Bolivia</title>
+    <style>
+        /* Scoped styles with a specific class prefix to avoid conflicts */
+        .lapaz-slideshow-wrapper {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .lapaz-slideshow-wrapper * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Bolivia flag colors - red, yellow, green */
+        .lapaz-slideshow-container {
+            --bolivia-red: #DC143C;
+            --bolivia-yellow: #FFD700;
+            --bolivia-green: #228B22;
+            --bolivia-dark-red: #B91C3C;
+            --bolivia-dark-green: #15803D;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --background-light: #F9FAFB;
+            
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(220, 20, 60, 0.15);
+            background: #F9FAFB;
+        }
+        
+        .lapaz-slideshow-header {
+            background: #DC143C;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+        }
+        
+        .lapaz-mySlides {
+            display: none;
+            width: 100%;
+            background: #ffffff;
+        }
+        
+        .lapaz-slide-image-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 60%;
+            overflow: hidden;
+            position: relative;
+            background: #f8f9fa;
+        }
+        
+        .lapaz-slide-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #f8f9fa;
+        }
+        
+        .lapaz-content-container {
+            padding: 24px;
+            background-color: #ffffff;
+        }
+        
+        .lapaz-slide-title {
+            color: #DC143C;
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .lapaz-slide-subtitle {
+            color: #B91C3C;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .lapaz-slide-description {
+            color: #1F2937;
+            font-size: 1rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .lapaz-highlight-fact {
+            background: #FFD700;
+            border: 2px solid #FFC107;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .lapaz-highlight-fact-label {
+            color: #B91C3C;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .lapaz-highlight-fact-text {
+            color: #1F2937;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        /* Navigation buttons */
+        .lapaz-prev, .lapaz-next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            border-radius: 0 8px 8px 0;
+            user-select: none;
+            background: rgba(220, 20, 60, 0.8);
+            z-index: 10;
+            border: none;
+        }
+        
+        .lapaz-next {
+            right: 0;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .lapaz-prev {
+            left: 0;
+        }
+        
+        .lapaz-prev:hover, .lapaz-next:hover {
+            background: #DC143C;
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .lapaz-prev:focus, .lapaz-next:focus {
+            outline: 3px solid #FFD700;
+            outline-offset: 2px;
+        }
+        
+        /* Dots navigation */
+        .lapaz-dots-container {
+            text-align: center;
+            padding: 20px;
+            background: #228B22;
+        }
+        
+        .lapaz-dot {
+            height: 16px;
+            width: 16px;
+            margin: 0 6px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .lapaz-active-dot, .lapaz-dot:hover {
+            background-color: #ffffff;
+            transform: scale(1.2);
+            border-color: #FFD700;
+        }
+        
+        /* Counter display */
+        .lapaz-counter {
+            padding: 8px 12px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Attribution section */
+        .lapaz-attribution-section {
+            background: #F5F5F5;
+            border-top: 1px solid #E0E0E0;
+            position: relative;
+        }
+        
+        .lapaz-attribution-toggle {
+            background: #228B22;
+            color: #ffffff;
+            border: none;
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .lapaz-attribution-toggle:hover {
+            background: #15803D;
+        }
+        
+        .lapaz-attribution-toggle:focus {
+            outline: 3px solid #FFD700;
+            outline-offset: 2px;
+        }
+        
+        .lapaz-attribution-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #fffdf5;
+            border-top: 1px solid #E0E0E0;
+        }
+        
+        .lapaz-attribution-content.expanded {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .lapaz-attribution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+        
+        .lapaz-attribution-item {
+            background: #ffffff;
+            border: 1px solid #E5E5E5;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .lapaz-attribution-title {
+            color: #DC143C;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .lapaz-attribution-details {
+            color: #1F2937;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        
+        .lapaz-attribution-details strong {
+            color: #B91C3C;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .lapaz-attribution-details .author {
+            color: #228B22;
+            margin-bottom: 2px;
+        }
+        
+        .lapaz-attribution-details em {
+            color: #6B7280;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+        
+        .lapaz-attribution-link {
+            color: #FFD700;
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            padding: 4px 8px;
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            background: #1F2937;
+        }
+        
+        .lapaz-attribution-link:hover {
+            background-color: #FFD700;
+            color: #1F2937;
+        }
+        
+        .lapaz-attribution-link:focus {
+            outline: 2px solid #FFD700;
+            outline-offset: 2px;
+        }
+        
+        /* Fade animation */
+        .lapaz-fade {
+            animation-name: lapaz-fade-keyframes;
+            animation-duration: 0.8s;
+        }
+        
+        @keyframes lapaz-fade-keyframes {
+            from {opacity: 0.4} 
+            to {opacity: 1}
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .lapaz-content-container {
+                padding: 20px;
+            }
+            
+            .lapaz-prev, .lapaz-next {
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .lapaz-slide-image-container {
+                padding-bottom: 65%;
+            }
+            
+            .lapaz-attribution-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .lapaz-slideshow-header {
+                padding: 16px;
+                font-size: 1.1rem;
+            }
+            
+            .lapaz-content-container {
+                padding: 16px;
+            }
+            
+            .lapaz-prev, .lapaz-next {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .lapaz-slide-image-container {
+                padding-bottom: 70%;
+            }
+            
+            .lapaz-attribution-grid {
+                padding: 12px;
+            }
+            
+            .lapaz-attribution-item {
+                padding: 10px;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .lapaz-slideshow-wrapper *,
+            .lapaz-slideshow-wrapper *::before,
+            .lapaz-slideshow-wrapper *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                transition-delay: 0ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lapaz-slideshow-wrapper">
+        <div class="lapaz-slideshow-container">
+            <div class="lapaz-slideshow-header">
+                🏔️ Life in La Paz, Bolivia: Living Closer to the Sky! ☁️
+            </div>
+            
+            <!-- Slide 1: La Paz Skyline -->
+            <div class="lapaz-mySlides lapaz-fade">
+                <div class="lapaz-counter">1 / 4</div>
+                <div class="lapaz-slide-image-container">
+                    <img class="lapaz-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/La_Paz_Skyline.jpg/640px-La_Paz_Skyline.jpg" alt="La Paz skyline with Illimani mountain">
+                </div>
+                <div class="lapaz-content-container">
+                    <h3 class="lapaz-slide-title">Welcome to La Paz!</h3>
+                    <div class="lapaz-slide-subtitle">🏔️ One of the World's Highest Cities</div>
+                    <div class="lapaz-slide-description">
+                        This is La Paz, Bolivia, viewed from El Alto with the majestic Illimani mountain in the background. At 3,000 meters (almost 10,000 feet) above sea level, La Paz is one of the highest cities on Earth - that means you're practically living in the clouds!
+                    </div>
+                    <div class="lapaz-highlight-fact">
+                        <div class="lapaz-highlight-fact-label">
+                            <span aria-hidden="true">🌄</span>
+                            Amazing fact:
+                        </div>
+                        <div class="lapaz-highlight-fact-text">La Paz sits at 3,000 meters above sea level - that's higher than many mountains in other countries!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: View from El Alto -->
+            <div class="lapaz-mySlides lapaz-fade">
+                <div class="lapaz-counter">2 / 4</div>
+                <div class="lapaz-slide-image-container">
+                    <img class="lapaz-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/La_paz_bolivia_20180404.jpg/640px-La_paz_bolivia_20180404.jpg" alt="La Paz from El Alto perspective">
+                </div>
+                <div class="lapaz-content-container">
+                    <h3 class="lapaz-slide-title">A City Built on Hills</h3>
+                    <div class="lapaz-slide-subtitle">🏘️ Houses Climbing the Mountains</div>
+                    <div class="lapaz-slide-description">
+                        Look how the city spreads across the mountainous landscape! The colorful houses and buildings climb up the hillsides, creating a unique cityscape that you won't find anywhere else in the world. Living here means some people walk uphill to get home every day!
+                    </div>
+                    <div class="lapaz-highlight-fact">
+                        <div class="lapaz-highlight-fact-label">
+                            <span aria-hidden="true">🏠</span>
+                            City fact:
+                        </div>
+                        <div class="lapaz-highlight-fact-text">Many homes in La Paz are built on steep slopes, so residents get a great workout just walking to and from their houses!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Downtown La Paz -->
+            <div class="lapaz-mySlides lapaz-fade">
+                <div class="lapaz-counter">3 / 4</div>
+                <div class="lapaz-slide-image-container">
+                    <img class="lapaz-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Centro_de_La_Paz%2C_Bolivia.jpg/640px-Centro_de_La_Paz%2C_Bolivia.jpg" alt="Downtown La Paz panoramic view">
+                </div>
+                <div class="lapaz-content-container">
+                    <h3 class="lapaz-slide-title">The Heart of the City</h3>
+                    <div class="lapaz-slide-subtitle">🌉 Downtown La Paz</div>
+                    <div class="lapaz-slide-description">
+                        This is a panoramic view of downtown La Paz, showing the bustling city center with the Puente de las Américas bridge. Even in the city center, you can see how the altitude affects daily life - the air is thinner here, so visitors might feel a bit out of breath at first!
+                    </div>
+                    <div class="lapaz-highlight-fact">
+                        <div class="lapaz-highlight-fact-label">
+                            <span aria-hidden="true">💨</span>
+                            Altitude fact:
+                        </div>
+                        <div class="lapaz-highlight-fact-text">When visitors first arrive in La Paz, they might experience altitude sickness - feeling dizzy or needing more oxygen because the air is thinner!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Urban Garden -->
+            <div class="lapaz-mySlides lapaz-fade">
+                <div class="lapaz-counter">4 / 4</div>
+                <div class="lapaz-slide-image-container">
+                    <img class="lapaz-slide-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Vista_del_huerto_org%C3%A1nico_Lak%27a_Uta_en_La_Paz_-_Bolivia_en_el_a%C3%B1o_2019.jpg/640px-Vista_del_huerto_org%C3%A1nico_Lak%27a_Uta_en_La_Paz_-_Bolivia_en_el_a%C3%B1o_2019.jpg" alt="Organic garden Lak'a Uta in La Paz">
+                </div>
+                <div class="lapaz-content-container">
+                    <h3 class="lapaz-slide-title">Growing Food in the Sky</h3>
+                    <div class="lapaz-slide-subtitle">🌱 Urban Farming at High Altitude</div>
+                    <div class="lapaz-slide-description">
+                        This amazing view shows the landscape of La Paz from the Lak'a Uta Organic Garden, which is the first urban garden in the city. It's a space where people can grow their own organic food, even at this incredible altitude! Imagine gardening closer to the clouds than most people ever get to experience.
+                    </div>
+                    <div class="lapaz-highlight-fact">
+                        <div class="lapaz-highlight-fact-label">
+                            <span aria-hidden="true">🥬</span>
+                            Think about it:
+                        </div>
+                        <div class="lapaz-highlight-fact-text">How do you think the high altitude and mountain climate affect what foods people can grow in La Paz compared to your community?</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next and previous buttons -->
+            <button class="lapaz-prev" onclick="lapazChangeSlide(-1)" aria-label="Previous slide">&#10094;</button>
+            <button class="lapaz-next" onclick="lapazChangeSlide(1)" aria-label="Next slide">&#10095;</button>
+            
+            <!-- Dots navigation -->
+            <div class="lapaz-dots-container">
+                <span class="lapaz-dot" onclick="lapazCurrentSlide(1)" aria-label="La Paz skyline"></span>
+                <span class="lapaz-dot" onclick="lapazCurrentSlide(2)" aria-label="View from El Alto"></span>
+                <span class="lapaz-dot" onclick="lapazCurrentSlide(3)" aria-label="Downtown La Paz"></span>
+                <span class="lapaz-dot" onclick="lapazCurrentSlide(4)" aria-label="Urban garden"></span>
+            </div>
+            
+            <!-- Attribution Section -->
+            <div class="lapaz-attribution-section">
+                <button class="lapaz-attribution-toggle" onclick="toggleLapazAttribution()" aria-expanded="false" aria-controls="lapazAttributionContent">
+                    <span aria-hidden="true">📸</span>
+                    View Image Sources
+                </button>
+                <div class="lapaz-attribution-content" id="lapazAttributionContent">
+                    <div class="lapaz-attribution-grid">
+                        <div class="lapaz-attribution-item">
+                            <div class="lapaz-attribution-title">Slide 1: La Paz Skyline</div>
+                            <div class="lapaz-attribution-details">
+                                <strong>La Paz Skyline.jpg</strong>
+                                <div>View of La Paz from El Alto with the Illimani mountain in the background.</div>
+                                <div class="author">by EEJCC</div>
+                                <em>Creative Commons Attribution-Share Alike 4.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/La_Paz_Skyline.jpg/640px-La_Paz_Skyline.jpg" class="lapaz-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                        <div class="lapaz-attribution-item">
+                            <div class="lapaz-attribution-title">Slide 2: View from El Alto</div>
+                            <div class="lapaz-attribution-details">
+                                <strong>La paz bolivia 20180404.jpg</strong>
+                                <div>La Paz desde El Alto.</div>
+                                <div class="author">by Mowaaaaan</div>
+                                <em>Creative Commons Attribution-Share Alike 4.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/La_paz_bolivia_20180404.jpg/640px-La_paz_bolivia_20180404.jpg" class="lapaz-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                        <div class="lapaz-attribution-item">
+                            <div class="lapaz-attribution-title">Slide 3: Downtown La Paz</div>
+                            <div class="lapaz-attribution-details">
+                                <strong>Centro de La Paz, Bolivia.jpg</strong>
+                                <div>Panoramic view of Downtown La Paz and the Puente de las Américas bridge to the left.</div>
+                                <div class="author">by EEJCC</div>
+                                <em>Creative Commons Zero, Public Domain Dedication</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Centro_de_La_Paz%2C_Bolivia.jpg/640px-Centro_de_La_Paz%2C_Bolivia.jpg" class="lapaz-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                        <div class="lapaz-attribution-item">
+                            <div class="lapaz-attribution-title">Slide 4: Organic Garden</div>
+                            <div class="lapaz-attribution-details">
+                                <strong>View of the Lak'a Uta organic garden in La Paz - Bolivia in 2019.jpg</strong>
+                                <div>Landscape of La Paz city from the Lak'a Uta Organic Garden, the first urban garden in the city. A space where people cultivate their own organic food.</div>
+                                <div class="author">by Yazzmale</div>
+                                <em>Creative Commons Attribution-Share Alike 4.0</em>
+                            </div>
+                            <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Vista_del_huerto_org%C3%A1nico_Lak%27a_Uta_en_La_Paz_-_Bolivia_en_el_a%C3%B1o_2019.jpg/640px-Vista_del_huerto_org%C3%A1nico_Lak%27a_Uta_en_La_Paz_-_Bolivia_en_el_a%C3%B1o_2019.jpg" class="lapaz-attribution-link" target="_blank" rel="noopener noreferrer">View Image</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Use IIFE to scope all variables and functions to avoid global conflicts
+        (function() {
+            let lapazSlideIndex = 1;
+            
+            // Function to initialize the slideshow
+            function initLapazSlideshow() {
+                showLapazSlides(lapazSlideIndex);
+                
+                // Add keyboard event listener for navigation
+                document.addEventListener('keydown', function(e) {
+                    // Only respond to keyboard events if the slideshow is in the viewport
+                    const slideshowElement = document.querySelector('.lapaz-slideshow-container');
+                    if (slideshowElement) {
+                        const rect = slideshowElement.getBoundingClientRect();
+                        const isInViewport = rect.top < window.innerHeight && rect.bottom >= 0;
+                        
+                        if (isInViewport) {
+                            if (e.key === 'ArrowLeft') {
+                                lapazChangeSlide(-1);
+                            } else if (e.key === 'ArrowRight') {
+                                lapazChangeSlide(1);
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Next/previous controls function
+            window.lapazChangeSlide = function(n) {
+                showLapazSlides(lapazSlideIndex += n);
+            }
+            
+            // Thumbnail image controls function
+            window.lapazCurrentSlide = function(n) {
+                showLapazSlides(lapazSlideIndex = n);
+            }
+            
+            // Attribution toggle function
+            window.toggleLapazAttribution = function() {
+                const attributionContent = document.getElementById('lapazAttributionContent');
+                const button = document.querySelector('.lapaz-attribution-toggle');
+                const isExpanded = attributionContent.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    attributionContent.classList.remove('expanded');
+                    button.innerHTML = '<span aria-hidden="true">📸</span> View Image Sources';
+                    button.setAttribute('aria-expanded', 'false');
+                } else {
+                    attributionContent.classList.add('expanded');
+                    button.innerHTML = '<span aria-hidden="true">📸</span> Hide Image Sources';
+                    button.setAttribute('aria-expanded', 'true');
+                }
+            }
+            
+            // Function to display the current slide
+            function showLapazSlides(n) {
+                let i;
+                let slides = document.getElementsByClassName("lapaz-mySlides");
+                let dots = document.getElementsByClassName("lapaz-dot");
+                
+                // Loop back to the first slide if at the end
+                if (n > slides.length) {lapazSlideIndex = 1}
+                
+                // Go to the last slide if going back from the first slide
+                if (n < 1) {lapazSlideIndex = slides.length}
+                
+                // Hide all slides
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                
+                // Remove active class from all dots
+                for (i = 0; i < dots.length; i++) {
+                    dots[i].className = dots[i].className.replace(" lapaz-active-dot", "");
+                }
+                
+                // Show the current slide and activate the corresponding dot
+                if (slides[lapazSlideIndex-1]) {
+                    slides[lapazSlideIndex-1].style.display = "block";
+                }
+                if (dots[lapazSlideIndex-1]) {
+                    dots[lapazSlideIndex-1].className += " lapaz-active-dot";
+                }
+            }
+            
+            // Initialize the slideshow when the content is loaded
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                initLapazSlideshow();
+            } else {
+                document.addEventListener('DOMContentLoaded', initLapazSlideshow);
+            }
+        })();
+    </script>
+</body>
+</html>
