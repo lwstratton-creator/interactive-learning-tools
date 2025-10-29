@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Learning Activity - Pretérito Pluscuamperfecto</title>
+    <style>
+        .spanish-learning-container * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .spanish-learning-container {
+            --primary-color: #F2CB05;
+            --secondary-color: #00994D;
+            --accent-color: #C72C27;
+            --text-color: #333;
+            --background-color: #f9f9f9;
+            --alt-background-color: #fff;
+            --font-family: 'Arial', sans-serif;
+            --highlight-color: rgba(242, 203, 5, 0.2);
+            --ziggy-highlight: #FFDAB9;
+
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Activity Section Styles */
+        .spanish-learning-container .activity-section {
+            margin-bottom: 20px;
+            background-color: var(--alt-background-color);
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .spanish-learning-container .activity-section h2 {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .spanish-learning-container .verb-list {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .spanish-learning-container .verb-list span {
+            white-space: nowrap;
+        }
+
+        /* Drag and Drop Styles */
+        .spanish-learning-container .drag-drop-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+            min-height: 200px;
+        }
+
+        .spanish-learning-container .drop-zones-container,
+        .spanish-learning-container .drag-items-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .spanish-learning-container .drag-item {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            text-align: center;
+            margin: 5px;
+            touch-action: none;
+        }
+
+        .spanish-learning-container .drop-zone {
+            border: 2px solid #ddd;
+            background: #fff;
+            border-radius: 5px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+        }
+
+        .spanish-learning-container .drop-zone.correct {
+            background: #e0ffe0;
+            border-color: var(--secondary-color);
+        }
+
+        .spanish-learning-container .drop-zone.incorrect {
+            background: #ffe0e0;
+            border-color: var(--accent-color);
+        }
+
+        /* Form Styles */
+        .spanish-learning-container .verb-form-input {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .spanish-learning-container .verb-form-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .spanish-learning-container .verb-form-group label {
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .spanish-learning-container .verb-form-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .spanish-learning-container .verb-form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 5px rgba(242, 203, 5, 0.5);
+        }
+
+        .spanish-learning-container .example-box {
+            background-color: var(--highlight-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        /* Button Styles */
+        .spanish-learning-container button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .spanish-learning-container button:hover {
+            background-color: #006633;
+            opacity: 0.9;
+        }
+
+        .spanish-learning-container .meanings-button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        /* Meanings Overlay */
+        .meanings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .meanings-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .meanings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .meanings-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1em;
+        }
+
+        .close-meanings {
+            display: block;
+            margin: 20px auto 0;
+            padding: 8px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .close-meanings:hover {
+            opacity: 0.9;
+        }
+
+        /* Ziggy Section Styles */
+        .spanish-learning-container .ziggy-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--alt-background-color);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .spanish-learning-container .ziggy-highlight-text {
+            background-color: var(--ziggy-highlight);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* Hint System */
+        .spanish-learning-container .hint-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .spanish-learning-container .hint-icon {
+            background: #FF8C00;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            padding: 0;
+        }
+
+        .spanish-learning-container .hint-content {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: max-content;
+            max-width: 200px;
+            z-index: 100;
+            top: 50%;
+            left: calc(100% + 12px);
+            transform: translateY(-50%);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+        
+        .spanish-learning-container .hint-container:hover .hint-content {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Accent Button Styles */
+        .spanish-learning-container .accent-wrapper {
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .spanish-learning-container .accent-buttons {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .spanish-learning-container .accent-buttons button {
+            background-color: white !important;
+            color: var(--text-color) !important;
+            border: 1px solid #FFA500 !important;
+            border-radius: 3px !important;
+            padding: 5px 7px !important;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+            min-width: 30px;
+            text-align: center;
+            margin: 2px;
+        }
+
+        .spanish-learning-container .accent-buttons button:hover {
+            background-color: #f5f5f5 !important;
+        }
+
+        .spanish-learning-container .accent-buttons button:focus {
+            outline: 2px solid #FFA500;
+            outline-offset: 2px;
+        }
+
+        @media (forced-colors: active) {
+            .spanish-learning-container .accent-buttons button:focus {
+                outline: 2px solid ButtonText;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .spanish-learning-container {
+                padding: 10px;
+                margin: 10px;
+            }
+
+            .spanish-learning-container .verb-form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .spanish-learning-container .drop-zones-container,
+            .spanish-learning-container .drag-items-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="spanish-learning-container">
+    <div class="activity-section">
+        <h2>🎯 Goal: Construct sentences using the Pretérito Pluscuamperfecto tense!</h2>
+        <div class="verb-list">
+            <span>💔 perder</span>
+            <span>💼 trabajar</span>
+            <span>❓ desconocer</span>
+            <span>🔍 encontrar</span>
+            <span>✅ determinar</span>
+            <span>🤔 tener</span>
+            <span>💭 pensar</span>
+        </div>
+    </div>
+
+    <div class="activity-section">
+        <h2>📋 Review: Match the Verb with the Emoji</h2>
+        <p>Drag and drop each verb to its corresponding emoji.</p>
+        <div class="drag-drop-container" id="dragDropArea"></div>
+        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+            <button onclick="resetActivity()">Reset</button>
+            <button onclick="showMeanings()" class="meanings-button">Show Meanings</button>
+        </div>
+    </div>
+
+    <!-- Meanings Overlay -->
+    <div id="meaningsOverlay" class="meanings-overlay">
+        <div class="meanings-content">
+            <h3>Verb Meanings</h3>
+            <ul class="meanings-list">
+                <li>💔 perder - to lose</li>
+                <li>💼 trabajar - to work</li>
+                <li>❓ desconocer - to not know/be unaware</li>
+                <li>🔍 encontrar - to find</li>
+                <li>✅ determinar - to determine</li>
+                <li>🤔 tener - to have</li>
+                <li>💭 pensar - to think</li>
+            </ul>
+            <button onclick="hideMeanings()" class="close-meanings">Close</button>
+        </div>
+    </div>
+
+    <div class="activity-section">
+        <h2>📝 Warm-up</h2>
+        <p>
+            Write the verbs <strong>perder</strong> and <strong>tener</strong> in the Pretérito Pluscuamperfecto for <strong>yo</strong>.
+        </p>
+        <div class="example-box">
+            Example:<br>
+            Trabajar: (Yo) <strong>había trabajado</strong>
+        </div>
+        <div class="verb-form-input">
+            <div class="verb-form-group">
+                <label>perder (yo):</label>
+                <input type="text" id="perder-yo" placeholder="Type your answer">
+                <div class="accent-wrapper">
+                    <div class="accent-buttons">
+                        <button type="button" class="accent-button" data-accent="á">á</button>
+                        <button type="button" class="accent-button" data-accent="é">é</button>
+                        <button type="button" class="accent-button" data-accent="í">í</button>
+                        <button type="button" class="accent-button" data-accent="ó">ó</button>
+                        <button type="button" class="accent-button" data-accent="ú">ú</button>
+                    </div>
+                </div>
+                <button onclick="checkAnswer('perder-yo', 'había perdido')">Check</button>
+            </div>
+            
+            <div class="verb-form-group">
+                <label>tener (yo):</label>
+                <input type="text" id="tener-yo" placeholder="Type your answer">
+                <div class="accent-wrapper">
+                    <div class="accent-buttons">
+                        <button type="button" class="accent-button" data-accent="á">á</button>
+                        <button type="button" class="accent-button" data-accent="é">é</button>
+                        <button type="button" class="accent-button" data-accent="í">í</button>
+                        <button type="button" class="accent-button" data-accent="ó">ó</button>
+      <button type="button" class="accent-button" data-accent="ú">ú</button>
+                </div>
+            </div>
+            <button onclick="checkAnswer('tener-yo', 'había tenido')">Check</button>
+        </div>
+    </div>
+</div>
+
+<div class="ziggy-section">
+    <h3>🤖 Check with Ziggy</h3>
+    <p>Open up the Ziggy chat window by clicking on the icon in the right corner! ⤵️</p><br>
+    <ul style="list-style: none; padding: 0;">
+        <li>Ask Ziggy: <span class="ziggy-highlight-text">Is _______ [verb form] correct?</span></li><br>
+        <li>Ask Ziggy: <span class="ziggy-highlight-text">What does "había desconocido" mean?</span></li><br>
+        <li>Ask Ziggy: <span class="ziggy-highlight-text">Does "había sido encontrado" mean "had been found"?</span></li>
+    </ul>
+</div>
+</div>
+<script>
+const verbs = [
+    { verb: 'perder', emoji: '💔' },
+    { verb: 'trabajar', emoji: '💼' },
+    { verb: 'desconocer', emoji: '❓' },
+    { verb: 'encontrar', emoji: '🔍' },
+    { verb: 'determinar', emoji: '✅' },
+    { verb: 'tener', emoji: '🤔' },
+    { verb: 'pensar', emoji: '💭' }
+];
+
+let draggedItem = null;
+const dragDropArea = document.getElementById('dragDropArea');
+
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function initializeDragDrop() {
+    dragDropArea.innerHTML = '';
+    
+    const shuffledVerbsForDrag = shuffleArray(verbs);
+    const shuffledVerbsForDrop = shuffleArray(verbs);
+    
+    const dropZonesContainer = document.createElement('div');
+    dropZonesContainer.className = 'drop-zones-container';
+    const dragItemsContainer = document.createElement('div');
+    dragItemsContainer.className = 'drag-items-container';
+    
+    dragDropArea.appendChild(dropZonesContainer);
+    dragDropArea.appendChild(dragItemsContainer);
+    
+    shuffledVerbsForDrop.forEach(item => {
+        const dropZone = document.createElement('div');
+        dropZone.className = 'drop-zone';
+        dropZone.dataset.verb = item.verb;
+        dropZone.textContent = item.emoji;
+        dropZonesContainer.appendChild(dropZone);
+    });
+
+    shuffledVerbsForDrag.forEach(item => {
+        const dragItem = document.createElement('div');
+        dragItem.className = 'drag-item';
+        dragItem.draggable = true;
+        dragItem.textContent = item.verb;
+        dragItem.dataset.verb = item.verb;
+        dragItemsContainer.appendChild(dragItem);
+
+        dragItem.addEventListener('dragstart', handleDragStart);
+        dragItem.addEventListener('dragend', handleDragEnd);
+        dragItem.addEventListener('touchstart', handleTouchStart);
+        dragItem.addEventListener('touchmove', handleTouchMove);
+        dragItem.addEventListener('touchend', handleTouchEnd);
+    });
+
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+    });
+}
+
+function handleDragStart(e) {
+    draggedItem = e.target;
+    e.target.style.opacity = '0.5';
+    e.dataTransfer.setData('text/plain', e.target.dataset.verb);
+}
+
+function handleDragEnd(e) {
+    e.target.style.opacity = '1';
+    draggedItem = null;
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    if (!draggedItem) return;
+
+    const dropZone = e.target.closest('.drop-zone');
+    if (!dropZone) return;
+
+    const draggedVerb = draggedItem.dataset.verb;
+    const targetVerb = dropZone.dataset.verb;
+
+    if (draggedVerb === targetVerb) {
+        dropZone.textContent = draggedItem.textContent;
+        dropZone.className = 'drop-zone correct';
+        draggedItem.remove();
+    } else {
+        dropZone.className = 'drop-zone incorrect';
+        setTimeout(() => {
+            dropZone.className = 'drop-zone';
+        }, 800);
+    }
+}
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+function handleTouchStart(e) {
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    draggedItem = e.target;
+    e.target.style.opacity = '0.5';
+}
+
+function handleTouchMove(e) {
+    if (!draggedItem) return;
+    e.preventDefault();
+    
+    const touch = e.touches[0];
+    draggedItem.style.position = 'absolute';
+    draggedItem.style.left = touch.clientX - draggedItem.offsetWidth / 2 + 'px';
+    draggedItem.style.top = touch.clientY - draggedItem.offsetHeight / 2 + 'px';
+}
+
+function handleTouchEnd(e) {
+    if (!draggedItem) return;
+    
+    const touch = e.changedTouches[0];
+    const dropZone = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    if (dropZone && dropZone.classList.contains('drop-zone')) {
+        const draggedVerb = draggedItem.dataset.verb;
+        const targetVerb = dropZone.dataset.verb;
+        
+        if (draggedVerb === targetVerb) {
+            dropZone.textContent = draggedItem.textContent;
+            dropZone.className = 'drop-zone correct';
+            draggedItem.remove();
+        } else {
+            dropZone.className = 'drop-zone incorrect';
+            setTimeout(() => {
+                dropZone.className = 'drop-zone';
+            }, 800);
+        }
+    }
+    
+    draggedItem.style.opacity = '1';
+    draggedItem.style.position = 'static';
+    draggedItem = null;
+}
+
+function resetActivity() {
+    initializeDragDrop();
+}
+
+function showMeanings() {
+    const overlay = document.getElementById('meaningsOverlay');
+    overlay.style.display = 'flex';
+}
+
+function hideMeanings() {
+    const overlay = document.getElementById('meaningsOverlay');
+    overlay.style.display = 'none';
+}
+
+function normalizeString(str) {
+    return str.trim().toLowerCase().replace(/\s/g, '');
+}
+
+function removeAccents(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function createHintButton(hintText) {
+    const hintContainer = document.createElement('div');
+    hintContainer.className = 'hint-container';
+
+    const button = document.createElement('button');
+    button.className = 'hint-icon';
+    button.textContent = '?';
+    button.setAttribute('aria-label', 'Show hint');
+    button.setAttribute('type', 'button');
+
+    const hintContent = document.createElement('div');
+    hintContent.className = 'hint-content';
+    hintContent.setAttribute('role', 'tooltip');
+    hintContent.id = `hint-${Math.random().toString(36).substr(2, 9)}`;
+    hintContent.textContent = hintText;
+
+    button.setAttribute('aria-describedby', hintContent.id);
+    button.setAttribute('aria-expanded', 'false');
+
+    button.addEventListener('click', () => {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', !isExpanded);
+        if (!isExpanded) {
+            hintContent.style.visibility = 'visible';
+            hintContent.style.opacity = '1';
+        } else {
+            hintContent.style.visibility = 'hidden';
+            hintContent.style.opacity = '0';
+        }
+    });
+
+    hintContainer.appendChild(button);
+    hintContainer.appendChild(hintContent);
+
+    return hintContainer;
+}
+
+function checkAnswer(inputId, correctAnswer) {
+    const input = document.getElementById(inputId);
+    let userAnswer = input.value;
+    let normalizedUserAnswer = normalizeString(userAnswer);
+    let normalizedCorrectAnswer = normalizeString(correctAnswer);
+    let noAccentUserAnswer = removeAccents(normalizedUserAnswer);
+    let noAccentCorrectAnswer = removeAccents(normalizedCorrectAnswer);
+
+    const existingHint = input.parentNode.querySelector('.hint-container');
+    if (existingHint) {
+        existingHint.remove();
+    }
+
+    if (normalizedUserAnswer === normalizedCorrectAnswer) {
+        input.style.backgroundColor = '#e0ffe0';
+        input.setAttribute('aria-invalid', 'false');
+        setTimeout(() => {
+            input.style.backgroundColor = '';
+        }, 2000);
+        return;
+    }
+
+    let hintMessage = "";
+    if (noAccentUserAnswer === noAccentCorrectAnswer) {
+        hintMessage = "Your answer looks really close! What might be missing?";
+    } else if (!normalizedUserAnswer.startsWith("había")) {
+        hintMessage = 'Think about the structure of the Pretérito Pluscuamperfecto. What helping verb do we use?';
+    } else if (!normalizedUserAnswer.endsWith("ido") && 
+               (inputId.includes("perder") || inputId.includes("tener"))) {
+        hintMessage = 'Remember how past participles are formed. What ending do regular -er and -ir verbs typically use?';
+    } else if (normalizedUserAnswer.length < normalizedCorrectAnswer.length) {
+        hintMessage = 'Your answer seems incomplete. Are you including all the parts of the verb form?';
+    } else {
+        hintMessage = "Take a moment to review the verb conjugation. What might need adjustment?";
+    }
+
+    const hintButton = createHintButton(hintMessage);
+    input.parentNode.insertBefore(hintButton, input.nextSibling);
+
+    input.style.backgroundColor = '#ffe0e0';
+    input.setAttribute('aria-invalid', 'true');
+    setTimeout(() => {
+        input.style.backgroundColor = '';
+    }, 2000);
+
+    input.focus();
+}
+
+// Close overlay when clicking outside the content
+document.addEventListener('click', (e) => {
+    const overlay = document.getElementById('meaningsOverlay');
+    if (e.target === overlay) {
+        hideMeanings();
+    }
+});
+
+// Initialize everything when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeDragDrop();
+    
+    // Add keyboard event listeners for input fields
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const correctAnswer = {
+                    'perder-yo': 'había perdido',
+                    'tener-yo': 'había tenido'
+                }[input.id];
+                if (correctAnswer) {
+                    checkAnswer(input.id, correctAnswer);
+                }
+            }
+        });
+
+        input.addEventListener('focus', () => {
+            input.style.borderColor = 'var(--primary-color)';
+            input.style.outline = 'none';
+        });
+
+        input.addEventListener('blur', () => {
+            input.style.borderColor = '#ddd';
+        });
+    });
+    
+    // Add click handlers for accent buttons
+    document.querySelectorAll('.accent-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const accent = this.dataset.accent;
+            const input = this.closest('.verb-form-group').querySelector('input');
+            if (input) {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                input.value = input.value.substring(0, start) + accent + input.value.substring(end);
+                input.selectionStart = input.selectionEnd = start + 1;
+                input.focus();
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
