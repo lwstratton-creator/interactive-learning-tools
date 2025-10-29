@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Pretérito Pluscuamperfecto Practice</title>
+    <style>
+        :root {
+            --primary-color: #F2CB05;
+            --secondary-color: #00994D;
+            --accent-color: #C72C27;
+            --text-color: #333;
+            --background-color: #f9f9f9;
+            --alt-background-color: #fff;
+            --font-family: 'Arial', sans-serif;
+            --highlight-color: rgba(242, 203, 5, 0.2);
+            --ziggy-highlight: #FFDAB9;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        .interactive-activity-container {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+
+        .activity-section {
+            margin-bottom: 24px;
+            background-color: var(--alt-background-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .activity-header h2 {
+            color: var(--secondary-color);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-color);
+            line-height: 1.5;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-step {
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .progress-step.completed {
+            color: var(--success-color);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .exercise-container {
+            margin-bottom: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .exercise-item {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .exercise-prompt {
+            font-weight: 500;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .exercise-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            position: relative;
+        }
+
+        .exercise-input-group input {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+            width: 100%;
+        }
+
+        .exercise-input-group input.correct {
+            border-color: var(--success-color);
+            background-color: #e8f5e9;
+        }
+
+        .exercise-input-group input.incorrect {
+            border-color: var(--error-color);
+            background-color: #ffebee;
+        }
+
+        .accent-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .accent-button {
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .accent-button:hover {
+            background-color: #d0d0d0;
+        }
+
+        .check-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            align-self: flex-start;
+        }
+
+        .check-button:hover {
+            background-color: #006633;
+            opacity: 0.9;
+        }
+
+        .example-sentences {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            border-left: 3px solid;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .example-sentences.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-color: var(--success-color);
+            display: block;
+        }
+
+        .example-sentences.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border-color: var(--error-color);
+            display: block;
+        }
+
+        .grammar-box {
+            background-color: var(--highlight-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .grammar-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+
+        .grammar-box ul {
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
+        
+        .hint-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .hint-icon {
+            background: #ffa500;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            padding: 0;
+        }
+
+        .hint-content {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: max-content;
+            max-width: 250px;
+            z-index: 100;
+            top: 50%;
+            left: calc(100% + 12px);
+            transform: translateY(-50%);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+
+        .hint-container:focus-within .hint-content,
+        .hint-icon:hover + .hint-content,
+        .hint-icon:focus + .hint-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hint-content::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -6px;
+            transform: translateY(-50%);
+            border-width: 6px 6px 6px 0;
+            border-style: solid;
+            border-color: transparent #333 transparent transparent;
+        }
+
+        .verb-highlight {
+            background-color: #ffffcc;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .incorrect-highlight {
+            background-color: #ffdddd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-decoration: line-through;
+        }
+        
+        .ziggy-highlight-text {
+            background-color: var(--ziggy-highlight);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .mobile-instructions {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-instructions {
+                display: block;
+                font-size: .8rem;
+                margin-top: 10px;
+                color: #777;
+            }
+            
+            .exercise-input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .progress-indicator {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="interactive-activity-container">
+    <div class="activity-section">
+        <div class="activity-header">
+            <h2>🏋️‍♀️ Practice Drills</h2>
+        </div>
+
+        <div class="instructions">
+            <p>Complete the exercise by hand, then type the full sentence into Ziggy and ask if it is correct. Correct your written answer if needed!</p>
+        </div>
+
+        <div class="progress-indicator">
+            <div class="progress-step" id="step1">Exercise A</div>
+            <div class="progress-step" id="step2">Exercise B</div>
+        </div>
+
+        <div class="exercise-container">
+            <!-- Exercise A -->
+            <div class="exercise-item" id="exercise-a">
+                <div class="exercise-prompt">
+                    <strong>a.</strong> Complete the sentence using <strong>convertirse</strong>: <br>
+                    Antes de la dictadura, ellos <span class="verb-highlight">______</span> en funcionarios.
+                </div>
+                <div class="exercise-input-group">
+                    <input type="text" id="input-a" placeholder="Type your complete answer">
+                    <div class="accent-buttons">
+                        <button type="button" class="accent-button" onclick="insertAccent('input-a', 'á')">á</button>
+                        <button type="button" class="accent-button" onclick="insertAccent('input-a', 'í')">í</button>
+                        <button type="button" class="accent-button" onclick="insertAccent('input-a', 'ó')">ó</button>
+                    </div>
+                    <button class="check-button" onclick="checkAnswer('a')">Check Answer</button>
+                </div>
+                <div class="example-sentences" id="feedback-a"></div>
+            </div>
+
+            <!-- Exercise B -->
+            <div class="exercise-item" id="exercise-b">
+                <div class="exercise-prompt">
+                    <strong>b.</strong> Jason Rodriguez is a very famous Cuban American baseball player who is giving an interview in Spanish but he has forgotten how to conjugate the verbs. Help him correct his sentences.
+                </div>
+
+                <!-- Sentence 1 -->
+                <div>
+                    <p>i. Antes de jugar baseball, mis hermanos <span class="incorrect-highlight">han jugar</span> baloncesto en la escuela primaria.<br>→ Antes de jugar baseball, mis hermanos <span class="verb-highlight">____________</span> baloncesto en la escuela primaria.</p>
+                    <div class="exercise-input-group">
+                        <input type="text" id="input-b1" placeholder="Type your answer">
+                        <div class="accent-buttons">
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b1', 'í')">í</button>
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b1', 'á')">á</button>
+                        </div>
+                        <button class="check-button" onclick="checkAnswer('b1')">Check Answer</button>
+                    </div>
+                    <div class="example-sentences" id="feedback-b1"></div>
+                </div>
+
+                <!-- Sentence 2 -->
+                <div>
+                    <p>ii. Cuando ellos eran muy niño, ellos <span class="incorrect-highlight">ha viendo</span> baseball en la televisión y por eso les gustó.<br>→ Cuando ellos eran muy niño, ellos <span class="verb-highlight">______ ________</span> beisbol en la televisión y por eso les gustó.</p>
+                    <div class="exercise-input-group">
+                        <input type="text" id="input-b2" placeholder="Type your answer">
+                        <div class="accent-buttons">
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b2', 'í')">í</button>
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b2', 'á')">á</button>
+                        </div>
+                        <button class="check-button" onclick="checkAnswer('b2')">Check Answer</button>
+                    </div>
+                    <div class="example-sentences" id="feedback-b2"></div>
+                </div>
+
+                <!-- Sentence 3 -->
+                <div>
+                    <p>iii. Su ilusión más grande era jugar para los Yankees. Ellos los <span class="incorrect-highlight">he viendo</span> en la televisión también.<br>→ Su ilusión más grande era jugar para los Yankees. Ellos los <span class="verb-highlight">_______ ________</span> en la televisión también.</p>
+                    <div class="exercise-input-group">
+                        <input type="text" id="input-b3" placeholder="Type your answer">
+                        <div class="accent-buttons">
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b3', 'í')">í</button>
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b3', 'á')">á</button>
+                        </div>
+                        <button class="check-button" onclick="checkAnswer('b3')">Check Answer</button>
+                    </div>
+                    <div class="example-sentences" id="feedback-b3"></div>
+                </div>
+
+                <!-- Sentence 4 -->
+                <div>
+                    <p>iv. Entonces empezaron con el equipo del colegio. Ellos no <span class="incorrect-highlight">ha entrenar</span> nunca al beisbol. Y era malo.<br>→ Entonces empezaron con el equipo del colegio. Ellos no <span class="verb-highlight">_______ ____________</span> nunca al béisbol. Y era malo.</p>
+                    <div class="exercise-input-group">
+                        <input type="text" id="input-b4" placeholder="Type your answer">
+                        <div class="accent-buttons">
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b4', 'í')">í</button>
+                            <button type="button" class="accent-button" onclick="insertAccent('input-b4', 'á')">á</button>
+                        </div>
+                        <button class="check-button" onclick="checkAnswer('b4')">Check Answer</button>
+                    </div>
+                    <div class="example-sentences" id="feedback-b4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grammar-box">
+            <h3>💡 Remember:</h3>
+            <ul>
+                <li>Pretérito pluscuamperfecto formation for <strong>ellos/ellas</strong>: <strong>habían</strong> + past participle</li>
+                <li>For reflexive verbs, place <strong>se</strong> before <strong>habían</strong></li>
+                <li><strong>Antes de</strong> is used to express "before" in time sequences</li>
+                <li>Common past participles: <strong>convertido</strong> (convertir), <strong>jugado</strong> (jugar), <strong>visto</strong> (ver), <strong>entrenado</strong> (entrenar)</li>
+                <li>The pluscuamperfecto is used to express actions that had occurred before another past action</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; color: #777;">
+            🆘 Need Extra Help? Type <span class="ziggy-highlight-text">Ayuda, Ziggy!</span> and tell Ziggy what you don't understand.
+            <p class="mobile-instructions">💡 <strong>Tip:</strong> Use the accent buttons to add Spanish characters to your answers.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Helper Functions
+function insertAccent(inputId, accent) {
+    const input = document.getElementById(inputId);
+    const cursorPos = input.selectionStart;
+    const textBefore = input.value.substring(0, cursorPos);
+    const textAfter = input.value.substring(cursorPos);
+    
+    input.value = textBefore + accent + textAfter;
+    input.focus();
+    input.setSelectionRange(cursorPos + 1, cursorPos + 1);
+}
+
+function createHintButton(hintText) {
+    const hintContainer = document.createElement('div');
+    hintContainer.className = 'hint-container';
+
+    const button = document.createElement('button');
+    button.className = 'hint-icon';
+    button.textContent = '?';
+    button.setAttribute('aria-label', 'Show hint');
+    button.setAttribute('type', 'button');
+
+    const hintContent = document.createElement('div');
+    hintContent.className = 'hint-content';
+    hintContent.setAttribute('role', 'tooltip');
+    hintContent.id = `hint-${Math.random().toString(36).substr(2, 9)}`;
+    hintContent.textContent = hintText;
+
+    button.setAttribute('aria-describedby', hintContent.id);
+    button.setAttribute('aria-expanded', 'false');
+
+    button.addEventListener('click', () => {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', !isExpanded);
+        if (!isExpanded) {
+            hintContent.style.visibility = 'visible';
+            hintContent.style.opacity = '1';
+        } else {
+            hintContent.style.visibility = 'hidden';
+            hintContent.style.opacity = '0';
+        }
+    });
+
+    hintContainer.appendChild(button);
+    hintContainer.appendChild(hintContent);
+
+    return hintContainer;
+}
+
+function normalizeString(str) {
+    return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+// Check answers for each exercise
+function checkAnswer(exerciseId) {
+    let inputId = 'input-' + exerciseId;
+    let feedbackId = 'feedback-' + exerciseId;
+    
+    const input = document.getElementById(inputId);
+    const userAnswer = input.value.trim().toLowerCase();
+    const feedback = document.getElementById(feedbackId);
+    
+    // Remove existing hint if present
+    const existingHint = input.parentNode.querySelector('.hint-container');
+    if (existingHint) {
+        existingHint.remove();
+    }
+    
+    let correctAnswers = [];
+    let hintMessage = "";
+    
+    // Set correct answers and hint messages based on exercise
+    switch(exerciseId) {
+        case 'a':
+            correctAnswers = [
+                'antes de la dictadura, ellos se habían convertido en funcionarios',
+                'ellos se habían convertido en funcionarios antes de la dictadura'
+            ];
+            hintMessage = "Remember to use the reflexive pronoun 'se' + 'habían' + past participle 'convertido'";
+            break;
+        case 'b1':
+            correctAnswers = [
+                'habían jugado',
+                'mis hermanos habían jugado'
+            ];
+            hintMessage = "The past participle of 'jugar' is 'jugado' and you need to use 'habían' (not 'han') for pluscuamperfecto";
+            break;
+        case 'b2':
+            correctAnswers = [
+                'habían visto',
+                'ellos habían visto'
+            ];
+            hintMessage = "The past participle of 'ver' is 'visto' (not 'viendo' which is the gerund)";
+            break;
+        case 'b3':
+            correctAnswers = [
+                'habían visto',
+                'ellos habían visto',
+                'ellos los habían visto'
+            ];
+            hintMessage = "Similar to the previous sentence, you need 'habían' + 'visto'";
+            break;
+        case 'b4':
+            correctAnswers = [
+                'habían entrenado',
+                'ellos no habían entrenado'
+            ];
+            hintMessage = "The past participle of 'entrenar' is 'entrenado' and you need to use the negative form with 'no habían'";
+            break;
+    }
+    
+    // Check if answer is correct
+    let isCorrect = false;
+    for (let correctAnswer of correctAnswers) {
+        if (userAnswer.includes(normalizeString(correctAnswer))) {
+            isCorrect = true;
+            break;
+        }
+    }
+    
+    if (isCorrect) {
+        input.classList.add('correct');
+        input.classList.remove('incorrect');
+        
+        feedback.textContent = "¡Correcto! That's the right form of the pluscuamperfecto.";
+        feedback.classList.add('success');
+        feedback.classList.remove('error');
+        feedback.style.display = "block";
+        
+        // Update progress
+        if (exerciseId === 'a') {
+            document.getElementById('step1').classList.add('completed');
+        } else if (exerciseId.startsWith('b')) {
+            // Check if all B exercises are completed
+            const bInputs = ['input-b1', 'input-b2', 'input-b3', 'input-b4'];
+            const allBCompleted = bInputs.every(id => document.getElementById(id).classList.contains('correct'));
+            
+            if (allBCompleted) {
+                document.getElementById('step2').classList.add('completed');
+            }
+        }
+    } else {
+        input.classList.add('incorrect');
+        input.classList.remove('correct');
+        
+        // Generate more generic hint messages that don't give away the answers
+        switch(exerciseId) {
+            case 'a':
+                hintMessage = "Consider what happens with reflexive verbs in the pluscuamperfecto tense";
+                break;
+            case 'b1':
+                hintMessage = "Remember the correct auxiliary verb form for pluscuamperfecto";
+                break;
+            case 'b2':
+                hintMessage = "Check the correct form of the past participle for this verb";
+                break;
+            case 'b3':
+                hintMessage = "This requires the same form of the verb as in the previous sentence";
+                break;
+            case 'b4':
+                hintMessage = "Consider how to form the negative in pluscuamperfecto";
+                break;
+        }
+        
+        // Create and add hint button
+        const hintButton = createHintButton(hintMessage);
+        input.parentNode.insertBefore(hintButton, input.nextSibling);
+        
+        feedback.textContent = "Try again. Check the verb tense and form.";
+        feedback.classList.add('error');
+        feedback.classList.remove('success');
+        feedback.style.display = "block";
+    }
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Enter key support for all inputs
+    const inputIds = ['input-a', 'input-b1', 'input-b2', 'input-b3', 'input-b4'];
+    
+    inputIds.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        
+        // Add Enter key support
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                // Extract exercise ID from input ID
+                const exerciseId = inputId.replace('input-', '');
+                checkAnswer(exerciseId);
+            }
+        });
+        
+        // Clear styling on input change
+        input.addEventListener('input', function() {
+            this.classList.remove('correct', 'incorrect');
+            
+            // Get the feedback element
+            const exerciseId = inputId.replace('input-', '');
+            const feedbackId = 'feedback-' + exerciseId;
+            const feedback = document.getElementById(feedbackId);
+            if (feedback) {
+                feedback.style.display = 'none';
+            }
+            
+            // Remove existing hint if present
+            const existingHint = this.parentNode.querySelector('.hint-container');
+            if (existingHint) {
+                existingHint.remove();
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
