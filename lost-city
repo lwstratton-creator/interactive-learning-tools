@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Scoped styles with indigenous-inspired colors */
+    .ec-container * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    
+    .ec-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #f5f1e6; /* Light earthen background */
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid #9b7653; /* Earth brown border */
+      position: relative;
+    }
+    
+    /* Carousel styles */
+    .ec-carousel-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    
+    .ec-slide {
+      display: none;
+      width: 100%;
+    }
+    
+    .ec-slide.active {
+      display: block;
+    }
+    
+    .ec-slide-img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      max-height: 400px;
+    }
+    
+    .ec-slide-content {
+      padding: 16px;
+      background: #f5f1e6; /* Matching container background */
+    }
+    
+    .ec-slide-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #5d4037; /* Darker earthy color */
+      margin-bottom: 8px;
+    }
+    
+    .ec-slide-description {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #5d4037; /* Darker earthy color */
+      margin-bottom: 12px;
+    }
+    
+    .ec-slide-attribution {
+      font-size: 12px;
+      font-style: italic;
+      color: #777;
+      border-top: 1px dashed #9b7653; /* Matching dashed border from reflection */
+      padding-top: 8px;
+    }
+    
+    .ec-nav-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-130%);
+      background: rgba(198, 124, 59, 0.8); /* Terracotta with opacity */
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .ec-nav-button:hover {
+      background: rgba(198, 124, 59, 1); /* Solid terracotta on hover */
+    }
+    
+    .ec-prev {
+      left: 10px;
+    }
+    
+    .ec-next {
+      right: 10px;
+    }
+    
+    .ec-nav-button svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+    }
+    
+    .ec-indicators {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      background: #e8d2a0; /* Light ochre from reflection component */
+      border-top: 1px dashed #9b7653;
+    }
+    
+    .ec-indicator {
+      width: 10px;
+      height: 10px;
+      background: #9b7653; /* Earth brown */
+      border-radius: 50%;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    
+    .ec-indicator.active {
+      background: #c67c3b; /* Terracotta active indicator */
+    }
+    
+    /* Header styles from reflection component */
+    .ec-header {
+      background: #c67c3b; /* Solid terracotta color */
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    
+    /* Footer styles from reflection component */
+    .ec-footer {
+      padding: 15px;
+      text-align: center;
+      background: #e8d2a0; /* Light ochre */
+      border-top: 1px dashed #9b7653;
+      font-size: 14px;
+      color: #5d4037;
+    }
+    
+    /* Indigenous pattern design for footer */
+    .ec-indigenous-pattern {
+      height: 10px;
+      background: #8b4513; /* Solid earth brown color */
+      border-top: 2px solid #c67c3b;
+      border-bottom: 2px solid #c67c3b;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .ec-header {
+        font-size: 20px;
+      }
+      
+      .ec-slide-title {
+        font-size: 18px;
+      }
+      
+      .ec-slide-description {
+        font-size: 14px;
+      }
+      
+      .ec-slide-attribution {
+        font-size: 11px;
+      }
+      
+      .ec-nav-button {
+        width: 36px;
+        height: 36px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .ec-header {
+        font-size: 18px;
+        padding: 12px 15px;
+      }
+      
+      .ec-slide-title {
+        font-size: 16px;
+      }
+      
+      .ec-slide-description {
+        font-size: 13px;
+      }
+      
+      .ec-slide-attribution {
+        font-size: 10px;
+      }
+      
+      .ec-nav-button {
+        width: 32px;
+        height: 32px;
+      }
+      
+      .ec-nav-button svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ec-container">
+    <div class="ec-header">La Ciudad Perdida: Colombia's Lost City</div>
+    
+    <div class="ec-carousel-wrapper">
+      <!-- Slide 1 -->
+      <div class="ec-slide active">
+        <img class="ec-slide-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VISTAS_DESDE_LA_CIUDAD_PERDIDA_-_panoramio.jpg/640px-VISTAS_DESDE_LA_CIUDAD_PERDIDA_-_panoramio.jpg" alt="La Ciudad Perdida overview">
+        <div class="ec-slide-content">
+          <h2 class="ec-slide-title">Welcome to La Ciudad Perdida</h2>
+          <p class="ec-slide-description">An ancient city hidden deep in the Colombian jungle, built by the Tayrona civilization over 1,300 years ago!</p>
+          <p class="ec-slide-attribution">Image source: boskimano, VISTAS DESDE LA CIUDAD PERDIDA - panoramio.jpg, Creative Commons Attribution-Share Alike 3.0, via Wikimedia Commons.</p>
+        </div>
+      </div>
+      
+      <!-- Slide 2 -->
+      <div class="ec-slide">
+        <img class="ec-slide-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/View_of_Ciudad_Perdida.jpg/640px-View_of_Ciudad_Perdida.jpg" alt="Jungle location of La Ciudad Perdida">
+        <div class="ec-slide-content">
+          <h2 class="ec-slide-title">Location & Environment</h2>
+          <p class="ec-slide-description">As you explore: What do you notice about the location of this ancient city? Why do you think people built a city in such a remote jungle location?</p>
+          <p class="ec-slide-attribution">Image source: Dwayne Reilander, View of Ciudad Perdida.jpg, Creative Commons Attribution-Share Alike 4.0, via Wikimedia Commons.</p>
+        </div>
+      </div>
+      
+      <!-- Slide 3 -->
+      <div class="ec-slide">
+        <img class="ec-slide-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Wikitravel_Ciudad_perdida_archi.jpg/640px-Wikitravel_Ciudad_perdida_archi.jpg" alt="Stone terraces of La Ciudad Perdida">
+        <div class="ec-slide-content">
+          <h2 class="ec-slide-title">Impressive Architecture</h2>
+          <p class="ec-slide-description">Look at the stone terraces and structures. What impresses you most about this city that was built over 1,300 years ago without modern technology?</p>
+          <p class="ec-slide-attribution">Image source: Raphael Chay, Wikitravel Ciudad perdida archi.jpg, Creative Commons Attribution-Share Alike 3.0, via Wikimedia Commons.</p>
+        </div>
+      </div>
+      
+      <!-- Slide 4 -->
+      <div class="ec-slide">
+        <img class="ec-slide-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Stone_Stairway_to_Ciudad_Perdida.jpg/640px-Stone_Stairway_to_Ciudad_Perdida.jpg" alt="Ancient history of La Ciudad Perdida">
+        <div class="ec-slide-content">
+          <h2 class="ec-slide-title">Ancient History</h2>
+          <p class="ec-slide-description">The indigenous Tayrona people built this city in the 7th and 8th centuries - that's about 650 years OLDER than the famous Machu Picchu in Peru! Why do you think it remained "lost" to the outside world for so long?</p>
+          <p class="ec-slide-attribution">Image source: Dwayne Reilander, Stone Stairway to Ciudad Perdida.jpg, Creative Commons Attribution-Share Alike 4.0, via Wikimedia Commons.</p>
+        </div>
+      </div>
+      
+      <!-- Slide 5 -->
+      <div class="ec-slide">
+        <img class="ec-slide-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Turistas_en_Ciudad_Perdida.jpg/640px-Turistas_en_Ciudad_Perdida.jpg" alt="Hiking to La Ciudad Perdida">
+        <div class="ec-slide-content">
+          <h2 class="ec-slide-title">Journey to the Lost City</h2>
+          <p class="ec-slide-description">Notice the surrounding jungle and mountains. What kinds of challenges do you think visitors face when hiking to reach this remote site today?</p>
+          <p class="ec-slide-attribution">Image source: Wikimedia Commons</p>
+        </div>
+      </div>
+      
+      <!-- Navigation buttons -->
+      <button class="ec-nav-button ec-prev" aria-label="Previous slide">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button class="ec-nav-button ec-next" aria-label="Next slide">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Indicators -->
+    <div class="ec-indicators">
+      <div class="ec-indicator active" data-index="0"></div>
+      <div class="ec-indicator" data-index="1"></div>
+      <div class="ec-indicator" data-index="2"></div>
+      <div class="ec-indicator" data-index="3"></div>
+      <div class="ec-indicator" data-index="4"></div>
+    </div>
+    
+    <!-- Footer with indigenous pattern -->
+    <div class="ec-footer">Explore the wonders of La Ciudad Perdida and its rich history!</div>
+    <div class="ec-indigenous-pattern"></div>
+  </div>
+  
+  <script>
+    // Self-contained JavaScript
+    (function() {
+      const slides = document.querySelectorAll('.ec-slide');
+      const indicators = document.querySelectorAll('.ec-indicator');
+      const prevButton = document.querySelector('.ec-prev');
+      const nextButton = document.querySelector('.ec-next');
+      let currentSlide = 0;
+      
+      // Function to show a specific slide
+      function showSlide(index) {
+        // Remove active class from all slides and indicators
+        slides.forEach(function(slide) {
+          slide.classList.remove('active');
+        });
+        indicators.forEach(function(indicator) {
+          indicator.classList.remove('active');
+        });
+        
+        // Show the selected slide and indicator
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+        currentSlide = index;
+      }
+      
+      // Event listeners for navigation buttons
+      prevButton.addEventListener('click', function() {
+        let index = currentSlide - 1;
+        if (index < 0) index = slides.length - 1;
+        showSlide(index);
+      });
+      
+      nextButton.addEventListener('click', function() {
+        let index = currentSlide + 1;
+        if (index >= slides.length) index = 0;
+        showSlide(index);
+      });
+      
+      // Event listeners for indicators
+      indicators.forEach(function(indicator) {
+        indicator.addEventListener('click', function() {
+          const index = parseInt(indicator.getAttribute('data-index'));
+          showSlide(index);
+        });
+      });
+      
+      // Swipe functionality for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      const carousel = document.querySelector('.ec-carousel-wrapper');
+      
+      carousel.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+      https://github.com/lwstratton-creator/interactive-learning-tools/tree/main
+      carousel.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+      
+      function handleSwipe() {
+        // Detect direction
+        if (touchEndX < touchStartX - 50) {
+          // Swipe left - next slide
+          let index = currentSlide + 1;
+          if (index >= slides.length) index = 0;
+          showSlide(index);
+        }
+        
+        if (touchEndX > touchStartX + 50) {
+          // Swipe right - previous slide
+          let index = currentSlide - 1;
+          if (index < 0) index = slides.length - 1;
+          showSlide(index);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
