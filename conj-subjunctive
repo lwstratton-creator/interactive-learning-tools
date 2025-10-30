@@ -3,324 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Practice Drills: Dialogue Question Matching</title>
+    <title>Spanish Subjunctive Practice - Soccer Chat</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: transparent;
-            overflow-x: hidden;
-        }
-
-        .practice-module {
+        :root {
             --primary-color: #F2CB05;
             --secondary-color: #00994D;
             --accent-color: #C72C27;
             --text-color: #333;
             --background-color: #f9f9f9;
+            --alt-background-color: #fff;
+            --font-family: 'Arial', sans-serif;
+            --highlight-color: rgba(242, 203, 5, 0.2);
+            --ziggy-highlight: #FFDAB9;
             --success-color: #4CAF50;
             --error-color: #f44336;
-            --chat-bg: #e5ddd5;
-            --chat-ashley: #fff;
-            --chat-mayerli: #dcf8c6;
-            --shadow-soft: 0 4px 6px rgba(0,0,0,0.1);
-            
-            font-family: Arial, sans-serif;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 12px;
-            border: 3px solid var(--secondary-color);
-            border-radius: 15px;
-            background: white;
-            box-shadow: var(--shadow-soft);
+            --soccer-green: #2E8B57;
+            --soccer-white: #FFFFFF;
         }
 
-        .section-title {
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        .interactive-activity-container {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+
+        .activity-section {
+            margin-bottom: 24px;
+            background-color: var(--alt-background-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .activity-header h2 {
             color: var(--secondary-color);
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding-bottom: 6px;
-            border-bottom: 3px solid var(--secondary-color);
-            text-align: center;
+            margin: 0;
+            font-size: 1.5rem;
         }
 
         .instructions {
-            background: var(--background-color);
-            padding: 10px;
+            background-color: #f8f9fa;
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 0.9em;
-            line-height: 1.4;
+            margin-bottom: 20px;
             border-left: 4px solid var(--secondary-color);
-        }
-
-        .question-bank {
-            background: #f0fff8;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            font-size: 0.85em;
-            border: 2px dashed var(--secondary-color);
-        }
-
-        .question-bank h4 {
-            margin: 0 0 8px 0;
-            color: var(--secondary-color);
-            text-align: center;
-            font-size: 0.95em;
-        }
-
-        .question-bank ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
             line-height: 1.5;
         }
 
-        .question-bank li {
-            margin-bottom: 4px;
+        .typo-reference {
+            font-weight: bold;
+            color: var(--error-color);
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            position: relative;
         }
 
-        .dialogue-container {
-            margin-bottom: 15px;
-            padding: 12px;
+        .progress-indicator {
+            background-color: #f8f9fa;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .exercise-container {
+            margin-bottom: 24px;
+            padding: 16px;
             border-radius: 8px;
-            background: var(--chat-bg);
-            max-height: 500px;
-            overflow-y: auto;
-            border: 2px solid #ccc;
+            background-color: #f8f9fa;
         }
 
-        .chat-turn {
-            display: flex;
+        .chat-container {
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .chat-container::before {
+            content: "⚽";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 24px;
+            background-color: white;
+            padding: 5px;
+            border-radius: 50%;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .message {
             margin-bottom: 10px;
-            max-width: 85%;
+            display: flex;
+            align-items: flex-start;
         }
 
-        .chat-bubble {
-            padding: 8px 12px;
-            border-radius: 12px;
-            line-height: 1.5;
-            font-size: 0.9em;
+        .message-left {
+            justify-content: flex-start;
+        }
+
+        .message-header {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            margin-left: 15px;
+            color: #606060;
+            font-size: 0.9rem;
+        }
+
+        .bubble {
+            max-width: 85%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            font-size: 1rem;
+            line-height: 1.4;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .bubble-left {
+            background-color: white;
+            border-bottom-left-radius: 5px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        .chat-bubble .speaker {
+        .typo-text {
             font-weight: bold;
-            display: block;
-            margin-bottom: 4px;
-            font-size: 0.85em;
-        }
-
-        .ashley-turn {
-            justify-content: flex-start;
-            margin-right: auto;
-        }
-
-        .ashley-turn .chat-bubble {
-            background: var(--chat-ashley);
-            border: 1px solid #ddd;
-            border-bottom-left-radius: 4px;
-        }
-
-        .ashley-turn .speaker {
-            color: var(--accent-color);
-        }
-
-        .mayerli-turn {
-            justify-content: flex-end;
-            margin-left: auto;
-        }
-
-        .mayerli-turn .chat-bubble {
-            background: var(--chat-mayerli);
-            border: 1px solid #badaa4;
-            border-bottom-right-radius: 4px;
-        }
-
-        .mayerli-turn .speaker {
-            color: var(--secondary-color);
-            text-align: right;
-        }
-
-        .sentence-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 8px 0 10px 0;
-            padding: 8px;
-            border-radius: 6px;
-            background: #f5f5f5;
-        }
-
-        .dropdown-highlight {
-            display: inline-block;
-            margin: 0 4px;
-        }
-
-        .dropdown-highlight select {
-            padding: 6px 10px;
-            border: 2px solid #ccc;
-            border-radius: 6px;
-            font-size: 0.9em;
-            font-family: Arial, sans-serif;
-            background: white;
-            min-width: 200px;
-            max-width: 100%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-highlight select:focus {
-            border-color: var(--primary-color);
-            outline: 2px solid #4D90FE;
-            outline-offset: 1px;
-        }
-
-        .dropdown-highlight select.correct {
-            border-color: var(--success-color);
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .dropdown-highlight select.incorrect {
-            border-color: var(--error-color);
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .check-button {
-            background: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85em;
-            font-weight: bold;
-            margin-left: auto;
-        }
-
-        .check-button:hover {
-            background: #006633;
-            transform: translateY(-2px);
-        }
-
-        .hint-container {
+            color: var(--error-color);
+            text-decoration: underline;
+            text-decoration-style: wavy;
             position: relative;
-            display: inline-block;
-            margin-left: 8px;
         }
 
-        .hint-icon {
-            background: #ffa500;
-            color: white;
-            width: 22px;
-            height: 22px;
+        .correction-input {
+            display: inline-block;
+            width: 100px;
+            padding: 5px 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .correction-input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 153, 77, 0.2);
+        }
+
+        .correction-input.correct {
+            border-color: var(--success-color);
+            background-color: #e8f5e9;
+        }
+
+        .correction-input.incorrect {
+            border-color: var(--error-color);
+            background-color: #ffebee;
+        }
+
+        .soccer-field {
+            margin: 20px 0;
+            height: 10px;
+            background-color: var(--soccer-green);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .soccer-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--soccer-white);
             border-radius: 50%;
+            top: -5px;
+            left: 0;
+            transition: left 0.5s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-size: 13px;
-            border: none;
-            padding: 0;
-        }
-
-        .hint-content {
-            position: absolute;
-            background: #333;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            width: max-content;
-            max-width: 220px;
-            z-index: 100;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s, visibility 0.2s;
-        }
-
-        .hint-container:focus-within .hint-content,
-        .hint-icon:hover + .hint-content,
-        .hint-icon:focus + .hint-content {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .hint-content::before {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 6px 6px 0 6px;
-            border-style: solid;
-            border-color: #333 transparent transparent transparent;
-        }
-
-        .feedback {
-            width: 100%;
-            margin-top: 6px;
-            padding: 8px 10px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            border-left: 3px solid transparent;
-            display: none;
-        }
-
-        .feedback.show {
-            display: block;
-        }
-
-        .feedback.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-left-color: var(--success-color);
-        }
-
-        .feedback.error {
-            background: #ffebee;
-            color: #c62828;
-            border-left-color: var(--error-color);
+            font-size: 16px;
         }
 
         .check-all-button {
-            background: var(--secondary-color);
+            background-color: var(--secondary-color);
             color: white;
             border: none;
-            padding: 10px 24px;
-            border-radius: 6px;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 15px auto;
+            margin: 20px auto;
             display: block;
-            font-size: 1em;
-            font-weight: bold;
+            font-size: 1.1rem;
         }
 
         .check-all-button:hover {
-            background: #006633;
-            transform: translateY(-2px);
+            background-color: #006633;
+            opacity: 0.9;
+        }
+
+        .grammar-box {
+            background-color: var(--highlight-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .grammar-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+
+        .grammar-box ul {
+            margin-bottom: 0;
+            line-height: 1.6;
         }
 
         .celebration {
             text-align: center;
-            padding: 15px;
-            background: #f8f8f8;
+            padding: 20px;
+            background-color: #f8f8f8;
             border-radius: 8px;
-            margin-top: 15px;
+            margin-top: 20px;
             display: none;
         }
 
@@ -329,452 +267,269 @@
         }
 
         .celebration-emoji {
-            font-size: 2em;
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-10px); }
         }
 
         .floating-emoji {
             animation: float 2s ease-in-out infinite;
             display: inline-block;
-            margin: 0 5px;
         }
 
-        .grammar-box {
-            background: rgba(242, 203, 5, 0.15);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .grammar-box h3 {
-            color: var(--secondary-color);
-            margin-bottom: 8px;
-            font-size: 1em;
-        }
-
-        .grammar-box ul {
-            margin-left: 20px;
-            line-height: 1.5;
-            font-size: 0.9em;
-        }
-
-        .grammar-box li {
-            margin-bottom: 4px;
-        }
-
-        .ziggy-highlight {
-            background: #FFDAB9;
+        .ziggy-highlight-text {
+            background-color: var(--ziggy-highlight);
             padding: 2px 5px;
             border-radius: 3px;
             font-weight: bold;
         }
 
-        .help-text {
-            text-align: center;
-            margin-top: 15px;
-            color: #777;
-            font-size: 0.85em;
+        .mobile-instructions {
+            display: none;
         }
 
-        @media (max-width: 400px) {
-            .practice-module {
-                padding: 15px;
+        @media (max-width: 768px) {
+            .mobile-instructions {
+                display: block;
+                font-size: .8rem;
+                margin-top: 10px;
+                color: #777;
             }
-
-            .chat-turn {
-                max-width: 95%;
+            
+            .bubble {
+                max-width: 80%;
             }
-
-            .sentence-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .dropdown-highlight select {
-                width: 100%;
-                min-width: unset;
-            }
-
-            .check-button {
-                width: 100%;
-                margin-left: 0;
-            }
-
-            .hint-content {
-                position: fixed;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                max-width: 80vw;
-            }
-
-            .hint-content::before {
-                display: none;
+            
+            .correction-input {
+                width: 90px;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
 <body>
-<div class="practice-module">
-    <div class="section-title">🏋️‍♀️ Practice Drills</div>
+<div class="interactive-activity-container">
+    <div class="activity-section">
+        <div class="activity-header">
+            <h2>🏋️‍♀️ Practice Drills: El Subjuntivo</h2>
+        </div>
 
-    <div class="instructions">
-        <p><strong>Ashley está transcribiendo otra entrevista que le hizo a una mujer de Nicaragua, pero ha perdido algunas partes.</strong></p>
-        <p>Ayúdala a completarla eligiendo la pregunta correcta para cada espacio en la conversación.</p>
-    </div>
+        <div class="instructions">
+            <p>A couple of friends, who are absolute soccer fans, are chatting about the next soccer match they will watch together. There are some typos that make it hard to understand them.</p>
+            <ul>
+                <li>Correct the <span class="typo-reference">typos</span> using the correct subjunctive forms</li>
+                <li>Type your corrections in the input fields</li>
+                <li>Click "Check All Answers" when you're done</li>
+            </ul>
+        </div>
 
-    <div class="question-bank">
-        <h4>Preguntas Posibles:</h4>
-        <ul>
-            <li>¿Y cuánto tiempo llevan viviendo así?</li>
-            <li>¿Y qué hacen mientras tanto?</li>
-            <li>¿A qué te refieres con "vivir en el fin del mundo"?</li>
-            <li>¿Por qué?</li>
-            <li>¿Podrías explicarnos un poco más sobre el camión del gobierno?</li>
-        </ul>
-    </div>
-
-    <div class="dialogue-container">
-        <!-- Turn 1 -->
-        <div class="chat-turn ashley-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Ashley:</span>
-                <p>Muchas gracias por su tiempo. Quisiera que me explicara cómo es su situación aquí en Nicaragua?</p>
+        <div class="progress-indicator">
+            <div class="soccer-field">
+                <div class="soccer-ball" id="soccer-ball">⚽</div>
             </div>
         </div>
 
-        <!-- Turn 2 -->
-        <div class="chat-turn mayerli-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Mayerli:</span>
-                <p>Pues nuestra situación aquí es terrible. Es como vivir en el fin del mundo permanentemente.</p>
+        <div class="exercise-container">
+            <div class="chat-container">
+                <div class="message-header">Julieta 👧</div>
+                <div class="message message-left">
+                    <div class="bubble bubble-left">
+                        ¿Cómo crees que va a quedar el partido del viernes? ⚽
+                    </div>
+                </div>
+                
+                <div class="message-header">Isabel 👩</div>
+                <div class="message message-left">
+                    <div class="bubble bubble-left">
+                        Pues ojalá <span class="typo-text">gae</span> <input type="text" class="correction-input" id="correction-1" placeholder="Correct form"> el Junior 🔵⚪
+                    </div>
+                </div>
+                
+                <div class="message-header">Julieta 👧</div>
+                <div class="message message-left">
+                    <div class="bubble bubble-left">
+                        Yo solo quiero que Gerrard no <span class="typo-text">coete</span> <input type="text" class="correction-input" id="correction-2" placeholder="Correct form"> ninguna falta. 🙏
+                    </div>
+                </div>
+                
+                <div class="message-header">Isabel 👩</div>
+                <div class="message message-left">
+                    <div class="bubble bubble-left">
+                        Yo quiero que el Junior no <span class="typo-text">perda</span> <input type="text" class="correction-input" id="correction-3" placeholder="Correct form"> ni una sola oportunidad de hacer gol. ⚽🥅
+                    </div>
+                </div>
+                
+                <div class="message-header">Julieta 👧</div>
+                <div class="message message-left">
+                    <div class="bubble bubble-left">
+                        Pues que <span class="typo-text">gne</span> <input type="text" class="correction-input" id="correction-4" placeholder="Correct form"> el mejor. 🏆
+                    </div>
+                </div>
+            </div>
+
+            <button class="check-all-button" onclick="checkAllAnswers()">Check All Answers</button>
+
+            <div class="celebration" id="celebration">
+                <div class="celebration-emoji">
+                    <span class="floating-emoji">⚽</span>
+                    <span class="floating-emoji">🏆</span>
+                    <span class="floating-emoji">🎉</span>
+                </div>
+                <h2>¡GOOOOOL! 🥅</h2>
+                <p>You've scored with your knowledge of the subjunctive!</p>
+                <p>Now you can understand what these soccer fans are hoping for in their match.</p>
             </div>
         </div>
 
-        <!-- Question 1 -->
-        <div class="chat-turn ashley-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Ashley:</span>
-                <p>
-                    <span class="dropdown-highlight">
-                        <select id="select-1" data-answer="¿A qué te refieres con "vivir en el fin del mundo"?">
-                            <option value="">Selecciona una pregunta...</option>
-                            <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
-                            <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
-                            <option value="¿A qué te refieres con "vivir en el fin del mundo"?">¿A qué te refieres con "vivir en el fin del mundo"?</option>
-                            <option value="¿Por qué?">¿Por qué?</option>
-                            <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
-                        </select>
-                    </span>
-                </p>
-            </div>
-        </div>
-        <div class="sentence-controls" id="group-1">
-            <button class="check-button" onclick="checkAnswer('select-1')">Check</button>
-            <div class="feedback" id="feedback-1"></div>
+        <div class="grammar-box">
+            <h3>💡 Remember:</h3>
+            <ul>
+                <li><strong>Present subjunctive forms:</strong>
+                    <ul>
+                        <li>-ar verbs: change -ar to -e (hablar → hable)</li>
+                        <li>-er/-ir verbs: change to -a (comer → coma, vivir → viva)</li>
+                    </ul>
+                </li>
+                <li>Structure: Ojalá/Espero que + (no) + [verb in present subjunctive]</li>
+                <li>"Ojalá" comes from Arabic and expresses a strong wish or hope</li>
+                <li>Watch out for stem-changing verbs! They usually change in subjunctive too</li>
+            </ul>
         </div>
 
-        <!-- Turn 4 -->
-        <div class="chat-turn mayerli-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Mayerli:</span>
-                <p>Gracias a las inundaciones y las sequías extremas, ya no podemos cultivar la tierra. Entonces lo único que tenemos para comer es lo que nos da el Gobierno: harina de trigo y leche en polvo.</p>
-            </div>
+        <div style="text-align: center; margin-top: 20px; color: #777;">
+            🆘 Need Extra Help? Type <span class="ziggy-highlight-text">Ayuda, Ziggy!</span> and tell Ziggy what you don't understand.
+            <p class="mobile-instructions">💡 <strong>Tip:</strong> Type the correct subjunctive form in each blank.</p>
         </div>
-
-        <!-- Question 2 -->
-        <div class="chat-turn ashley-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Ashley:</span>
-                <p>
-                    <span class="dropdown-highlight">
-                        <select id="select-2" data-answer="¿Y cuánto tiempo llevan viviendo así?">
-                            <option value="">Selecciona una pregunta...</option>
-                            <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
-                            <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
-                            <option value="¿A qué te refieres con "vivir en el fin del mundo"?">¿A qué te refieres con "vivir en el fin del mundo"?</option>
-                            <option value="¿Por qué?">¿Por qué?</option>
-                            <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
-                        </select>
-                    </span>
-                </p>
-            </div>
-        </div>
-        <div class="sentence-controls" id="group-2">
-            <button class="check-button" onclick="checkAnswer('select-2')">Check</button>
-            <div class="feedback" id="feedback-2"></div>
-        </div>
-
-        <!-- Turn 6 -->
-        <div class="chat-turn mayerli-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Mayerli:</span>
-                <p>Ya llevamos dos años y medio así…nos estamos enfermando ya…</p>
-            </div>
-        </div>
-
-        <!-- Question 3 -->
-        <div class="chat-turn ashley-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Ashley:</span>
-                <p>
-                    <span class="dropdown-highlight">
-                        <select id="select-3" data-answer="¿Por qué?">
-                            <option value="">Selecciona una pregunta...</option>
-                            <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
-                            <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
-                            <option value="¿A qué te refieres con "vivir en el fin del mundo"?">¿A qué te refieres con "vivir en el fin del mundo"?</option>
-                            <option value="¿Por qué?">¿Por qué?</option>
-                            <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
-                        </select>
-                    </span>
-                </p>
-            </div>
-        </div>
-        <div class="sentence-controls" id="group-3">
-            <button class="check-button" onclick="checkAnswer('select-3')">Check</button>
-            <div class="feedback" id="feedback-3"></div>
-        </div>
-
-        <!-- Turn 8 -->
-        <div class="chat-turn mayerli-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Mayerli:</span>
-                <p>Porque antes podíamos comer plátano, frijoles, arroz, frutas y ahora no hay nada… solo harina y leche en polvo…cada vez que el camión del gobierno trae, claro.</p>
-            </div>
-        </div>
-
-        <!-- Question 4 -->
-        <div class="chat-turn ashley-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Ashley:</span>
-                <p>
-                    <span class="dropdown-highlight">
-                        <select id="select-4" data-answer="¿Podrías explicarnos un poco más sobre el camión del gobierno?">
-                            <option value="">Selecciona una pregunta...</option>
-                            <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
-                            <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
-                            <option value="¿A qué te refieres con "vivir en el fin del mundo"?">¿A qué te refieres con "vivir en el fin del mundo"?</option>
-                            <option value="¿Por qué?">¿Por qué?</option>
-                            <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
-                        </select>
-                    </span>
-                </p>
-            </div>
-        </div>
-        <div class="sentence-controls" id="group-4">
-            <button class="check-button" onclick="checkAnswer('select-4')">Check</button>
-            <div class="feedback" id="feedback-4"></div>
-        </div>
-
-        <!-- Turn 10 -->
-        <div class="chat-turn mayerli-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Mayerli:</span>
-                <p>Cada 15 días viene el camión del Gobierno a traer 1 kilo de harina de trigo y un kilo de leche en polvo para cada familia. A veces viene cada mes…</p>
-            </div>
-        </div>
-
-        <!-- Question 5 -->
-        <div class="chat-turn ashley-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Ashley:</span>
-                <p>
-                    <span class="dropdown-highlight">
-                        <select id="select-5" data-answer="¿Y qué hacen mientras tanto?">
-                            <option value="">Selecciona una pregunta...</option>
-                            <option value="¿Y cuánto tiempo llevan viviendo así?">¿Y cuánto tiempo llevan viviendo así?</option>
-                            <option value="¿Y qué hacen mientras tanto?">¿Y qué hacen mientras tanto?</option>
-                            <option value="¿A qué te refieres con "vivir en el fin del mundo"?">¿A qué te refieres con "vivir en el fin del mundo"?</option>
-                            <option value="¿Por qué?">¿Por qué?</option>
-                            <option value="¿Podrías explicarnos un poco más sobre el camión del gobierno?">¿Podrías explicarnos un poco más sobre el camión del gobierno?</option>
-                        </select>
-                    </span>
-                </p>
-            </div>
-        </div>
-        <div class="sentence-controls" id="group-5">
-            <button class="check-button" onclick="checkAnswer('select-5')">Check</button>
-            <div class="feedback" id="feedback-5"></div>
-        </div>
-
-        <!-- Turn 12 -->
-        <div class="chat-turn mayerli-turn">
-            <div class="chat-bubble">
-                <span class="speaker">Mayerli:</span>
-                <p>Pues racionar la comida como si fuera el fin del mundo…</p>
-            </div>
-        </div>
-    </div>
-
-    <button class="check-all-button" onclick="checkAllAnswers()">Check All Answers</button>
-
-    <div class="celebration" id="celebration">
-        <div class="celebration-emoji">
-            <span class="floating-emoji">🏞️</span>
-            <span class="floating-emoji">💬</span>
-            <span class="floating-emoji">✅</span>
-        </div>
-        <h2 style="margin: 10px 0; font-size: 1.3em;">Excellent work!</h2>
-        <p style="font-size: 0.9em;">You've successfully completed the dialogue!</p>
-    </div>
-
-    <div class="grammar-box">
-        <h3>💡 Remember:</h3>
-        <ul>
-            <li><span class="ziggy-highlight">Podrías</span> is the conditional form of poder (could you).</li>
-            <li>Use <span class="ziggy-highlight">qué</span> for "what" and <span class="ziggy-highlight">por qué</span> for "why".</li>
-            <li><span class="ziggy-highlight">Cuánto</span> can be used for time (how long) or quantity (how much).</li>
-            <li>Pay attention to verb conjugations needed in questions!</li>
-        </ul>
-    </div>
-
-    <div class="help-text">
-        🆘 Need Extra Help? Type <span class="ziggy-highlight">Ayuda, Ziggy!</span> and tell Ziggy what you don't understand.
     </div>
 </div>
 
 <script>
-const completedExercises = { 1: false, 2: false, 3: false, 4: false, 5: false };
-const totalExercises = 5;
+// Track completed exercises
+let completedExercises = {
+    1: false,
+    2: false,
+    3: false,
+    4: false
+};
 
-function normalizeString(str) {
-    if (typeof str !== 'string') return '';
-    return str.trim().toLowerCase().replace(/[""]/g, '"').replace(/\s+/g, ' ');
-}
+// Correct answers
+const correctAnswers = {
+    'correction-1': 'gane',
+    'correction-2': 'cometa',
+    'correction-3': 'pierda',
+    'correction-4': 'gane'
+};
 
-function clearFeedback(groupId) {
-    const feedbackArea = document.getElementById(`feedback-${groupId.split('-')[1]}`);
-    if (feedbackArea) {
-        feedbackArea.innerHTML = '';
-        feedbackArea.className = 'feedback';
-    }
-    const controlGroup = document.getElementById(groupId);
-    if (controlGroup) {
-        const existingHint = controlGroup.querySelector('.hint-container');
-        if (existingHint) existingHint.remove();
-    }
-}
-
-function addFeedbackMessage(groupId, message, type) {
-    const feedbackArea = document.getElementById(`feedback-${groupId.split('-')[1]}`);
-    if (feedbackArea) {
-        feedbackArea.textContent = message;
-        feedbackArea.classList.add(type, 'show');
-    }
-}
-
-function addHint(groupId, hintText) {
-    const controlGroup = document.getElementById(groupId);
-    if (!controlGroup || controlGroup.querySelector('.hint-container')) return;
-
-    const hintContainer = document.createElement('span');
-    hintContainer.className = 'hint-container';
-    const button = document.createElement('button');
-    button.className = 'hint-icon';
-    button.textContent = '?';
-    button.setAttribute('type', 'button');
-    button.setAttribute('aria-label', 'Show hint');
+function updateProgress() {
+    // Count completed exercises
+    const completedCount = Object.values(completedExercises).filter(value => value).length;
+    const totalExercises = Object.keys(completedExercises).length;
     
-    const hintContent = document.createElement('div');
-    hintContent.className = 'hint-content';
-    hintContent.setAttribute('role', 'tooltip');
-    hintContent.textContent = hintText;
+    // Calculate percentage
+    const percentage = (completedCount / totalExercises) * 100;
     
-    hintContainer.appendChild(button);
-    hintContainer.appendChild(hintContent);
-    
-    const checkButton = controlGroup.querySelector('.check-button');
-    if (checkButton) {
-        checkButton.parentNode.insertBefore(hintContainer, checkButton);
-    }
+    // Move the soccer ball
+    document.getElementById('soccer-ball').style.left = `${percentage}%`;
 }
 
-function checkAnswer(selectId) {
-    const select = document.getElementById(selectId);
-    if (!select) return;
-
-    const exerciseNumber = selectId.split('-')[1];
-    const groupId = `group-${exerciseNumber}`;
-    clearFeedback(groupId);
-
-    const selectedValue = select.value;
-    const correctAnswer = select.getAttribute('data-answer');
-
-    select.classList.remove('correct', 'incorrect');
-
-    if (!selectedValue) {
-        addHint(groupId, 'Which question makes the most sense following the previous statement?');
-        select.focus();
-        select.classList.add('incorrect');
-        addFeedbackMessage(groupId, 'Please select a question.', 'error');
-        return;
+function checkAnswer(inputId) {
+    const input = document.getElementById(inputId);
+    const userAnswer = input.value.trim().toLowerCase();
+    const correctAnswer = correctAnswers[inputId].toLowerCase();
+    const questionNumber = inputId.split('-')[1];
+    
+    if (!userAnswer) {
+        return false; // Skip empty inputs
     }
-
-    if (normalizeString(selectedValue) === normalizeString(correctAnswer)) {
-        select.classList.add('correct');
-        completedExercises[exerciseNumber] = true;
-        addFeedbackMessage(groupId, 'Correct!', 'success');
-        checkAllCompleted();
+    
+    const isCorrect = userAnswer === correctAnswer;
+    
+    if (isCorrect) {
+        input.classList.add('correct');
+        input.classList.remove('incorrect');
+        completedExercises[questionNumber] = true;
+        updateProgress();
+        return true;
     } else {
-        select.classList.add('incorrect');
-        completedExercises[exerciseNumber] = false;
-        let hintText = "Read Mayerli's previous statement again. What would be a logical follow-up question?";
-        
-        if (exerciseNumber === '1') hintText = "Mayerli said something dramatic ('vivir en el fin del mundo'). What would you ask to understand that better?";
-        else if (exerciseNumber === '2') hintText = "Mayerli explained why things are bad. What's a logical question about the duration?";
-        else if (exerciseNumber === '3') hintText = "Mayerli mentioned getting sick. What simple question asks for the reason?";
-        else if (exerciseNumber === '4') hintText = "Mayerli mentioned the government truck. What question asks for more details about it?";
-        else if (exerciseNumber === '5') hintText = "Mayerli described infrequent food delivery. What question asks about managing between deliveries?";
-
-        addFeedbackMessage(groupId, "That question doesn't quite fit the flow here.", 'error');
-        addHint(groupId, hintText);
-    }
-}
-
-function checkAllCompleted() {
-    const allDone = Object.values(completedExercises).every(value => value === true);
-    const celebrationDiv = document.getElementById('celebration');
-    if (celebrationDiv) {
-        celebrationDiv.classList.toggle('show', allDone);
+        input.classList.add('incorrect');
+        input.classList.remove('correct');
+        setTimeout(() => {
+            input.classList.remove('incorrect');
+        }, 2000);
+        return false;
     }
 }
 
 function checkAllAnswers() {
-    for (let i = 1; i <= totalExercises; i++) {
-        checkAnswer(`select-${i}`);
+    // Check if any inputs are empty
+    let allFilled = true;
+    let allCorrect = true;
+    let correctCount = 0;
+    
+    for (let i = 1; i <= 4; i++) {
+        const inputId = `correction-${i}`;
+        const input = document.getElementById(inputId);
+        
+        if (!input.value.trim()) {
+            allFilled = false;
+            input.classList.add('incorrect');
+            setTimeout(() => {
+                input.classList.remove('incorrect');
+            }, 2000);
+            continue;
+        }
+        
+        const isCorrect = checkAnswer(inputId);
+        if (isCorrect) {
+            correctCount++;
+        } else {
+            allCorrect = false;
+        }
     }
-    checkAllCompleted();
+    
+    if (!allFilled) {
+        alert("Please fill in all the correction fields.");
+        return;
+    }
+    
+    if (allCorrect) {
+        document.getElementById('celebration').classList.add('show');
+    } else {
+        alert(`You have ${correctCount} out of 4 correct answers. Try again!`);
+    }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const selects = document.querySelectorAll('.dropdown-highlight select');
-
-    selects.forEach(select => {
-        select.addEventListener('change', function() {
-            this.classList.remove('correct', 'incorrect');
-            const groupId = `group-${this.id.split('-')[1]}`;
-            clearFeedback(groupId);
-
-            const currentExerciseNumber = this.id.split('-')[1];
-            if (completedExercises[currentExerciseNumber]) {
-                completedExercises[currentExerciseNumber] = false;
-            }
-            
-            const celebrationDiv = document.getElementById('celebration');
-            if (celebrationDiv) celebrationDiv.classList.remove('show');
-        });
-
-        select.addEventListener('keydown', function(e) {
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize progress visual
+    updateProgress();
+    
+    // Add Enter key support
+    document.querySelectorAll('.correction-input').forEach(input => {
+        input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                checkAnswer(this.id);
+                checkAnswer(input.id);
+                
+                // Find next input to focus
+                const currentId = parseInt(input.id.split('-')[1]);
+                if (currentId < 4) {
+                    const nextInput = document.getElementById(`correction-${currentId + 1}`);
+                    if (nextInput) nextInput.focus();
+                } else {
+                    // If last input, check all answers
+                    checkAllAnswers();
+                }
             }
+        });
+        
+        // Clear incorrect styling when typing
+        input.addEventListener('input', () => {
+            input.classList.remove('incorrect');
         });
     });
 });
