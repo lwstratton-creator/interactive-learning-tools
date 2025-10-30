@@ -147,6 +147,11 @@
             transition: all 0.3s;
         }
 
+        .verb-drop-zone.over {
+            background: #e3f2fd;
+            border-color: var(--secondary-color);
+        }
+
         .verb-drop-zone.correct {
             background: #e0ffe0;
             border-color: var(--success-color);
@@ -225,6 +230,11 @@
             font-size: 0.85em;
         }
 
+        .phrase-drop-zone.over {
+            background: #e3f2fd;
+            border-color: var(--secondary-color);
+        }
+
         .phrase-drop-zone.correct {
             background: #e0ffe0;
             border-color: var(--success-color);
@@ -246,46 +256,6 @@
 
         .hidden {
             display: none;
-        }
-
-        /* Ziggy Section */
-        .ziggy-section {
-            margin-top: 15px;
-            padding: 12px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .ziggy-section h3 {
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-            font-size: 1em;
-        }
-
-        .ziggy-highlight-text {
-            background: var(--ziggy-highlight);
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-weight: bold;
-            color: #444;
-        }
-
-        .ziggy-section ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .ziggy-section li {
-            margin-bottom: 8px;
-            background: #f8f8f8;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 0.85em;
-        }
-
-        .ziggy-section li::before {
-            content: "🤖";
-            margin-right: 6px;
         }
 
         /* Buttons */
@@ -458,13 +428,13 @@
         <p class="instruction-text">Drag and drop each Spanish concept/verb keyword to its corresponding emoji.</p>
         <div class="verb-drag-drop-container" id="verbDragDropArea"></div>
         <div class="button-group">
-            <button class="action-button reset-button" onclick="resetActivity()">Reset Review</button>
+            <button class="action-button reset-button" onclick="resetVerbActivity()">Reset Review</button>
             <button class="action-button meanings-button" onclick="showMeanings()">Show Meanings</button>
         </div>
     </div>
 
     <!-- Meanings Overlay -->
-    <div id="meaningsOverlay" class="meanings-overlay">
+    <div id="meaningsOverlay" class="meanings-overlay" onclick="if(event.target===this) hideMeanings()">
         <div class="meanings-content">
             <h3>Keyword Meanings</h3>
             <ul class="meanings-list" id="verbMeaningsList"></ul>
@@ -496,377 +466,248 @@
             <h4 style="font-size: 0.95em; margin-bottom: 8px;">Drag the Spanish phrases to the correct English meaning:</h4>
         </div>
         <div id="phraseResetBtnContainer" class="hidden button-group">
-            <button class="action-button reset-button" onclick="resetActivity()">Reset Matching</button>
+            <button class="action-button reset-button" onclick="resetPhraseActivity()">Reset Matching</button>
         </div>
     </div>
 
 </div>
 
 <script>
-    const reviewVerbs = [
-        { verb: 'Qué', emoji: '🔍', meaning: 'What' },
-        { verb: 'Por qué', emoji: '❓', meaning: 'Why' },
-        { verb: 'Cuánto', emoji: '💰', meaning: 'How much/many' },
-        { verb: 'Podrías', emoji: '🙏', meaning: 'Could you (informal)' },
-        { verb: 'Explicarlo', emoji: '📢', meaning: 'Explain it' },
-        { verb: 'Referirse', emoji: '👉', meaning: 'To refer to' }
-    ];
+const reviewVerbs = [
+    { verb: 'Qué', emoji: '🔍', meaning: 'What' },
+    { verb: 'Por qué', emoji: '❓', meaning: 'Why' },
+    { verb: 'Cuánto', emoji: '💰', meaning: 'How much/many' },
+    { verb: 'Podrías', emoji: '🙏', meaning: 'Could you (informal)' },
+    { verb: 'Explicarlo', emoji: '📢', meaning: 'Explain it' },
+    { verb: 'Referirse', emoji: '👉', meaning: 'To refer to' }
+];
 
-    const phrases = [
-        { spanish: '¿Podrías explicarlo de otra manera?', english: 'Could you explain it differently?', id: 'phrase1' },
-        { spanish: '¿A qué te refieres con "inseguridad alimentaria"?', english: 'What do you mean by "food insecurity"?', id: 'phrase2' },
-        { spanish: '¿Por qué sucedió eso?', english: 'Why did that happen?', id: 'phrase3' },
-        { spanish: '¿Cuánto tiempo duró esa situación?', english: 'How long did that situation last?', id: 'phrase4' },
-        { spanish: '¿Qué hizo el gobierno para ayudar?', english: 'What did the government do to help?', id: 'phrase5' }
-    ];
+const phrases = [
+    { spanish: '¿Podrías explicarlo de otra manera?', english: 'Could you explain it differently?', id: 'phrase1' },
+    { spanish: '¿A qué te refieres con "inseguridad alimentaria"?', english: 'What do you mean by "food insecurity"?', id: 'phrase2' },
+    { spanish: '¿Por qué sucedió eso?', english: 'Why did that happen?', id: 'phrase3' },
+    { spanish: '¿Cuánto tiempo duró esa situación?', english: 'How long did that situation last?', id: 'phrase4' },
+    { spanish: '¿Qué hizo el gobierno para ayudar?', english: 'What did the government do to help?', id: 'phrase5' }
+];
 
-    let draggedItem = null;
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let currentDroppable = null;
+let draggedItem = null;
+let touchStartX = 0;
+let touchStartY = 0;
+let currentDroppable = null;
 
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// VERB DRAG AND DROP
+function initializeVerbDragDrop() {
     const verbDragDropArea = document.getElementById('verbDragDropArea');
-    const phraseDragDropArea = document.getElementById('phraseDragDropArea');
-    const phraseReadingArea = document.getElementById('phraseReadingArea');
-    const phraseResetBtnContainer = document.getElementById('phraseResetBtnContainer');
-    const meaningsOverlay = document.getElementById('meaningsOverlay');
-    const verbMeaningsList = document.getElementById('verbMeaningsList');
+    verbDragDropArea.innerHTML = '';
+    
+    const shuffledVerbsForDrag = shuffleArray(reviewVerbs);
+    const shuffledVerbsForDrop = shuffleArray(reviewVerbs);
 
-    function shuffleArray(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
+    const dropZonesContainer = document.createElement('div');
+    dropZonesContainer.className = 'verb-drop-zones-container';
+    const dragItemsContainer = document.createElement('div');
+    dragItemsContainer.className = 'verb-drag-items-container';
 
-    function initializeVerbDragDrop() {
-        verbDragDropArea.innerHTML = '';
-        if (!reviewVerbs || reviewVerbs.length === 0) return;
+    verbDragDropArea.appendChild(dropZonesContainer);
+    verbDragDropArea.appendChild(dragItemsContainer);
 
-        const shuffledVerbsForDrag = shuffleArray(reviewVerbs);
-        const shuffledVerbsForDrop = shuffleArray(reviewVerbs);
-
-        const dropZonesContainer = document.createElement('div');
-        dropZonesContainer.className = 'verb-drop-zones-container';
-        const dragItemsContainer = document.createElement('div');
-        dragItemsContainer.className = 'verb-drag-items-container';
-
-        verbDragDropArea.appendChild(dropZonesContainer);
-        verbDragDropArea.appendChild(dragItemsContainer);
-
-        shuffledVerbsForDrop.forEach(item => {
-            const dropZone = document.createElement('div');
-            dropZone.className = 'verb-drop-zone';
-            dropZone.dataset.verb = item.verb;
-            dropZone.textContent = item.emoji;
-            dropZonesContainer.appendChild(dropZone);
-            addDropZoneListeners(dropZone);
-        });
-
-        shuffledVerbsForDrag.forEach(item => {
-            const dragItem = document.createElement('div');
-            dragItem.className = 'verb-drag-item';
-            dragItem.draggable = true;
-            dragItem.textContent = item.verb;
-            dragItem.dataset.verb = item.verb;
-            dragItemsContainer.appendChild(dragItem);
-            addDragItemListeners(dragItem);
-        });
-    }
-
-    function initializePhraseDragDrop() {
-        phraseDragDropArea.innerHTML = '';
-        if (!phrases || phrases.length === 0) return;
-
-        const shuffledPhrasesForDrag = shuffleArray(phrases);
-        const shuffledPhrasesForDrop = shuffleArray(phrases);
-
-        const dropZonesContainer = document.createElement('div');
-        dropZonesContainer.className = 'phrase-drop-zones-container';
-        const dragItemsContainer = document.createElement('div');
-        dragItemsContainer.className = 'phrase-drag-items-container';
-
-        phraseDragDropArea.appendChild(dropZonesContainer);
-        phraseDragDropArea.appendChild(dragItemsContainer);
-
-        shuffledPhrasesForDrop.forEach(item => {
-            const dropZone = document.createElement('div');
-            dropZone.className = 'phrase-drop-zone';
-            dropZone.dataset.id = item.id;
-            dropZone.innerHTML = `<span class="english-phrase">${item.english}</span>`;
-            dropZonesContainer.appendChild(dropZone);
-            addDropZoneListeners(dropZone);
-        });
-
-        shuffledPhrasesForDrag.forEach(item => {
-            const dragItem = document.createElement('div');
-            dragItem.className = 'phrase-drag-item';
-            dragItem.draggable = true;
-            dragItem.textContent = item.spanish;
-            dragItem.dataset.id = item.id;
-            dragItemsContainer.appendChild(dragItem);
-            addDragItemListeners(dragItem);
-        });
-    }
-
-    function startMatching() {
-        phraseReadingArea.classList.add('hidden');
-        phraseDragDropArea.classList.remove('hidden');
-        phraseResetBtnContainer.classList.remove('hidden');
-        initializePhraseDragDrop();
-    }
-
-    function addDragItemListeners(item) {
-        item.addEventListener('dragstart', handleDragStart);
-        item.addEventListener('dragend', handleDragEnd);
-        item.addEventListener('touchstart', handleTouchStart, { passive: false });
-        item.addEventListener('touchmove', handleTouchMove, { passive: false });
-        item.addEventListener('touchend', handleTouchEnd);
-    }
-
-    function addDropZoneListeners(zone) {
-        zone.addEventListener('dragover', handleDragOver);
-        zone.addEventListener('dragleave', handleDragLeave);
-        zone.addEventListener('drop', handleDrop);
-    }
-
-    function handleDragStart(e) {
-        draggedItem = e.target;
-        let dataValue = '';
-        if (e.target.classList.contains('verb-drag-item')) {
-            dataValue = e.target.dataset.verb;
-        } else if (e.target.classList.contains('phrase-drag-item')) {
-            dataValue = e.target.dataset.id;
-        }
-        if (e.dataTransfer) {
-            e.dataTransfer.setData('text/plain', dataValue);
-            e.dataTransfer.effectAllowed = 'move';
-        }
-        setTimeout(() => { if (draggedItem) draggedItem.style.opacity = '0.5' }, 0);
-    }
-
-    function handleDragEnd(e) {
-        if (draggedItem) {
-            draggedItem.style.opacity = '1';
-        }
-        draggedItem = null;
-        document.querySelectorAll('.verb-drop-zone.over, .phrase-drop-zone.over').forEach(zone => zone.classList.remove('over'));
-    }
-
-    function handleDragOver(e) {
-        e.preventDefault();
-        if (e.dataTransfer) {
-            e.dataTransfer.dropEffect = 'move';
-        }
-        const dropZone = e.target.closest('.verb-drop-zone, .phrase-drop-zone');
-        if (dropZone && draggedItem) {
-            const isVerbItem = draggedItem.classList.contains('verb-drag-item');
-            const isVerbZone = dropZone.classList.contains('verb-drop-zone');
-            const isPhraseItem = draggedItem.classList.contains('phrase-drag-item');
-            const isPhraseZone = dropZone.classList.contains('phrase-drop-zone');
-
-            if ((isVerbItem && isVerbZone && !dropZone.classList.contains('filled')) ||
-                (isPhraseItem && isPhraseZone && !dropZone.querySelector('.dropped-phrase'))) {
+    shuffledVerbsForDrop.forEach(item => {
+        const dropZone = document.createElement('div');
+        dropZone.className = 'verb-drop-zone';
+        dropZone.dataset.verb = item.verb;
+        dropZone.textContent = item.emoji;
+        dropZonesContainer.appendChild(dropZone);
+        
+        // Drop zone events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!dropZone.classList.contains('filled')) {
                 dropZone.classList.add('over');
             }
-        }
-    }
-
-    function handleDragLeave(e) {
-        e.target.closest('.verb-drop-zone, .phrase-drop-zone')?.classList.remove('over');
-    }
-
-    function handleDrop(e) {
-        e.preventDefault();
-        const dropZone = e.target.closest('.verb-drop-zone, .phrase-drop-zone');
-        if (!dropZone || !draggedItem) return;
-
-        dropZone.classList.remove('over');
-
-        if (dropZone.classList.contains('verb-drop-zone') && draggedItem.classList.contains('verb-drag-item')) {
-            if (dropZone.classList.contains('filled')) return;
-            const draggedVerb = draggedItem.dataset.verb;
-            const targetVerb = dropZone.dataset.verb;
-
-            if (draggedVerb === targetVerb) {
-                dropZone.textContent = draggedItem.textContent;
-                dropZone.className = 'verb-drop-zone correct filled';
-                draggedItem.remove();
-            } else {
-                dropZone.classList.add('incorrect');
-                setTimeout(() => dropZone.classList.remove('incorrect'), 800);
-            }
-        } else if (dropZone.classList.contains('phrase-drop-zone') && draggedItem.classList.contains('phrase-drag-item')) {
-            if (dropZone.querySelector('.dropped-phrase')) return;
-            const draggedId = draggedItem.dataset.id;
-            const targetId = dropZone.dataset.id;
-
-            if (draggedId === targetId) {
-                const droppedPhraseSpan = document.createElement('span');
-                droppedPhraseSpan.className = 'dropped-phrase';
-                droppedPhraseSpan.textContent = draggedItem.textContent;
-                dropZone.appendChild(droppedPhraseSpan);
-                dropZone.classList.add('correct');
-                draggedItem.remove();
-            } else {
-                dropZone.classList.add('incorrect');
-                setTimeout(() => dropZone.classList.remove('incorrect'), 800);
-            }
-        }
-    }
-
-    function handleTouchStart(e) {
-        if (e.target.classList.contains('verb-drag-item') || e.target.classList.contains('phrase-drag-item')) {
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('over');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            draggedItem = e.target;
-            const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-
-            const clone = draggedItem.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.zIndex = '1000';
-            clone.style.opacity = '0.7';
-            clone.style.pointerEvents = 'none';
-            document.body.appendChild(clone);
-            draggedItem.clone = clone;
-
-            clone.style.left = touch.clientX - clone.offsetWidth / 2 + 'px';
-            clone.style.top = touch.clientY - clone.offsetHeight / 2 + 'px';
-
-            draggedItem.style.opacity = '0.5';
-        }
-    }
-
-    function handleTouchMove(e) {
-        if (!draggedItem || !draggedItem.clone) return;
-        e.preventDefault();
-
-        const touch = e.touches[0];
-        const clone = draggedItem.clone;
-
-        clone.style.left = touch.clientX - clone.offsetWidth / 2 + 'px';
-        clone.style.top = touch.clientY - clone.offsetHeight / 2 + 'px';
-
-        clone.style.display = 'none';
-        const elementUnderFinger = document.elementFromPoint(touch.clientX, touch.clientY);
-        clone.style.display = '';
-
-        const droppableBelow = elementUnderFinger?.closest('.verb-drop-zone, .phrase-drop-zone');
-
-        if (currentDroppable !== droppableBelow) {
-            currentDroppable?.classList.remove('over');
-            if (droppableBelow && draggedItem) {
-                const isVerbItem = draggedItem.classList.contains('verb-drag-item');
-                const isVerbZone = droppableBelow.classList.contains('verb-drop-zone');
-                const isPhraseItem = draggedItem.classList.contains('phrase-drag-item');
-                const isPhraseZone = droppableBelow.classList.contains('phrase-drop-zone');
-
-                if (isVerbItem && isVerbZone && !droppableBelow.classList.contains('filled')) {
-                    droppableBelow.classList.add('over');
-                } else if (isPhraseItem && isPhraseZone && !droppableBelow.querySelector('.dropped-phrase')) {
-                    droppableBelow.classList.add('over');
-                } else {
-                    droppableBelow = null;
-                }
+            dropZone.classList.remove('over');
+            
+            if (dropZone.classList.contains('filled')) return;
+            
+            const draggedVerb = e.dataTransfer.getData('text/plain');
+            const targetVerb = dropZone.dataset.verb;
+            
+            if (draggedVerb === targetVerb) {
+                dropZone.textContent = draggedVerb;
+                dropZone.classList.add('correct', 'filled');
+                // Remove the dragged item
+                const draggedElement = document.querySelector(`.verb-drag-item[data-verb="${draggedVerb}"]`);
+                if (draggedElement) draggedElement.remove();
             } else {
-                droppableBelow = null;
-            }
-            currentDroppable = droppableBelow;
-        }
-    }
-
-    function handleTouchEnd(e) {
-        if (!draggedItem || !draggedItem.clone) return;
-
-        const clone = draggedItem.clone;
-        document.body.removeChild(clone);
-        draggedItem.clone = null;
-        draggedItem.style.opacity = '1';
-
-        const dropZone = currentDroppable;
-        currentDroppable?.classList.remove('over');
-
-        if (dropZone) {
-            if (dropZone.classList.contains('verb-drop-zone') && draggedItem.classList.contains('verb-drag-item')) {
-                if (!dropZone.classList.contains('filled')) {
-                    const draggedVerb = draggedItem.dataset.verb;
-                    const targetVerb = dropZone.dataset.verb;
-                    if (draggedVerb === targetVerb) {
-                        dropZone.textContent = draggedItem.textContent;
-                        dropZone.className = 'verb-drop-zone correct filled';
-                        draggedItem.remove();
-                    } else {
-                        dropZone.classList.add('incorrect');
-                        setTimeout(() => { dropZone.classList.remove('incorrect'); }, 800);
-                    }
-                }
-            } else if (dropZone.classList.contains('phrase-drop-zone') && draggedItem.classList.contains('phrase-drag-item')) {
-                if (!dropZone.querySelector('.dropped-phrase')) {
-                    const draggedId = draggedItem.dataset.id;
-                    const targetId = dropZone.dataset.id;
-                    if (draggedId === targetId) {
-                        const droppedPhraseSpan = document.createElement('span');
-                        droppedPhraseSpan.className = 'dropped-phrase';
-                        droppedPhraseSpan.textContent = draggedItem.textContent;
-                        dropZone.appendChild(droppedPhraseSpan);
-                        dropZone.classList.add('correct');
-                        draggedItem.remove();
-                    } else {
-                        dropZone.classList.add('incorrect');
-                        setTimeout(() => { dropZone.classList.remove('incorrect'); }, 800);
-                    }
-                }
-            }
-        }
-
-        draggedItem = null;
-        currentDroppable = null;
-    }
-
-    function resetActivity() {
-        initializeVerbDragDrop();
-        phraseDragDropArea.innerHTML = '';
-        phraseDragDropArea.classList.add('hidden');
-        phraseReadingArea.classList.remove('hidden');
-        phraseResetBtnContainer.classList.add('hidden');
-    }
-
-    function populateVerbMeanings() {
-        verbMeaningsList.innerHTML = '';
-        reviewVerbs.forEach(item => {
-            const li = document.createElement('li');
-            li.innerHTML = `<span class="emoji">${item.emoji}</span> ${item.verb} - ${item.meaning}`;
-            verbMeaningsList.appendChild(li);
-        });
-    }
-
-    function showMeanings() {
-        populateVerbMeanings();
-        meaningsOverlay.classList.add('show');
-    }
-
-    function hideMeanings() {
-        meaningsOverlay.classList.remove('show');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeVerbDragDrop();
-
-        meaningsOverlay.addEventListener('click', (e) => {
-            if (e.target === meaningsOverlay) {
-                hideMeanings();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && meaningsOverlay.classList.contains('show')) {
-                hideMeanings();
+                dropZone.classList.add('incorrect');
+                setTimeout(() => dropZone.classList.remove('incorrect'), 800);
             }
         });
     });
+
+    shuffledVerbsForDrag.forEach(item => {
+        const dragItem = document.createElement('div');
+        dragItem.className = 'verb-drag-item';
+        dragItem.draggable = true;
+        dragItem.textContent = item.verb;
+        dragItem.dataset.verb = item.verb;
+        dragItemsContainer.appendChild(dragItem);
+        
+        // Drag item events
+        dragItem.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', item.verb);
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => dragItem.style.opacity = '0.5', 0);
+        });
+        
+        dragItem.addEventListener('dragend', () => {
+            dragItem.style.opacity = '1';
+        });
+    });
+}
+
+// PHRASE DRAG AND DROP
+function initializePhraseDragDrop() {
+    const phraseDragDropArea = document.getElementById('phraseDragDropArea');
+    phraseDragDropArea.innerHTML = '<h4 style="font-size: 0.95em; margin-bottom: 8px;">Drag the Spanish phrases to the correct English meaning:</h4>';
+    
+    const shuffledPhrasesForDrag = shuffleArray(phrases);
+    const shuffledPhrasesForDrop = shuffleArray(phrases);
+
+    const dropZonesContainer = document.createElement('div');
+    dropZonesContainer.className = 'phrase-drop-zones-container';
+    const dragItemsContainer = document.createElement('div');
+    dragItemsContainer.className = 'phrase-drag-items-container';
+
+    phraseDragDropArea.appendChild(dropZonesContainer);
+    phraseDragDropArea.appendChild(dragItemsContainer);
+
+    shuffledPhrasesForDrop.forEach(item => {
+        const dropZone = document.createElement('div');
+        dropZone.className = 'phrase-drop-zone';
+        dropZone.dataset.id = item.id;
+        dropZone.innerHTML = `<span class="english-phrase">${item.english}</span>`;
+        dropZonesContainer.appendChild(dropZone);
+        
+        // Drop zone events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!dropZone.querySelector('.dropped-phrase')) {
+                dropZone.classList.add('over');
+            }
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('over');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('over');
+            
+            if (dropZone.querySelector('.dropped-phrase')) return;
+            
+            const draggedId = e.dataTransfer.getData('text/plain');
+            const targetId = dropZone.dataset.id;
+            
+            if (draggedId === targetId) {
+                const draggedElement = document.querySelector(`.phrase-drag-item[data-id="${draggedId}"]`);
+                const droppedPhraseSpan = document.createElement('span');
+                droppedPhraseSpan.className = 'dropped-phrase';
+                droppedPhraseSpan.textContent = draggedElement.textContent;
+                dropZone.appendChild(droppedPhraseSpan);
+                dropZone.classList.add('correct');
+                draggedElement.remove();
+            } else {
+                dropZone.classList.add('incorrect');
+                setTimeout(() => dropZone.classList.remove('incorrect'), 800);
+            }
+        });
+    });
+
+    shuffledPhrasesForDrag.forEach(item => {
+        const dragItem = document.createElement('div');
+        dragItem.className = 'phrase-drag-item';
+        dragItem.draggable = true;
+        dragItem.textContent = item.spanish;
+        dragItem.dataset.id = item.id;
+        dragItemsContainer.appendChild(dragItem);
+        
+        // Drag item events
+        dragItem.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', item.id);
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => dragItem.style.opacity = '0.5', 0);
+        });
+        
+        dragItem.addEventListener('dragend', () => {
+            dragItem.style.opacity = '1';
+        });
+    });
+}
+
+function startMatching() {
+    document.getElementById('phraseReadingArea').classList.add('hidden');
+    document.getElementById('phraseDragDropArea').classList.remove('hidden');
+    document.getElementById('phraseResetBtnContainer').classList.remove('hidden');
+    initializePhraseDragDrop();
+}
+
+function resetVerbActivity() {
+    initializeVerbDragDrop();
+}
+
+function resetPhraseActivity() {
+    document.getElementById('phraseDragDropArea').classList.add('hidden');
+    document.getElementById('phraseReadingArea').classList.remove('hidden');
+    document.getElementById('phraseResetBtnContainer').classList.add('hidden');
+}
+
+function populateVerbMeanings() {
+    const verbMeaningsList = document.getElementById('verbMeaningsList');
+    verbMeaningsList.innerHTML = '';
+    reviewVerbs.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="emoji">${item.emoji}</span> ${item.verb} - ${item.meaning}`;
+        verbMeaningsList.appendChild(li);
+    });
+}
+
+function showMeanings() {
+    populateVerbMeanings();
+    document.getElementById('meaningsOverlay').classList.add('show');
+}
+
+function hideMeanings() {
+    document.getElementById('meaningsOverlay').classList.remove('show');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initializeVerbDragDrop();
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('meaningsOverlay').classList.contains('show')) {
+            hideMeanings();
+        }
+    });
+});
 </script>
 </body>
 </html>
