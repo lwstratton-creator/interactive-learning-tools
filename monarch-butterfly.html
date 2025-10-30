@@ -3,89 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monarch Butterfly Migration Game</title>
+  <title>Monarch Butterfly Migration</title>
   <style>
-    /* Scoped styles with unique class prefix to prevent leaking */
-    .monarch-game-container * {
+    * {
       box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
     }
     
-    .monarch-game-container {
-      max-width: 600px;
+    body {
+      font-family: Arial, sans-serif;
+      background: transparent;
+      padding: 8px;
+    }
+    
+    .container {
+      max-width: 100%;
       margin: 0 auto;
-      padding: 16px;
-      background-color: #fff8e1;
+      padding: 12px;
+      background: #fff8e1;
+      border: 3px solid #ff9800;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
     }
     
-    .monarch-game-title {
+    .title {
       color: #e65100;
       text-align: center;
-      margin-bottom: 16px;
-      font-size: 1.5rem;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+      font-weight: bold;
     }
     
-    .monarch-game-subtitle {
+    .subtitle {
       color: #555;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 1rem;
+      margin-bottom: 12px;
+      font-size: 0.85em;
     }
     
-    .monarch-progress-bar-container {
+    .progress-container {
       width: 100%;
-      background-color: #e0e0e0;
-      height: 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      background: #e0e0e0;
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
       overflow: hidden;
     }
     
-    .monarch-progress-bar {
+    .progress-bar {
       height: 100%;
-      background-color: #ff9800;
-      border-radius: 8px;
-      transition: width 0.5s ease-in-out;
+      background: #ff9800;
+      border-radius: 6px;
+      width: 0%;
+      transition: width 0.5s ease;
     }
     
-    .monarch-map-container {
+    .map {
       position: relative;
-      height: 140px;
-      background-color: #e3f2fd;
+      height: 120px;
+      background: #e3f2fd;
       border-radius: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
     }
     
-    .monarch-map-bg {
+    .location-emoji {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      font-size: 24px;
-      z-index: 1;
-    }
-    
-    .monarch-location-emoji {
-      position: absolute;
-      top: 15%;
+      top: 10px;
       transform: translateX(-50%);
-      font-size: 24px;
+      font-size: 20px;
       z-index: 5;
     }
     
-    .monarch-path-line {
+    .path-line {
       position: absolute;
-      height: 4px;
-      background-color: #bdbdbd;
+      height: 3px;
+      background: #bdbdbd;
       top: 50%;
       left: 10%;
       right: 10%;
@@ -93,158 +87,174 @@
       z-index: 2;
     }
     
-    .monarch-path-point {
+    .path-point {
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       border: 2px solid #757575;
-      background-color: #e0e0e0;
+      background: #e0e0e0;
       top: 50%;
       transform: translate(-50%, -50%);
       z-index: 3;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
     }
     
-    .monarch-path-point.active {
-      background-color: #ff9800;
+    .path-point.active {
+      background: #ff9800;
       border-color: #e65100;
     }
     
-    .monarch-butterfly {
+    .butterfly {
       position: absolute;
-      font-size: 24px;
+      font-size: 22px;
       top: 50%;
       transform: translate(-50%, -50%);
       z-index: 4;
-      transition: left 0.5s ease-in-out;
-      animation: butterfly-float 2s infinite alternate ease-in-out;
+      transition: left 0.5s ease;
+      animation: float 2s infinite alternate ease-in-out;
     }
     
-    @keyframes butterfly-float {
-      from {
-        transform: translate(-50%, -45%);
-      }
-      to {
-        transform: translate(-50%, -55%);
-      }
+    @keyframes float {
+      from { transform: translate(-50%, -45%); }
+      to { transform: translate(-50%, -55%); }
     }
     
-    .monarch-location-card {
-      background-color: white;
-      padding: 16px;
+    .card {
+      background: white;
+      padding: 12px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-    }
-    
-    .monarch-location-title {
-      color: #e65100;
-      margin-top: 0;
       margin-bottom: 12px;
-      font-size: 1.1rem;
     }
     
-    .monarch-fact-container {
-      min-height: 60px;
+    .card-title {
+      color: #e65100;
+      margin-bottom: 8px;
+      font-size: 0.95em;
+      font-weight: bold;
     }
     
-    /* Butterfly animation for fact reveal */
-    @keyframes butterfly-fly-away-1 {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(60px, -70px) rotate(25deg);
-        opacity: 0;
-      }
+    .fact-container {
+      min-height: 50px;
+      position: relative;
     }
     
-    @keyframes butterfly-fly-away-2 {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(-60px, -60px) rotate(-20deg);
-        opacity: 0;
-      }
+    .fact-text {
+      font-size: 0.85em;
+      line-height: 1.4;
+      transition: opacity 0.5s;
     }
     
-    @keyframes butterfly-fly-away-3 {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(80px, -40px) rotate(15deg);
-        opacity: 0;
-      }
+    @keyframes fly1 {
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate(60px, -60px) rotate(25deg); opacity: 0; }
     }
     
-    @keyframes butterfly-fly-away-4 {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(-80px, -30px) rotate(-15deg);
-        opacity: 0;
-      }
+    @keyframes fly2 {
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate(-60px, -55px) rotate(-20deg); opacity: 0; }
     }
     
-    .monarch-flying-butterfly {
+    @keyframes fly3 {
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate(70px, -40px) rotate(15deg); opacity: 0; }
+    }
+    
+    @keyframes fly4 {
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate(-70px, -35px) rotate(-15deg); opacity: 0; }
+    }
+    
+    .flying-butterfly {
       position: absolute;
-      font-size: 16px;
+      font-size: 14px;
       animation-duration: 1.5s;
       animation-fill-mode: forwards;
     }
     
-    .monarch-flying-butterfly-1 {
-      animation-name: butterfly-fly-away-1;
+    .flying-butterfly-1 { animation-name: fly1; }
+    .flying-butterfly-2 { animation-name: fly2; }
+    .flying-butterfly-3 { animation-name: fly3; }
+    .flying-butterfly-4 { animation-name: fly4; }
+    
+    .controls {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
     }
     
-    .monarch-flying-butterfly-2 {
-      animation-name: butterfly-fly-away-2;
+    .btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85em;
+      transition: all 0.2s;
     }
     
-    .monarch-flying-butterfly-3 {
-      animation-name: butterfly-fly-away-3;
+    .btn-prev {
+      background: #64b5f6;
+      color: white;
     }
     
-    .monarch-flying-butterfly-4 {
-      animation-name: butterfly-fly-away-4;
+    .btn-prev:hover:not(:disabled) {
+      background: #42a5f5;
     }
     
-    /* Grand finale butterfly animation */
-    @keyframes butterfly-finale-fly {
-      0% {
-        transform: translate(0, 100vh) rotate(0deg);
-        opacity: 0;
-      }
-      20% {
-        opacity: 1;
-      }
-      80% {
-        opacity: 1;
-      }
-      100% {
-        transform: translate(var(--final-x), var(--final-y)) rotate(var(--final-rotate));
-        opacity: 0;
-      }
+    .btn-prev:disabled {
+      background: #e0e0e0;
+      color: #9e9e9e;
+      cursor: not-allowed;
     }
     
-    .monarch-finale-butterfly {
+    .btn-next {
+      background: #ff9800;
+      color: white;
+    }
+    
+    .btn-next:hover {
+      background: #f57c00;
+    }
+    
+    .btn-reset {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .btn-reset:hover {
+      background: #43a047;
+    }
+    
+    .completion {
+      margin-top: 12px;
+      padding: 12px;
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      border-radius: 8px;
+      text-align: center;
+      color: #2e7d32;
+      font-size: 0.9em;
+      display: none;
+    }
+    
+    @keyframes finale {
+      0% { transform: translate(0, 100vh) rotate(0deg); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translate(var(--final-x), var(--final-y)) rotate(var(--final-rotate)); opacity: 0; }
+    }
+    
+    .finale-butterfly {
       position: absolute;
-      font-size: var(--size, 16px);
-      color: var(--color, inherit);
-      animation: butterfly-finale-fly 5s forwards;
+      font-size: var(--size, 14px);
+      animation: finale 5s forwards;
       z-index: 10;
       pointer-events: none;
     }
     
-    .monarch-celebration-overlay {
+    .celebration-overlay {
       position: fixed;
       top: 0;
       left: 0;
@@ -252,389 +262,196 @@
       height: 100%;
       z-index: 9;
       pointer-events: none;
+      display: none;
     }
     
-    .monarch-fact-button {
-      width: 100%;
-      padding: 12px;
-      background-color: #ffecb3;
-      border: 1px solid #ffd54f;
-      color: #ff6f00;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s;
-    }
-    
-    .monarch-fact-button:hover {
-      background-color: #ffe082;
-    }
-    
-    .monarch-controls {
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    .monarch-button {
-      padding: 10px 16px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s;
-    }
-    
-    .monarch-button-prev {
-      background-color: #64b5f6;
-      color: white;
-    }
-    
-    .monarch-button-prev:hover:not(:disabled) {
-      background-color: #42a5f5;
-    }
-    
-    .monarch-button-prev:disabled {
-      background-color: #e0e0e0;
-      color: #9e9e9e;
-      cursor: not-allowed;
-    }
-    
-    .monarch-button-next {
-      background-color: #ff9800;
-      color: white;
-    }
-    
-    .monarch-button-next:hover {
-      background-color: #f57c00;
-    }
-    
-    .monarch-button-reset {
-      background-color: #4caf50;
-      color: white;
-    }
-    
-    .monarch-button-reset:hover {
-      background-color: #43a047;
-    }
-    
-    .monarch-completion {
-      margin-top: 20px;
-      padding: 16px;
-      background-color: #e8f5e9;
-      border: 1px solid #a5d6a7;
-      border-radius: 8px;
-      text-align: center;
-      color: #2e7d32;
-    }
-    
-    /* Responsive adjustments */
     @media (max-width: 480px) {
-      .monarch-game-container {
-        padding: 12px;
-      }
-      
-      .monarch-game-title {
-        font-size: 1.2rem;
-      }
-      
-      .monarch-map-container {
-        height: 150px;
-      }
-      
-      .monarch-button {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-      }
-      
-      .monarch-location-emoji {
-        font-size: 20px;
-      }
-      
-      .monarch-butterfly {
-        font-size: 20px;
-      }
+      .container { padding: 10px; }
+      .title { font-size: 1em; }
+      .subtitle { font-size: 0.8em; }
+      .map { height: 110px; }
+      .location-emoji { font-size: 18px; }
+      .butterfly { font-size: 20px; }
+      .btn { padding: 7px 12px; font-size: 0.8em; }
     }
   </style>
 </head>
 <body>
-  <div class="monarch-game-container">
-    <h2 class="monarch-game-title">Monarch Butterfly Migration Journey</h2>
-    <p class="monarch-game-subtitle">Follow the monarch butterfly on its amazing migration journey from Canada to Mexico!</p>
+  <div class="container">
+    <h2 class="title">🦋 Monarch Butterfly Migration</h2>
+    <p class="subtitle">Follow the butterfly from Canada to Mexico!</p>
     
-    <!-- Progress bar -->
-    <div class="monarch-progress-bar-container">
-      <div class="monarch-progress-bar" id="progressBar"></div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
     </div>
     
-    <!-- Map visualization with emojis -->
-    <div class="monarch-map-container">
-      <div class="monarch-map-bg">
-        <span class="monarch-location-emoji" style="left: 10%">🇨🇦</span>
-        <span class="monarch-location-emoji" style="left: 30%">🌲</span>
-        <span class="monarch-location-emoji" style="left: 50%">🏙️</span>
-        <span class="monarch-location-emoji" style="left: 70%">🌵</span>
-        <span class="monarch-location-emoji" style="left: 90%">🇲🇽</span>
-      </div>
-      <div class="monarch-path-line"></div>
+    <div class="map">
+      <span class="location-emoji" style="left: 10%">🇨🇦</span>
+      <span class="location-emoji" style="left: 30%">🌲</span>
+      <span class="location-emoji" style="left: 50%">🏙️</span>
+      <span class="location-emoji" style="left: 70%">🌵</span>
+      <span class="location-emoji" style="left: 90%">🇲🇽</span>
       
-      <!-- Path points -->
-      <div class="monarch-path-point" id="point0" style="left: 10%"></div>
-      <div class="monarch-path-point" id="point1" style="left: 30%"></div>
-      <div class="monarch-path-point" id="point2" style="left: 50%"></div>
-      <div class="monarch-path-point" id="point3" style="left: 70%"></div>
-      <div class="monarch-path-point" id="point4" style="left: 90%"></div>
+      <div class="path-line"></div>
       
-      <!-- Butterfly marker -->
-      <div class="monarch-butterfly" id="butterfly">🦋</div>
+      <div class="path-point" id="point0" style="left: 10%"></div>
+      <div class="path-point" id="point1" style="left: 30%"></div>
+      <div class="path-point" id="point2" style="left: 50%"></div>
+      <div class="path-point" id="point3" style="left: 70%"></div>
+      <div class="path-point" id="point4" style="left: 90%"></div>
+      
+      <div class="butterfly" id="butterfly">🦋</div>
     </div>
     
-    <!-- Location and fact card -->
-    <div class="monarch-location-card">
-      <h3 class="monarch-location-title" id="locationTitle">Starting Point: Canada</h3>
-      <div class="monarch-fact-container" id="factContainer">
-        <p class="monarch-fact" id="factText">Monarchs can travel around 2,800 miles (4,500 km) during migration!</p>
+    <div class="card">
+      <h3 class="card-title" id="locationTitle">Starting Point: Canada</h3>
+      <div class="fact-container" id="factContainer">
+        <p class="fact-text" id="factText">Monarchs can travel around 2,800 miles during migration!</p>
       </div>
     </div>
     
-    <!-- Game controls -->
-    <div class="monarch-controls">
-      <button class="monarch-button monarch-button-prev" id="prevButton" disabled>← Previous Stop</button>
-      <button class="monarch-button monarch-button-next" id="nextButton">Next Stop →</button>
+    <div class="controls">
+      <button class="btn btn-prev" id="prevBtn" disabled>← Previous</button>
+      <button class="btn btn-next" id="nextBtn">Next Stop →</button>
     </div>
     
-    <div id="completionMessage" style="display: none;" class="monarch-completion">
-      <p><strong>Congratulations! 🎉</strong></p>
-      <p>You've completed the monarch butterfly's migration journey from Canada to Mexico!</p>
+    <div id="completion" class="completion">
+      <p><strong>🎉 Congratulations! 🎉</strong></p>
+      <p>You completed the migration journey!</p>
     </div>
     
-    <!-- Celebration overlay for finale -->
-    <div id="celebrationOverlay" class="monarch-celebration-overlay" style="display: none;"></div>
+    <div id="celebrationOverlay" class="celebration-overlay"></div>
   </div>
   
   <script>
     (function() {
-      // Isolate our script with an IIFE to prevent leaking to global scope
-      const migrationPath = [
-        {
-          location: "Starting Point: Canada",
-          fact: "Monarchs can travel around 2,800 miles (4,500 km) during migration!"
-        },
-        {
-          location: "United States - Northern States",
-          fact: "They travel in groups of millions of butterflies"
-        },
-        {
-          location: "United States - Central States",
-          fact: "They fly south in the fall and return north in the spring"
-        },
-        {
-          location: "United States - Southern States",
-          fact: "Some Monarchs can live up to 8 months during migration (much longer than the usual 4-5 weeks)"
-        },
-        {
-          location: "Destination: Mexico",
-          fact: "They always return to the same forests in Mexico year after year"
-        }
+      const path = [
+        { location: "Starting Point: Canada", fact: "Monarchs can travel around 2,800 miles during migration!" },
+        { location: "United States - Northern States", fact: "They travel in groups of millions of butterflies" },
+        { location: "United States - Central States", fact: "They fly south in fall and return north in spring" },
+        { location: "United States - Southern States", fact: "Some can live up to 8 months during migration!" },
+        { location: "Destination: Mexico", fact: "They return to the same forests in Mexico year after year" }
       ];
       
-      let currentPosition = 0;
-      let gameCompleted = false;
+      let pos = 0;
+      let done = false;
       
-      // Get DOM elements
       const progressBar = document.getElementById('progressBar');
       const butterfly = document.getElementById('butterfly');
       const locationTitle = document.getElementById('locationTitle');
       const factContainer = document.getElementById('factContainer');
       const factText = document.getElementById('factText');
-      const prevButton = document.getElementById('prevButton');
-      const nextButton = document.getElementById('nextButton');
-      const completionMessage = document.getElementById('completionMessage');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const completion = document.getElementById('completion');
       
-      // Initialize
-      updateUI();
-      
-      // Event listeners
-      prevButton.addEventListener('click', movePrevious);
-      nextButton.addEventListener('click', moveNext);
-      
-      function updateUI(skipAnimation = false) {
-        // Update progress bar
-        progressBar.style.width = `${(currentPosition / (migrationPath.length - 1)) * 100}%`;
+      function update(skipAnim = false) {
+        progressBar.style.width = `${(pos / (path.length - 1)) * 100}%`;
+        butterfly.style.left = `${10 + (pos * 20)}%`;
+        locationTitle.textContent = path[pos].location;
         
-        // Update butterfly position
-        butterfly.style.left = `${10 + (currentPosition * 20)}%`;
-        
-        // Update location title
-        locationTitle.textContent = migrationPath[currentPosition].location;
-        
-        // Update path points
-        for (let i = 0; i < migrationPath.length; i++) {
+        for (let i = 0; i < path.length; i++) {
           const point = document.getElementById(`point${i}`);
-          if (i <= currentPosition) {
-            point.classList.add('active');
-          } else {
-            point.classList.remove('active');
-          }
+          point.classList.toggle('active', i <= pos);
         }
         
-        // Don't update fact text yet if we're going to animate
-        if (skipAnimation) {
-          factText.textContent = migrationPath[currentPosition].fact;
+        if (skipAnim) {
+          factText.textContent = path[pos].fact;
           factText.style.opacity = 1;
         } else {
-          // Hide the text initially, it will be shown after animation
           factText.style.opacity = 0;
         }
         
-        // Update buttons
-        prevButton.disabled = currentPosition === 0;
+        prevBtn.disabled = pos === 0;
         
-        if (gameCompleted) {
-          nextButton.textContent = 'Play Again';
-          nextButton.className = 'monarch-button monarch-button-reset';
-          completionMessage.style.display = 'block';
+        if (done) {
+          nextBtn.textContent = 'Play Again';
+          nextBtn.className = 'btn btn-reset';
+          completion.style.display = 'block';
         } else {
-          nextButton.textContent = currentPosition === migrationPath.length - 1 ? 'Complete Journey' : 'Next Stop →';
-          nextButton.className = 'monarch-button monarch-button-next';
-          completionMessage.style.display = 'none';
+          nextBtn.textContent = pos === path.length - 1 ? 'Complete!' : 'Next Stop →';
+          nextBtn.className = 'btn btn-next';
+          completion.style.display = 'none';
         }
       }
       
-      function animateButterflies() {
-        // Create many butterflies that fly away to reveal the fact
-        const factElement = document.getElementById('factText');
+      function animate() {
+        const count = 20;
+        const existing = document.querySelectorAll('.flying-butterfly');
+        existing.forEach(b => b.remove());
         
-        // Number of butterflies
-        const butterflyCount = 20;
-        
-        // Clear any existing butterflies
-        const existingButterflies = document.querySelectorAll('.monarch-flying-butterfly');
-        existingButterflies.forEach(b => b.remove());
-        
-        // Create a bunch of butterflies with different positions, sizes, and animations
-        for (let i = 0; i < butterflyCount; i++) {
-          const flyingButterfly = document.createElement('div');
-          
-          // Add base class and one of the four animation pattern classes
-          flyingButterfly.className = `monarch-flying-butterfly monarch-flying-butterfly-${(i % 4) + 1}`;
-          
-          // Alternate between orange and blue butterflies for visual variety
-          flyingButterfly.textContent = i % 2 === 0 ? '🦋' : '🦋';
-          
-          // Randomize starting positions across the fact container
-          const leftPos = 10 + Math.random() * 80; // 10% to 90%
-          const topPos = 20 + Math.random() * 60; // 20% to 80%
-          
-          flyingButterfly.style.left = `${leftPos}%`;
-          flyingButterfly.style.top = `${topPos}%`;
-          
-          // Randomize sizes for depth effect
-          const sizeVariation = 0.8 + (Math.random() * 0.8); // 0.8x to 1.6x
-          flyingButterfly.style.fontSize = `${16 * sizeVariation}px`;
-          
-          // Add slight random delay for each butterfly
-          flyingButterfly.style.animationDelay = `${Math.random() * 0.5}s`;
-          
-          factContainer.appendChild(flyingButterfly);
+        for (let i = 0; i < count; i++) {
+          const fb = document.createElement('div');
+          fb.className = `flying-butterfly flying-butterfly-${(i % 4) + 1}`;
+          fb.textContent = '🦋';
+          fb.style.left = `${10 + Math.random() * 80}%`;
+          fb.style.top = `${20 + Math.random() * 60}%`;
+          fb.style.fontSize = `${14 * (0.8 + Math.random() * 0.8)}px`;
+          fb.style.animationDelay = `${Math.random() * 0.5}s`;
+          factContainer.appendChild(fb);
         }
         
-        // After animation, show the fact
         setTimeout(() => {
-          // Set the new fact text here, just before making it visible
-          factElement.textContent = migrationPath[currentPosition].fact;
-          factElement.style.transition = 'opacity 0.5s ease-in';
-          factElement.style.opacity = 1;
-          
-          // Remove the flying butterflies after animation completes
+          factText.textContent = path[pos].fact;
+          factText.style.transition = 'opacity 0.5s';
+          factText.style.opacity = 1;
           setTimeout(() => {
-            const flyingButterflies = document.querySelectorAll('.monarch-flying-butterfly');
-            flyingButterflies.forEach(butterfly => {
-              butterfly.remove();
-            });
+            document.querySelectorAll('.flying-butterfly').forEach(b => b.remove());
           }, 2000);
         }, 1000);
       }
       
-      function movePrevious() {
-        if (currentPosition > 0) {
-          currentPosition--;
-          updateUI(false); // Don't show fact text immediately
-          animateButterflies();
+      prevBtn.addEventListener('click', () => {
+        if (pos > 0) {
+          pos--;
+          update();
+          animate();
         }
-      }
+      });
       
-      function moveNext() {
-        if (gameCompleted) {
-          // Reset game
-          currentPosition = 0;
-          gameCompleted = false;
-          updateUI(false); // Don't show fact text immediately
-          animateButterflies();
-        } else if (currentPosition < migrationPath.length - 1) {
-          currentPosition++;
-          updateUI(false); // Don't show fact text immediately
-          animateButterflies();
-        } else if (currentPosition === migrationPath.length - 1) {
-          gameCompleted = true;
-          updateUI(true); // Show fact text immediately for final screen
-          celebrateCompletion();
+      nextBtn.addEventListener('click', () => {
+        if (done) {
+          pos = 0;
+          done = false;
+          update();
+          animate();
+        } else if (pos < path.length - 1) {
+          pos++;
+          update();
+          animate();
+        } else if (pos === path.length - 1) {
+          done = true;
+          update(true);
+          celebrate();
         }
-      }
+      });
       
-      function celebrateCompletion() {
-        // Create a grand finale of butterflies that cover the entire screen
+      function celebrate() {
         const overlay = document.getElementById('celebrationOverlay');
         overlay.style.display = 'block';
-        
-        // Clear any existing finale butterflies
         overlay.innerHTML = '';
         
-        // Create 100 butterflies for grand finale
-        const butterflyCount = 100;
-        const colors = ['#FF9800', '#FFC107', '#FFB74D', '#FFCC80', '#FFE0B2']; // Orange shades
-        
-        for (let i = 0; i < butterflyCount; i++) {
-          const finaleButterfly = document.createElement('div');
-          finaleButterfly.className = 'monarch-finale-butterfly';
-          
-          // Alternate between different butterfly emojis
-          const butterflyType = i % 4;
-          finaleButterfly.textContent = '🦋';
-          
-          // Random starting positions horizontally across the screen
-          const leftPos = Math.random() * 100; // 0% to 100%
-          finaleButterfly.style.left = `${leftPos}%`;
-          
-          // Random sizes for depth effect
-          const sizeVariation = 0.5 + (Math.random() * 2); // 0.5x to 2.5x
-          finaleButterfly.style.setProperty('--size', `${16 * sizeVariation}px`);
-          
-          // Random color from our orange palette
-          finaleButterfly.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
-          
-          // Random final positions and rotation for flight paths
-          const finalX = (Math.random() * 200 - 100) + 'px'; // -100px to +100px from starting position
-          const finalY = (Math.random() * -300 - 50) + 'px'; // -50px to -350px (upward)
-          const finalRotate = (Math.random() * 360 - 180) + 'deg'; // -180deg to +180deg
-          
-          finaleButterfly.style.setProperty('--final-x', finalX);
-          finaleButterfly.style.setProperty('--final-y', finalY);
-          finaleButterfly.style.setProperty('--final-rotate', finalRotate);
-          
-          // Random delay for each butterfly
-          finaleButterfly.style.animationDelay = `${Math.random() * 2}s`;
-          
-          overlay.appendChild(finaleButterfly);
+        const count = 80;
+        for (let i = 0; i < count; i++) {
+          const fb = document.createElement('div');
+          fb.className = 'finale-butterfly';
+          fb.textContent = '🦋';
+          fb.style.left = `${Math.random() * 100}%`;
+          fb.style.setProperty('--size', `${14 * (0.5 + Math.random() * 2)}px`);
+          fb.style.setProperty('--final-x', `${Math.random() * 200 - 100}px`);
+          fb.style.setProperty('--final-y', `${Math.random() * -300 - 50}px`);
+          fb.style.setProperty('--final-rotate', `${Math.random() * 360 - 180}deg`);
+          fb.style.animationDelay = `${Math.random() * 2}s`;
+          overlay.appendChild(fb);
         }
         
-        // Remove the celebration overlay after animation completes
         setTimeout(() => {
           overlay.style.display = 'none';
         }, 7000);
       }
       
-      // Initial animation
-      animateButterflies();
+      update();
+      animate();
     })();
   </script>
 </body>
