@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Art Creator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: transparent;
+            padding: 5px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="%23f4f4f4"/><rect width="30" height="15" fill="%23f8f8f8"/><rect x="30" width="30" height="15" fill="%23fafafa"/><rect y="15" width="30" height="15" fill="%23fafafa"/><rect x="30" y="15" width="30" height="15" fill="%23f8f8f8"/></svg>');
+            background-size: 30px 15px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 300px;
+            display: block;
+            cursor: crosshair;
+            background: transparent;
+        }
+
+        canvas.emoji-mode {
+            cursor: pointer;
+        }
+
+        .toolbar {
+            background: #34495e;
+            padding: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            border-radius: 6px;
+        }
+
+        .label {
+            color: #ecf0f1;
+            font-size: 0.7rem;
+            font-weight: bold;
+            min-width: 40px;
+        }
+
+        .colors {
+            display: flex;
+            gap: 3px;
+        }
+
+        .color {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color:hover {
+            transform: scale(1.1);
+        }
+
+        .color.active {
+            border-color: #f39c12;
+            border-width: 3px;
+            transform: scale(1.15);
+        }
+
+        .brush {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .brush:hover {
+            background: #2980b9;
+        }
+
+        .brush.active {
+            background: #e74c3c;
+        }
+
+        .slider {
+            width: 60px;
+            height: 5px;
+            background: #bdc3c7;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #e74c3c;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: #e74c3c;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .size-num {
+            color: #ecf0f1;
+            font-weight: bold;
+            min-width: 20px;
+            font-size: 0.75rem;
+        }
+
+        .emojis {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            max-width: 150px;
+        }
+
+        .emoji {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 4px;
+            padding: 2px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .emoji:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .emoji.selected {
+            background: #3498db;
+            border-color: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+        }
+
+        .btn-clear:hover {
+            background: #c0392b;
+        }
+
+        .btn-save {
+            background: #27ae60;
+        }
+
+        .btn-save:hover {
+            background: #229954;
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                font-size: 0.9em;
+                padding: 8px;
+            }
+
+            canvas {
+                height: 250px;
+            }
+
+            .toolbar {
+                padding: 6px;
+                gap: 4px;
+            }
+
+            .tool-group {
+                padding: 4px;
+            }
+
+            .label {
+                font-size: 0.65rem;
+                min-width: 35px;
+            }
+
+            .color {
+                width: 22px;
+                height: 22px;
+            }
+
+            .emoji {
+                width: 22px;
+                height: 22px;
+                font-size: 0.9rem;
+            }
+
+            .brush {
+                padding: 4px 6px;
+                font-size: 0.65rem;
+            }
+
+            .slider {
+                width: 50px;
+            }
+
+            .btn {
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">🎨 Create Your Street Art! 🏢</div>
+        
+        <div class="canvas-wrapper">
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div class="toolbar">
+            <div class="tool-group">
+                <span class="label">Colors:</span>
+                <div class="colors">
+                    <div class="color active" style="background: #e74c3c" data-color="#e74c3c"></div>
+                    <div class="color" style="background: #3498db" data-color="#3498db"></div>
+                    <div class="color" style="background: #2ecc71" data-color="#2ecc71"></div>
+                    <div class="color" style="background: #f39c12" data-color="#f39c12"></div>
+                    <div class="color" style="background: #9b59b6" data-color="#9b59b6"></div>
+                    <div class="color" style="background: #000000" data-color="#000000"></div>
+                    <div class="color" style="background: #ffffff" data-color="#ffffff"></div>
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <span class="label">Brush:</span>
+                <button class="brush active" data-brush="round">Round</button>
+                <button class="brush" data-brush="square">Square</button>
+                <button class="brush" data-brush="spray">Spray</button>
+            </div>
+
+            <div class="tool-group">
+                <span class="label">Size:</span>
+                <input type="range" class="slider" id="size" min="2" max="40" value="10">
+                <span class="size-num" id="sizeNum">10</span>
+            </div>
+
+            <div class="tool-group">
+                <span class="label">Emojis:</span>
+                <div class="emojis">
+                    <button class="emoji" data-emoji="❤️">❤️</button>
+                    <button class="emoji" data-emoji="✊">✊</button>
+                    <button class="emoji" data-emoji="🌟">🌟</button>
+                    <button class="emoji" data-emoji="🌈">🌈</button>
+                    <button class="emoji" data-emoji="🎵">🎵</button>
+                    <button class="emoji" data-emoji="🕊️">🕊️</button>
+                    <button class="emoji" data-emoji="🌸">🌸</button>
+                    <button class="emoji" data-emoji="⭐">⭐</button>
+                    <button class="emoji" data-emoji="🎨">🎨</button>
+                    <button class="emoji" data-emoji="🦋">🦋</button>
+                    <button class="emoji" data-emoji="🔥">🔥</button>
+                    <button class="emoji" data-emoji="⚡">⚡</button>
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn btn-clear" id="clear">Clear</button>
+                <button class="btn btn-save" id="save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resize() {
+                const wrapper = canvas.parentElement;
+                canvas.width = wrapper.offsetWidth;
+                canvas.height = 300;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                drawBg();
+            }
+            
+            function drawBg() {
+                const pattern = document.createElement('canvas');
+                const pCtx = pattern.getContext('2d');
+                pattern.width = 60;
+                pattern.height = 30;
+                
+                pCtx.fillStyle = '#f4f4f4';
+                pCtx.fillRect(0, 0, 60, 30);
+                pCtx.fillStyle = '#f8f8f8';
+                pCtx.fillRect(0, 0, 30, 15);
+                pCtx.fillRect(30, 15, 30, 15);
+                pCtx.fillStyle = '#fafafa';
+                pCtx.fillRect(30, 0, 30, 15);
+                pCtx.fillRect(0, 15, 30, 15);
+                
+                ctx.fillStyle = ctx.createPattern(pattern, 'repeat');
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            resize();
+            window.addEventListener('resize', resize);
+            
+            let drawing = false;
+            let color = '#e74c3c';
+            let brush = 'round';
+            let size = 10;
+            let tool = 'brush';
+            let emoji = '';
+            let selectedEmoji = null;
+            
+            document.querySelectorAll('.color').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelector('.color.active').classList.remove('active');
+                    btn.classList.add('active');
+                    color = btn.dataset.color;
+                    tool = 'brush';
+                    canvas.classList.remove('emoji-mode');
+                    if (selectedEmoji) {
+                        selectedEmoji.classList.remove('selected');
+                        selectedEmoji = null;
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.brush').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelector('.brush.active').classList.remove('active');
+                    btn.classList.add('active');
+                    brush = btn.dataset.brush;
+                    tool = 'brush';
+                    canvas.classList.remove('emoji-mode');
+                    if (selectedEmoji) {
+                        selectedEmoji.classList.remove('selected');
+                        selectedEmoji = null;
+                    }
+                });
+            });
+            
+            const sizeSlider = document.getElementById('size');
+            const sizeNum = document.getElementById('sizeNum');
+            
+            sizeSlider.addEventListener('input', () => {
+                size = sizeSlider.value;
+                sizeNum.textContent = size;
+            });
+            
+            document.querySelectorAll('.emoji').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (selectedEmoji) {
+                        selectedEmoji.classList.remove('selected');
+                    }
+                    
+                    if (selectedEmoji === btn) {
+                        tool = 'brush';
+                        selectedEmoji = null;
+                        canvas.classList.remove('emoji-mode');
+                    } else {
+                        btn.classList.add('selected');
+                        selectedEmoji = btn;
+                        tool = 'emoji';
+                        emoji = btn.dataset.emoji;
+                        canvas.classList.add('emoji-mode');
+                    }
+                });
+            });
+            
+            function start(e) {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                if (tool === 'emoji') {
+                    ctx.font = `${size * 2}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(emoji, x, y);
+                    return;
+                }
+                
+                drawing = true;
+                draw(e);
+            }
+            
+            function draw(e) {
+                if (!drawing || tool === 'emoji') return;
+                e.preventDefault();
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
+                
+                if (brush === 'round') {
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                } else if (brush === 'square') {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                } else if (brush === 'spray') {
+                    for (let i = 0; i < 15; i++) {
+                        const ox = (Math.random() - 0.5) * size;
+                        const oy = (Math.random() - 0.5) * size;
+                        ctx.fillStyle = color;
+                        ctx.beginPath();
+                        ctx.arc(x + ox, y + oy, 1, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            function stop(e) {
+                if (e) e.preventDefault();
+                if (drawing) {
+                    drawing = false;
+                    ctx.beginPath();
+                }
+            }
+            
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stop);
+            canvas.addEventListener('mouseout', stop);
+            
+            canvas.addEventListener('touchstart', start);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', stop);
+            
+            document.getElementById('clear').addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawBg();
+            });
+            
+            document.getElementById('save').addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = 'street-art.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        })();
+    </script>
+</body>
+</html>
