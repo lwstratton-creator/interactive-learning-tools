@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic Stroke Practice</title>
+<style>
+/* Scoped styles to prevent parent page interference */
+.stroke-practice-module {
+  all: initial;
+  display: block;
+}
+
+.stroke-practice-module * {
+  all: unset;
+  box-sizing: border-box;
+}
+
+.stroke-practice-module {
+  --primary-color: #C41E3A;
+  --secondary-color: #FFD700;
+  --success-color: #0C8918;
+  --error-color: #8B0000;
+  --text-color: #234E52;
+  --bg-light: #F7F9FC;
+  --neutral-color: #FFFFFF;
+  --shadow-soft: 0 4px 6px rgba(139, 0, 0, 0.1);
+  --shadow-hover: 0 6px 8px rgba(139, 0, 0, 0.15);
+  
+  font-family: Arial, sans-serif;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 12px;
+  display: block;
+  border: 3px solid var(--primary-color);
+  border-radius: 15px;
+  background: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.stroke-practice-module .section-title {
+  display: block;
+  color: var(--primary-color);
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--primary-color);
+  text-align: center;
+}
+
+.stroke-practice-module .instructions {
+  display: block;
+  background: var(--bg-light);
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 0.85em;
+  color: #666;
+  border: 2px solid var(--primary-color);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.stroke-practice-module .current-stroke-info {
+  background: #FFF9E6;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid var(--secondary-color);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.stroke-practice-module .stroke-name {
+  color: var(--primary-color);
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.stroke-practice-module .stroke-direction-text {
+  display: inline-block;
+  padding: 6px 12px;
+  background: white;
+  border: 2px solid var(--primary-color);
+  border-radius: 6px;
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 0.85em;
+}
+
+.stroke-practice-module .canvas-section {
+  position: relative;
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.stroke-practice-module .canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: 
+    linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+    linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+  background-size: 50% 50%;
+  background-position: center;
+}
+
+.stroke-practice-module canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.stroke-practice-module #guideCanvas {
+  z-index: 1;
+}
+
+.stroke-practice-module #userCanvas {
+  z-index: 2;
+}
+
+.stroke-practice-module .feedback {
+  display: block;
+  text-align: center;
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 12px;
+  font-size: 0.95em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  line-height: 1.3;
+}
+
+.stroke-practice-module .feedback.show {
+  opacity: 1;
+}
+
+.stroke-practice-module .feedback.success {
+  background: var(--success-color);
+}
+
+.stroke-practice-module .feedback.error {
+  background: var(--error-color);
+}
+
+.stroke-practice-module .feedback.info {
+  background: var(--secondary-color);
+  color: #333;
+  font-weight: bold;
+}
+
+.stroke-practice-module .controls-section {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.stroke-practice-module .control-button {
+  display: inline-block;
+  padding: 8px 20px;
+  font-size: 0.9em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.stroke-practice-module .control-button:hover {
+  transform: translateY(-2px);
+}
+
+.stroke-practice-module .btn-clear {
+  background: #666;
+}
+
+.stroke-practice-module .btn-clear:hover {
+  background: #555;
+}
+
+.stroke-practice-module .btn-hint {
+  background: var(--secondary-color);
+  color: #333;
+}
+
+.stroke-practice-module .btn-hint:hover {
+  background: #E6C200;
+}
+
+.stroke-practice-module .btn-next {
+  background: var(--primary-color);
+}
+
+.stroke-practice-module .btn-next:hover {
+  background: #A01830;
+}
+
+.stroke-practice-module .control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+.stroke-practice-module .control-button:disabled:hover {
+  transform: none;
+  background: #9ca3af;
+}
+
+.stroke-practice-module .examples-section {
+  background: #FFF9E6;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid var(--secondary-color);
+  text-align: center;
+}
+
+.stroke-practice-module .examples-title {
+  color: var(--primary-color);
+  margin-bottom: 6px;
+  font-size: 0.85em;
+  font-weight: bold;
+  display: block;
+}
+
+.stroke-practice-module .examples-chars {
+  font-size: 1.8em;
+  color: var(--primary-color);
+  font-weight: bold;
+  letter-spacing: 12px;
+  display: block;
+}
+
+/* Review Page Styles */
+.stroke-practice-module .review-page {
+  display: none;
+}
+
+.stroke-practice-module .review-page.show {
+  display: block;
+}
+
+.stroke-practice-module .practice-page {
+  display: block;
+}
+
+.stroke-practice-module .practice-page.hide {
+  display: none;
+}
+
+.stroke-practice-module .celebration-header {
+  background: linear-gradient(135deg, var(--secondary-color) 0%, #FFA500 100%);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border: 3px solid var(--primary-color);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.stroke-practice-module .celebration-title {
+  font-size: 1.5em;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  font-weight: bold;
+  display: block;
+}
+
+.stroke-practice-module .celebration-subtitle {
+  font-size: 1em;
+  color: var(--text-color);
+  font-weight: 600;
+  display: block;
+}
+
+.stroke-practice-module .review-strokes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.stroke-practice-module .review-stroke-card {
+  background: white;
+  border: 3px solid var(--success-color);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.stroke-practice-module .review-stroke-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.stroke-practice-module .review-stroke-character {
+  font-size: 3em;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  font-weight: bold;
+  display: block;
+}
+
+.stroke-practice-module .review-stroke-name {
+  font-size: 1em;
+  color: var(--primary-color);
+  margin-bottom: 4px;
+  font-weight: bold;
+  display: block;
+}
+
+.stroke-practice-module .review-stroke-pinyin {
+  font-size: 0.9em;
+  color: var(--success-color);
+  margin-bottom: 4px;
+  font-weight: 600;
+  display: block;
+}
+
+.stroke-practice-module .review-stroke-direction {
+  font-size: 0.85em;
+  color: var(--text-color);
+  display: block;
+}
+
+.stroke-practice-module .review-checkmark {
+  font-size: 1.5em;
+  color: var(--success-color);
+  margin-top: 8px;
+  display: block;
+}
+
+.stroke-practice-module .btn-practice-again {
+  background: var(--primary-color);
+  padding: 10px 30px;
+  font-size: 1em;
+}
+
+.stroke-practice-module .btn-practice-again:hover {
+  background: #A01830;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+}
+
+.stroke-practice-module .confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Mobile only - single column */
+@media (max-width: 400px) {
+  .stroke-practice-module {
+    padding: 15px;
+  }
+
+  .stroke-practice-module .canvas-wrapper {
+    height: 250px;
+  }
+
+  .stroke-practice-module .review-strokes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="stroke-practice-module">
+  <!-- Practice Page -->
+  <div id="practicePage" class="practice-page">
+    <div class="section-title">Stroke Practice ✏️</div>
+    <div class="instructions">
+      👉 Trace the stroke from Green 🟢 → Yellow 🟡 → Red 🔴
+    </div>
+    
+    <!-- Current Stroke Info -->
+    <div class="current-stroke-info">
+      <span class="stroke-name" id="currentStrokeName">Héng (一) - Horizontal</span>
+      <div>
+        <span class="stroke-direction-text" id="currentStrokeDirection">Left to right →</span>
+      </div>
+    </div>
+    
+    <!-- Canvas Section -->
+    <div class="canvas-section">
+      <div class="canvas-wrapper">
+        <canvas id="guideCanvas"></canvas>
+        <canvas id="userCanvas"></canvas>
+      </div>
+    </div>
+    
+    <!-- Feedback Box -->
+    <div id="feedbackBox" class="feedback"></div>
+    
+    <!-- Controls -->
+    <div class="controls-section">
+      <button class="control-button btn-clear" onclick="clearCanvas()">Clear</button>
+      <button class="control-button btn-hint" onclick="showHint()">💡 Hint</button>
+      <button class="control-button btn-next" id="nextStrokeBtn" onclick="nextStroke()" disabled>Next →</button>
+    </div>
+    
+    <!-- Examples -->
+    <div class="examples-section">
+      <span class="examples-title" id="examplesTitle">Characters using Héng:</span>
+      <span class="examples-chars" id="examplesChars">一 二 三 十</span>
+    </div>
+  </div>
+
+  <!-- Review Page -->
+  <div id="reviewPage" class="review-page">
+    <div class="celebration-header">
+      <span class="celebration-title">🎊 太棒了！Good Job! 🎊</span>
+      <span class="celebration-subtitle">You've mastered all 4 basic strokes!</span>
+    </div>
+
+    <div class="review-strokes-grid">
+      <div class="review-stroke-card">
+        <span class="review-stroke-character">一</span>
+        <span class="review-stroke-name">Héng (一)</span>
+        <span class="review-stroke-pinyin">Horizontal</span>
+        <span class="review-stroke-direction">Left to Right →</span>
+        <span class="review-checkmark">✓</span>
+      </div>
+
+      <div class="review-stroke-card">
+        <span class="review-stroke-character">丨</span>
+        <span class="review-stroke-name">Shù (丨)</span>
+        <span class="review-stroke-pinyin">Vertical</span>
+        <span class="review-stroke-direction">Top to Bottom ↓</span>
+        <span class="review-checkmark">✓</span>
+      </div>
+
+      <div class="review-stroke-card">
+        <span class="review-stroke-character">丿</span>
+        <span class="review-stroke-name">Piě (丿)</span>
+        <span class="review-stroke-pinyin">Left-falling</span>
+        <span class="review-stroke-direction">Top Right to Bottom Left ↙</span>
+        <span class="review-checkmark">✓</span>
+      </div>
+
+      <div class="review-stroke-card">
+        <span class="review-stroke-character">㇏</span>
+        <span class="review-stroke-name">Nà (㇏)</span>
+        <span class="review-stroke-pinyin">Right-falling</span>
+        <span class="review-stroke-direction">Top Left to Bottom Right ↘</span>
+        <span class="review-checkmark">✓</span>
+      </div>
+    </div>
+
+    <button class="control-button btn-practice-again" onclick="resetPractice()">🔄 Practice Again</button>
+  </div>
+</div>
+
+<script>
+const strokes = {
+  heng: {
+    character: '一',
+    fullName: 'Héng (一) - Horizontal',
+    direction: 'Left to right →',
+    pinyin: 'Héng',
+    english: 'Horizontal',
+    path: {
+      start: [0.28, 0.48],
+      end: [0.82, 0.48]
+    },
+    hint: '💡 Start on the left side, draw straight across to the right →',
+    exampleText: 'Characters using Héng:',
+    examples: '一 二 三 十'
+  },
+  shu: {
+    character: '丨',
+    fullName: 'Shù (丨) - Vertical',
+    direction: 'Top to bottom ↓',
+    pinyin: 'Shù',
+    english: 'Vertical',
+    path: {
+      start: [0.50, 0.24],
+      end: [0.50, 0.76]
+    },
+    hint: '💡 Start at the top center, draw straight down ↓',
+    exampleText: 'Characters using Shù:',
+    examples: '十 中 山 川'
+  },
+  pie: {
+    character: '丿',
+    fullName: 'Piě (丿) - Left-falling',
+    direction: 'Top-right to bottom-left ↙',
+    pinyin: 'Piě',
+    english: 'Left-falling',
+    path: {
+      start: [0.58, 0.28],
+      end: [0.30, 0.76]
+    },
+    hint: '💡 Start at the top right, sweep down to the bottom left ↙',
+    exampleText: 'Characters using Piě:',
+    examples: '人 八 大 天'
+  },
+  na: {
+    character: '㇏',
+    fullName: 'Nà (㇏) - Right-falling',
+    direction: 'Top-left to bottom-right ↘',
+    pinyin: 'Nà',
+    english: 'Right-falling',
+    path: {
+      start: [0.30, 0.30],
+      end: [0.70, 0.72]
+    },
+    hint: '💡 Start at the top left, sweep down to the bottom right ↘',
+    exampleText: 'Characters using Nà:',
+    examples: '人 大 木 水'
+  }
+};
+
+let currentStroke = 'heng';
+let guideCanvas, userCanvas, guideCtx, userCtx;
+let canvasWidth, canvasHeight;
+let isDrawing = false;
+let userPath = [];
+let completedStrokes = new Set();
+
+function init() {
+  guideCanvas = document.getElementById('guideCanvas');
+  userCanvas = document.getElementById('userCanvas');
+  guideCtx = guideCanvas.getContext('2d');
+  userCtx = userCanvas.getContext('2d');
+  
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
+  setupEventListeners();
+  drawGuide();
+  updateStrokeInfo();
+}
+
+function resizeCanvas() {
+  const wrapper = document.querySelector('.stroke-practice-module .canvas-wrapper');
+  canvasWidth = wrapper.offsetWidth;
+  canvasHeight = wrapper.offsetHeight;
+  
+  guideCanvas.width = canvasWidth;
+  guideCanvas.height = canvasHeight;
+  userCanvas.width = canvasWidth;
+  userCanvas.height = canvasHeight;
+  
+  drawGuide();
+}
+
+function setupEventListeners() {
+  userCanvas.addEventListener('mousedown', startDrawing);
+  userCanvas.addEventListener('mousemove', draw);
+  userCanvas.addEventListener('mouseup', stopDrawing);
+  userCanvas.addEventListener('mouseout', stopDrawing);
+  
+  userCanvas.addEventListener('touchstart', handleTouch);
+  userCanvas.addEventListener('touchmove', handleTouch);
+  userCanvas.addEventListener('touchend', stopDrawing);
+}
+
+function handleTouch(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+    clientX: touch.clientX,
+    clientY: touch.clientY
+  });
+  userCanvas.dispatchEvent(mouseEvent);
+}
+
+function startDrawing(e) {
+  isDrawing = true;
+  const rect = userCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / canvasWidth;
+  const y = (e.clientY - rect.top) / canvasHeight;
+  userPath = [{ x, y, time: Date.now() }];
+  hideFeedback();
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  
+  const rect = userCanvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / canvasWidth;
+  const y = (e.clientY - rect.top) / canvasHeight;
+  
+  const now = Date.now();
+  userPath.push({ x, y, time: now });
+  
+  userCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  
+  if (userPath.length < 2) return;
+  
+  for (let i = 1; i < userPath.length; i++) {
+    const p1 = userPath[i - 1];
+    const p2 = userPath[i];
+    
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const timeDiff = p2.time - p1.time || 1;
+    const speed = distance / timeDiff;
+    
+    const minWidth = 6;
+    const maxWidth = 16;
+    const lineWidth = Math.max(minWidth, Math.min(maxWidth, maxWidth - speed * 800));
+    
+    userCtx.strokeStyle = '#C41E3A';
+    userCtx.lineWidth = lineWidth;
+    userCtx.lineCap = 'round';
+    userCtx.lineJoin = 'round';
+    
+    userCtx.beginPath();
+    userCtx.moveTo(p1.x * canvasWidth, p1.y * canvasHeight);
+    userCtx.lineTo(p2.x * canvasWidth, p2.y * canvasHeight);
+    userCtx.stroke();
+  }
+}
+
+function stopDrawing() {
+  if (isDrawing && userPath.length > 5) {
+    checkStrokeAutomatically();
+  }
+  isDrawing = false;
+}
+
+function drawGuide() {
+  guideCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  
+  const stroke = strokes[currentStroke];
+  const path = stroke.path;
+  
+  const gradient = guideCtx.createLinearGradient(
+    path.start[0] * canvasWidth, 
+    path.start[1] * canvasHeight,
+    path.end[0] * canvasWidth, 
+    path.end[1] * canvasHeight
+  );
+  gradient.addColorStop(0, '#10b981');
+  gradient.addColorStop(0.5, '#ffc107');
+  gradient.addColorStop(1, '#C41E3A');
+  
+  guideCtx.fillStyle = gradient;
+  guideCtx.font = 'bold ' + (canvasHeight * 0.7) + 'px Arial';
+  guideCtx.textAlign = 'center';
+  guideCtx.textBaseline = 'middle';
+  guideCtx.fillText(stroke.character, canvasWidth / 2, canvasHeight / 2);
+}
+
+function updateStrokeInfo() {
+  const stroke = strokes[currentStroke];
+  document.getElementById('currentStrokeName').textContent = stroke.fullName;
+  document.getElementById('currentStrokeDirection').textContent = stroke.direction;
+  document.getElementById('examplesTitle').textContent = stroke.exampleText;
+  document.getElementById('examplesChars').textContent = stroke.examples;
+}
+
+function selectStroke(strokeKey) {
+  currentStroke = strokeKey;
+  clearCanvas();
+  drawGuide();
+  updateStrokeInfo();
+  hideFeedback();
+  
+  const nextBtn = document.getElementById('nextStrokeBtn');
+  if (nextBtn) {
+    nextBtn.disabled = !completedStrokes.has(strokeKey);
+  }
+}
+
+function checkStrokeAutomatically() {
+  if (userPath.length < 5) return;
+  
+  const stroke = strokes[currentStroke];
+  const expectedPath = stroke.path;
+  
+  const start = userPath[0];
+  const end = userPath[userPath.length - 1];
+  
+  const startDist = distance(start, {x: expectedPath.start[0], y: expectedPath.start[1]});
+  const endDist = distance(end, {x: expectedPath.end[0], y: expectedPath.end[1]});
+  
+  const startMatch = startDist < 0.20;
+  const endMatch = endDist < 0.20;
+  
+  const directionCorrect = checkDirection(userPath, expectedPath);
+  
+  if (startMatch && endMatch && directionCorrect) {
+    const wasAlreadyCompleted = completedStrokes.has(currentStroke);
+    
+    if (!wasAlreadyCompleted) {
+      completedStrokes.add(currentStroke);
+      
+      const nextBtn = document.getElementById('nextStrokeBtn');
+      if (nextBtn) {
+        nextBtn.disabled = false;
+      }
+      
+      const progress = completedStrokes.size;
+      
+      if (progress === 1) {
+        showFeedback('✨ 很好! (Very good!) 1/4 complete', 'success');
+      } else if (progress === 2) {
+        showFeedback('🌟 太棒了! (Excellent!) 2/4 complete', 'success');
+      } else if (progress === 3) {
+        showFeedback('🎯 完美! (Perfect!) 3/4 complete', 'success');
+      } else if (progress === 4) {
+        showFeedback('🎊 Amazing! All strokes mastered! 🎊', 'success');
+        setTimeout(() => {
+          showReviewPage();
+        }, 2000);
+      }
+    } else {
+      showFeedback('✓ 很好! Great stroke!', 'success');
+    }
+  } else if (!startMatch) {
+    showFeedback('⭐ Start at the correct position!', 'error');
+  } else if (!directionCorrect) {
+    showFeedback('⭐ Draw in the correct direction!', 'error');
+  } else {
+    showFeedback('⭐ Try to reach the end position!', 'error');
+  }
+}
+
+function checkDirection(path, expectedPath) {
+  if (path.length < 2) return false;
+  
+  const userStart = path[0];
+  const userEnd = path[path.length - 1];
+  
+  const userDx = userEnd.x - userStart.x;
+  const userDy = userEnd.y - userStart.y;
+  
+  const expectedDx = expectedPath.end[0] - expectedPath.start[0];
+  const expectedDy = expectedPath.end[1] - expectedPath.start[1];
+  
+  const dotProduct = userDx * expectedDx + userDy * expectedDy;
+  
+  return dotProduct > 0.05;
+}
+
+function distance(p1, p2) {
+  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
+
+function clearCanvas() {
+  userCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+  userPath = [];
+  hideFeedback();
+}
+
+function showHint() {
+  const stroke = strokes[currentStroke];
+  showFeedback(stroke.hint, 'info');
+}
+
+function nextStroke() {
+  const strokeKeys = Object.keys(strokes);
+  const currentIndex = strokeKeys.indexOf(currentStroke);
+  const nextIndex = (currentIndex + 1) % strokeKeys.length;
+  selectStroke(strokeKeys[nextIndex]);
+}
+
+function showFeedback(message, type) {
+  const feedback = document.getElementById('feedbackBox');
+  feedback.textContent = message;
+  feedback.className = 'feedback show ' + type;
+}
+
+function hideFeedback() {
+  const feedback = document.getElementById('feedbackBox');
+  feedback.classList.remove('show');
+}
+
+function showReviewPage() {
+  document.getElementById('practicePage').classList.add('hide');
+  document.getElementById('reviewPage').classList.add('show');
+  createConfetti();
+}
+
+function resetPractice() {
+  completedStrokes.clear();
+  selectStroke('heng');
+  document.getElementById('reviewPage').classList.remove('show');
+  document.getElementById('practicePage').classList.remove('hide');
+}
+
+function createConfetti() {
+  const colors = ['#FFD700', '#C41E3A', '#0C8918', '#FFA500', '#FF69B4'];
+  const confettiCount = 50;
+  
+  for (let i = 0; i < confettiCount; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animation = `confetti-fall ${2 + Math.random() * 2}s linear`;
+      
+      document.querySelector('.stroke-practice-module').appendChild(confetti);
+      
+      setTimeout(() => confetti.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+window.addEventListener('load', init);
+</script>
+
+</body>
+</html>
