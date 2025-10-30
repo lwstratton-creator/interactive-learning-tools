@@ -5,287 +5,505 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spanish Learning Activity: Key Question Phrases</title>
     <style>
-        /* Scope all styles to our container */
-        .spanish-learning-container {
-            /* ... Standard CSS Variables ... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: transparent;
+            overflow-x: hidden;
+        }
+
+        .practice-module {
             --primary-color: #F2CB05;
             --secondary-color: #00994D;
             --accent-color: #C72C27;
             --text-color: #333;
             --background-color: #f9f9f9;
-            --alt-background-color: #fff;
-            --font-family: 'Arial', sans-serif;
             --highlight-color: rgba(242, 203, 5, 0.2);
             --ziggy-highlight: #FFDAB9;
             --success-color: #4CAF50;
             --error-color: #f44336;
-
-            font-family: var(--font-family);
-            color: var(--text-color);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 700px; /* Consistent width */
-            margin: 20px auto;
-            width: 100%;
-            position: relative;
-            box-sizing: border-box;
-            background-color: transparent;
+            --shadow-soft: 0 4px 6px rgba(0,0,0,0.1);
+            
+            font-family: Arial, sans-serif;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 12px;
+            border: 3px solid var(--secondary-color);
+            border-radius: 15px;
+            background: white;
+            box-shadow: var(--shadow-soft);
         }
 
-        .spanish-learning-container * {
-            box-sizing: border-box;
-            margin: 0;
+        .section-title {
+            color: var(--secondary-color);
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 3px solid var(--secondary-color);
+            text-align: center;
+        }
+
+        .activity-section {
+            margin-bottom: 15px;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .activity-section h2 {
+            color: var(--secondary-color);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 4px;
+        }
+
+        .activity-section p,
+        .activity-section ol {
+            line-height: 1.5;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .activity-section ol {
+            padding-left: 20px;
+        }
+
+        .phrase-list {
+            list-style-type: lower-roman;
+            margin: 8px 0 12px 20px;
+        }
+
+        .phrase-list li {
+            margin-bottom: 4px;
+            font-style: italic;
+            color: #444;
+            font-size: 0.9em;
+        }
+
+        .instruction-text {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 0.9em;
+        }
+
+        /* Verb/Emoji Drag and Drop */
+        .verb-drag-drop-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 12px;
+            min-height: 180px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .verb-drop-zones-container,
+        .verb-drag-items-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .verb-drag-item {
+            background: white;
+            padding: 8px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            text-align: center;
+            touch-action: none;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+
+        .verb-drag-item:active {
+            cursor: grabbing;
+            background: #eee;
+        }
+
+        .verb-drop-zone {
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            transition: all 0.3s;
+        }
+
+        .verb-drop-zone.correct {
+            background: #e0ffe0;
+            border-color: var(--success-color);
+        }
+
+        .verb-drop-zone.incorrect {
+            background: #ffe0e0;
+            border-color: var(--error-color);
+        }
+
+        .verb-drop-zone.filled {
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        /* Phrase Matching Drag and Drop */
+        .phrase-drag-drop-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 12px;
+            min-height: 250px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .phrase-drop-zones-container,
+        .phrase-drag-items-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .phrase-drag-item {
+            background: white;
+            padding: 10px 12px;
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            text-align: center;
+            touch-action: none;
+            font-size: 0.85em;
+            font-style: italic;
+            transition: background-color 0.2s;
+        }
+
+        .phrase-drag-item:active {
+            cursor: grabbing;
+            background: #eee;
+        }
+
+        .phrase-drop-zone {
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            min-height: 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .phrase-drop-zone .english-phrase {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 0.85em;
+        }
+
+        .phrase-drop-zone.correct {
+            background: #e0ffe0;
+            border-color: var(--success-color);
+        }
+
+        .phrase-drop-zone.incorrect {
+            background: #ffe0e0;
+            border-color: var(--error-color);
+        }
+
+        .phrase-drop-zone .dropped-phrase {
+            font-size: 0.85em;
+            font-style: italic;
+            color: var(--text-color);
+            background: var(--highlight-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Ziggy Section */
+        .ziggy-section {
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .ziggy-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .ziggy-highlight-text {
+            background: var(--ziggy-highlight);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .ziggy-section ul {
+            list-style: none;
             padding: 0;
         }
 
-        /* Activity Section Styles */
-        .spanish-learning-container .activity-section {
-            margin-bottom: 20px;
-            background-color: var(--alt-background-color); /* White sections */
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #eee; /* Subtle border */
+        .ziggy-section li {
+            margin-bottom: 8px;
+            background: #f8f8f8;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
         }
 
-        .spanish-learning-container .activity-section h2 {
-            color: var(--secondary-color); /* Green heading */
-            border-bottom: 2px solid var(--primary-color); /* Yellow underline */
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            font-size: 1.3rem; /* Slightly smaller heading */
+        .ziggy-section li::before {
+            content: "🤖";
+            margin-right: 6px;
         }
-         .spanish-learning-container .activity-section p,
-         .spanish-learning-container .activity-section ol,
-         .spanish-learning-container .activity-section ul { /* Added ul */
-             line-height: 1.6;
-             margin-bottom: 10px;
-         }
-         .spanish-learning-container .activity-section ol,
-         .spanish-learning-container .activity-section ul { /* Added ul */
-            padding-left: 25px;
-         }
-          /* Styling for phrase list */
-          .spanish-learning-container .phrase-list {
-             list-style-type: lower-roman; /* i, ii, iii... */
-             margin-top: 5px;
-             margin-bottom: 15px; /* Space before button */
-          }
-           .spanish-learning-container .phrase-list li {
-               margin-bottom: 5px;
-               font-style: italic;
-               color: #444;
-           }
-         .spanish-learning-container .instruction-text {
-            font-style: italic;
-            color: #555;
-            margin-bottom: 15px !important;
-         }
 
-        /* --- Verb/Emoji Drag and Drop Styles --- */
-        .spanish-learning-container .verb-drag-drop-container {
-            display: flex; flex-direction: column; gap: 20px; padding: 15px;
-            min-height: 200px; background-color: #f5f5f5; border-radius: 5px;
+        /* Buttons */
+        .action-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.85em;
         }
-        .spanish-learning-container .verb-drop-zones-container,
-        .spanish-learning-container .verb-drag-items-container {
-            display: grid; grid-template-columns: repeat(3, minmax(100px, 1fr));
-            gap: 15px; justify-content: center;
-        }
-        .spanish-learning-container .verb-drag-item {
-            background: var(--alt-background-color); padding: 10px; border: 1px dashed #ccc; border-radius: 5px;
-            cursor: grab; user-select: none; display: flex; align-items: center; justify-content: center;
-            min-height: 45px; text-align: center; touch-action: none; font-weight: bold; font-size: 1rem;
-            transition: background-color 0.2s;
-        }
-        .spanish-learning-container .verb-drag-item:active { cursor: grabbing; background-color: #eee; }
-        .spanish-learning-container .verb-drop-zone {
-            border: 2px solid #ddd; background: #fff; border-radius: 5px; min-height: 45px;
-            display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        .spanish-learning-container .verb-drop-zone.correct { background: #e0ffe0; border-color: var(--success-color); }
-        .spanish-learning-container .verb-drop-zone.incorrect { background: #ffe0e0; border-color: var(--error-color); }
-        .spanish-learning-container .verb-drop-zone.filled { font-size: 1rem; font-weight: bold; color: var(--text-color); }
-        /* --- End Verb Drag/Drop Styles --- */
 
-        /* --- Phrase Matching Drag and Drop Styles --- */
-        .spanish-learning-container .phrase-drag-drop-container {
-            display: flex; flex-direction: column; gap: 25px; padding: 15px;
-            min-height: 300px; background-color: #f5f5f5; border-radius: 5px;
-            margin-top: 15px;
+        .action-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
-        .spanish-learning-container .phrase-drop-zones-container,
-        .spanish-learning-container .phrase-drag-items-container {
-            display: grid; grid-template-columns: 1fr; gap: 10px; justify-content: center;
-        }
-        .spanish-learning-container .phrase-drag-item {
-            background: var(--alt-background-color); padding: 12px 15px; border: 1px dashed #ccc; border-radius: 5px;
-            cursor: grab; user-select: none; display: flex; align-items: center; justify-content: center;
-            min-height: 45px; text-align: center; touch-action: none; font-weight: normal; font-size: 1rem; font-style: italic;
-            transition: background-color 0.2s;
-        }
-        .spanish-learning-container .phrase-drag-item:active { cursor: grabbing; background-color: #eee; }
-        .spanish-learning-container .phrase-drop-zone {
-            border: 2px solid #ddd; background: #fff; border-radius: 5px; min-height: 50px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 10px; transition: background-color 0.3s, border-color 0.3s; text-align: center;
-        }
-        .spanish-learning-container .phrase-drop-zone .english-phrase { font-weight: bold; margin-bottom: 8px; color: #555; }
-        .spanish-learning-container .phrase-drop-zone.correct { background: #e0ffe0; border-color: var(--success-color); }
-        .spanish-learning-container .phrase-drop-zone.incorrect { background: #ffe0e0; border-color: var(--error-color); }
-        .spanish-learning-container .phrase-drop-zone .dropped-phrase { font-size: 1rem; font-style: italic; color: var(--text-color); background-color: var(--highlight-color); padding: 5px 8px; border-radius: 3px; }
-         /* --- End Phrase Drag/Drop Styles --- */
 
-        /* --- Warmup Step Control --- */
-        .hidden { display: none; }
-        /* --- End Warmup Step Control --- */
-
-        /* Ziggy Section Styles */
-        .spanish-learning-container .ziggy-section { margin-top: 20px; padding: 15px; background-color: var(--alt-background-color); border-radius: 5px; border: 1px solid #eee; }
-        .spanish-learning-container .ziggy-section h3 { color: var(--secondary-color); margin-bottom: 15px; }
-        .spanish-learning-container .ziggy-highlight-text { background-color: var(--ziggy-highlight); padding: 3px 6px; border-radius: 3px; font-weight: bold; color: #444; display: inline-block; }
-        .spanish-learning-container .ziggy-section ul { list-style: none; padding: 0; }
-        .spanish-learning-container .ziggy-section li { margin-bottom: 10px; background-color: #f8f8f8; padding: 8px 12px; border-radius: 4px; font-size: 0.95rem; }
-        .spanish-learning-container .ziggy-section li::before { content: "🤖"; margin-right: 8px; font-size: 1.1em; }
-
-        /* Button Styles */
-        .spanish-learning-container .action-button {
-            background-color: var(--secondary-color); color: white; border: none; padding: 8px 15px;
-            border-radius: 5px; cursor: pointer; transition: background-color 0.3s, transform 0.1s;
-            font-weight: bold; white-space: nowrap; flex-shrink: 0;
+        .action-button:hover:not(:disabled) {
+            background: #007a3d;
+            transform: translateY(-2px);
         }
-        .spanish-learning-container .action-button:disabled { background-color: #ccc; cursor: not-allowed; }
-        .spanish-learning-container .action-button:hover:not(:disabled) { background-color: #007a3d; opacity: 0.95; }
-        .spanish-learning-container .action-button:active:not(:disabled) { transform: scale(0.98); }
-        .spanish-learning-container .reset-button { background-color: #6c757d; }
-        .spanish-learning-container .reset-button:hover:not(:disabled) { background-color: #5a6268; }
-        .spanish-learning-container .meanings-button { /* Style specifically for meanings button */
-            background-color: var(--primary-color);
+
+        .reset-button {
+            background: #6c757d;
+        }
+
+        .reset-button:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .meanings-button {
+            background: var(--primary-color);
             color: var(--text-color);
         }
-        .spanish-learning-container .meanings-button:hover:not(:disabled) {
-             background-color: #e0b804;
-         }
-        .spanish-learning-container .start-matching-button {
-             margin-top: 10px; display: block; margin-left: auto; margin-right: auto;
-         }
 
-         /* --- Meanings Overlay Styles --- */
-         .meanings-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s ease-in-out;
+        .meanings-button:hover:not(:disabled) {
+            background: #e0b804;
         }
-        .meanings-overlay.show { display: flex; opacity: 1; }
+
+        .start-matching-button {
+            margin: 10px auto;
+            display: block;
+        }
+
+        .button-group {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Meanings Overlay */
+        .meanings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .meanings-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
         .meanings-content {
-            background-color: white; padding: 25px; border-radius: 8px; max-width: 450px; width: 90%;
-            position: relative; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: scale(0.95); transition: transform 0.3s ease-in-out;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.3s;
         }
-        .meanings-overlay.show .meanings-content { transform: scale(1); }
-        .meanings-content h3 { color: var(--secondary-color); margin-bottom: 15px; text-align: center; font-size: 1.4rem; }
-        .meanings-list { list-style: none; padding: 0; margin: 0 0 20px 0; column-count: 2; column-gap: 20px; }
-        .meanings-list li { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 1.0em; display: flex; align-items: center; gap: 8px; break-inside: avoid; }
-        .meanings-list li .emoji { font-size: 1.2em; }
-        .meanings-list li:last-child { border-bottom: none; }
-        .close-meanings { display: block; width: 100%; margin-top: 15px; }
-        /* --- End Meanings Overlay --- */
 
-        /* Responsive Styles */
+        .meanings-overlay.show .meanings-content {
+            transform: scale(1);
+        }
+
+        .meanings-content h3 {
+            color: var(--secondary-color);
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .meanings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            column-count: 2;
+            column-gap: 15px;
+        }
+
+        .meanings-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            break-inside: avoid;
+        }
+
+        .meanings-list li .emoji {
+            font-size: 1.1em;
+        }
+
+        .close-meanings {
+            display: block;
+            width: 100%;
+        }
+
+        /* Responsive */
         @media (max-width: 600px) {
-            .spanish-learning-container { padding: 10px; margin: 10px; }
-             .verb-drop-zones-container, .verb-drag-items-container { grid-template-columns: repeat(2, 1fr); }
-             .verb-drag-item { font-size: 0.85rem; }
-             .verb-drop-zone.filled { font-size: 0.85rem; }
-            .phrase-drop-zones-container, .phrase-drag-items-container { grid-template-columns: 1fr; }
-            .phrase-drag-item, .phrase-drop-zone { font-size: 0.95rem; }
-            .phrase-drop-zone .english-phrase { font-size: 0.9rem;}
-            .phrase-drop-zone .dropped-phrase { font-size: 0.95rem; }
-             .meanings-list { column-count: 1; }
-        }
+            .practice-module {
+                padding: 15px;
+            }
 
+            .verb-drop-zones-container,
+            .verb-drag-items-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .verb-drag-item,
+            .verb-drop-zone.filled {
+                font-size: 0.8em;
+            }
+
+            .phrase-drag-item,
+            .phrase-drop-zone .english-phrase,
+            .phrase-drop-zone .dropped-phrase {
+                font-size: 0.8em;
+            }
+
+            .meanings-list {
+                column-count: 1;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="spanish-learning-container" id="spanishLearning">
+<div class="practice-module">
+    <div class="section-title">🎯 Key Question Phrases</div>
+
     <div class="activity-section">
-        <h2>🎯 Goal</h2>
+        <h2>Goal</h2>
         <p>Master key question phrases and structures in Spanish!</p>
-        <p>
+        <p style="font-size: 0.95em;">
             <strong>Today's Key Phrases/Verbs:</strong><br>
-             🔍 Qué | ❓ Por qué | 💰 Cuánto | 🙏 Podrías | 📢 Explicarlo | 👉 Referirse
+            🔍 Qué | ❓ Por qué | 💰 Cuánto | 🙏 Podrías | 📢 Explicarlo | 👉 Referirse
         </p>
     </div>
 
-     <!-- Section 1: Verb/Keyword Review -->
-     <div class="activity-section">
-        <h2>1. 📋 Review: Match Concepts to Emojis</h2>
-        <p>Drag and drop each Spanish concept/verb keyword to its corresponding emoji.</p>
-        <div class="verb-drag-drop-container" id="verbDragDropArea">
-             <!-- Verb Drag/Drop zones & items will be generated here by JS -->
-        </div>
-        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+    <!-- Section 1: Verb/Keyword Review -->
+    <div class="activity-section">
+        <h2>1. 📋 Match Concepts to Emojis</h2>
+        <p class="instruction-text">Drag and drop each Spanish concept/verb keyword to its corresponding emoji.</p>
+        <div class="verb-drag-drop-container" id="verbDragDropArea"></div>
+        <div class="button-group">
             <button class="action-button reset-button" onclick="resetActivity()">Reset Review</button>
-            <!-- ADDED Show Meanings Button -->
             <button class="action-button meanings-button" onclick="showMeanings()">Show Meanings</button>
         </div>
     </div>
 
-     <!-- ADDED Meanings Overlay -->
-     <div id="meaningsOverlay" class="meanings-overlay">
+    <!-- Meanings Overlay -->
+    <div id="meaningsOverlay" class="meanings-overlay">
         <div class="meanings-content">
             <h3>Keyword Meanings</h3>
-            <ul class="meanings-list" id="verbMeaningsList">
-                <!-- Meanings will be populated by JS -->
-            </ul>
+            <ul class="meanings-list" id="verbMeaningsList"></ul>
             <button onclick="hideMeanings()" class="action-button close-meanings">Close</button>
         </div>
     </div>
 
-    <!-- Section 2: Phrase Matching Warm-up -->
+    <!-- Section 2: Phrase Matching -->
     <div class="activity-section">
-        <h2>2. 📝 Warm-up: Reading & Matching Phrases</h2>
-        <ol type="a">
+        <h2>2. 📝 Reading & Matching Phrases</h2>
+        <ol type="a" style="font-size: 0.9em;">
             <li>Read each Spanish phrase below carefully.</li>
             <li>Click the button below when you are ready to match them to their English meanings.</li>
         </ol>
 
-        <div id="phraseReadingArea"> <!-- Wrapper for initial display -->
-            <h4>Spanish Phrases:</h4>
+        <div id="phraseReadingArea">
+            <h4 style="font-size: 0.95em; margin-bottom: 6px;">Spanish Phrases:</h4>
             <ul class="phrase-list">
-                 <li>¿Podrías explicarlo de otra manera?</li>
-                 <li>¿A qué te refieres con "inseguridad alimentaria"?</li>
-                 <li>¿Por qué sucedió eso?</li>
-                 <li>¿Cuánto tiempo duró esa situación?</li>
-                 <li>¿Qué hizo el gobierno para ayudar?</li>
-             </ul>
-            <button id="startMatchingBtn" class="action-button start-matching-button" onclick="startMatching()">I've read the phrases, start matching!</button>
+                <li>¿Podrías explicarlo de otra manera?</li>
+                <li>¿A qué te refieres con "inseguridad alimentaria"?</li>
+                <li>¿Por qué sucedió eso?</li>
+                <li>¿Cuánto tiempo duró esa situación?</li>
+                <li>¿Qué hizo el gobierno para ayudar?</li>
+            </ul>
+            <button class="action-button start-matching-button" onclick="startMatching()">I've read the phrases, start matching!</button>
         </div>
 
-        <div class="phrase-drag-drop-container hidden" id="phraseDragDropArea"> <!-- Initially hidden -->
-              <h4>Drag the Spanish phrases to the correct English meaning:</h4>
-             <!-- Phrase Drag/Drop zones & items will be generated here by JS when button clicked -->
+        <div class="phrase-drag-drop-container hidden" id="phraseDragDropArea">
+            <h4 style="font-size: 0.95em; margin-bottom: 8px;">Drag the Spanish phrases to the correct English meaning:</h4>
         </div>
-        <div id="phraseResetBtnContainer" class="hidden" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;"> <!-- Initially hidden -->
+        <div id="phraseResetBtnContainer" class="hidden button-group">
             <button class="action-button reset-button" onclick="resetActivity()">Reset Matching</button>
         </div>
     </div>
 
-
-    <div class="activity-section ziggy-section">
-        <h3>3. 🤖 Check with Ziggy</h3>
-        <p>Type in your translations and ask Ziggy to check them.</p>
-        <ul>
-            <li>Ask Ziggy: Does <span class="ziggy-highlight-text">¿Podrías explicarlo de otra manera?</span> mean Could you explain it differently?</li>
-            <!-- Add other specific checks or general prompts as desired -->
-        </ul>
-    </div>
 </div>
 
 <script>
-    // === Configuration ===
-     const reviewVerbs = [
+    const reviewVerbs = [
         { verb: 'Qué', emoji: '🔍', meaning: 'What' },
         { verb: 'Por qué', emoji: '❓', meaning: 'Why' },
         { verb: 'Cuánto', emoji: '💰', meaning: 'How much/many' },
@@ -293,6 +511,7 @@
         { verb: 'Explicarlo', emoji: '📢', meaning: 'Explain it' },
         { verb: 'Referirse', emoji: '👉', meaning: 'To refer to' }
     ];
+
     const phrases = [
         { spanish: '¿Podrías explicarlo de otra manera?', english: 'Could you explain it differently?', id: 'phrase1' },
         { spanish: '¿A qué te refieres con "inseguridad alimentaria"?', english: 'What do you mean by "food insecurity"?', id: 'phrase2' },
@@ -301,22 +520,18 @@
         { spanish: '¿Qué hizo el gobierno para ayudar?', english: 'What did the government do to help?', id: 'phrase5' }
     ];
 
-    // === State Variables ===
     let draggedItem = null;
     let touchStartX = 0;
     let touchStartY = 0;
     let currentDroppable = null;
 
-    // === DOM Elements ===
     const verbDragDropArea = document.getElementById('verbDragDropArea');
     const phraseDragDropArea = document.getElementById('phraseDragDropArea');
     const phraseReadingArea = document.getElementById('phraseReadingArea');
-    const startMatchingBtn = document.getElementById('startMatchingBtn');
     const phraseResetBtnContainer = document.getElementById('phraseResetBtnContainer');
-    const meaningsOverlay = document.getElementById('meaningsOverlay'); // Get overlay
-    const verbMeaningsList = document.getElementById('verbMeaningsList'); // Get list inside overlay
+    const meaningsOverlay = document.getElementById('meaningsOverlay');
+    const verbMeaningsList = document.getElementById('verbMeaningsList');
 
-    // === Utility Functions ===
     function shuffleArray(array) {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -326,19 +541,6 @@
         return shuffled;
     }
 
-    function normalizeString(str) {
-         return str.trim();
-    }
-
-    // === Drag and Drop Logic ===
-
-    // --- Initialize BOTH drag-drop areas ---
-    function initializeAllDragDrop() {
-        initializeVerbDragDrop();
-        // Phrase Drag/Drop is initialized only after button click
-    }
-
-    // --- Verb/Emoji Drag Drop ---
     function initializeVerbDragDrop() {
         verbDragDropArea.innerHTML = '';
         if (!reviewVerbs || reviewVerbs.length === 0) return;
@@ -359,8 +561,6 @@
             dropZone.className = 'verb-drop-zone';
             dropZone.dataset.verb = item.verb;
             dropZone.textContent = item.emoji;
-            dropZone.setAttribute('aria-label', `Drop zone for ${item.verb}`);
-            dropZone.setAttribute('role', 'region');
             dropZonesContainer.appendChild(dropZone);
             addDropZoneListeners(dropZone);
         });
@@ -371,14 +571,12 @@
             dragItem.draggable = true;
             dragItem.textContent = item.verb;
             dragItem.dataset.verb = item.verb;
-            dragItem.setAttribute('aria-label', `Draggable keyword: ${item.verb}`);
             dragItemsContainer.appendChild(dragItem);
             addDragItemListeners(dragItem);
         });
     }
 
-     // --- Phrase Matching Drag Drop ---
-     function initializePhraseDragDrop() {
+    function initializePhraseDragDrop() {
         phraseDragDropArea.innerHTML = '';
         if (!phrases || phrases.length === 0) return;
 
@@ -398,8 +596,6 @@
             dropZone.className = 'phrase-drop-zone';
             dropZone.dataset.id = item.id;
             dropZone.innerHTML = `<span class="english-phrase">${item.english}</span>`;
-            dropZone.setAttribute('aria-label', `Drop zone for: ${item.english}`);
-            dropZone.setAttribute('role', 'region');
             dropZonesContainer.appendChild(dropZone);
             addDropZoneListeners(dropZone);
         });
@@ -410,13 +606,11 @@
             dragItem.draggable = true;
             dragItem.textContent = item.spanish;
             dragItem.dataset.id = item.id;
-            dragItem.setAttribute('aria-label', `Draggable phrase: ${item.spanish}`);
             dragItemsContainer.appendChild(dragItem);
             addDragItemListeners(dragItem);
         });
     }
 
-    // --- Start Matching Function ---
     function startMatching() {
         phraseReadingArea.classList.add('hidden');
         phraseDragDropArea.classList.remove('hidden');
@@ -424,9 +618,7 @@
         initializePhraseDragDrop();
     }
 
-
-    // --- Generic Event Handlers ---
-     function addDragItemListeners(item) {
+    function addDragItemListeners(item) {
         item.addEventListener('dragstart', handleDragStart);
         item.addEventListener('dragend', handleDragEnd);
         item.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -434,17 +626,16 @@
         item.addEventListener('touchend', handleTouchEnd);
     }
 
-     function addDropZoneListeners(zone) {
+    function addDropZoneListeners(zone) {
         zone.addEventListener('dragover', handleDragOver);
         zone.addEventListener('dragleave', handleDragLeave);
         zone.addEventListener('drop', handleDrop);
     }
 
-
     function handleDragStart(e) {
         draggedItem = e.target;
         let dataValue = '';
-        if(e.target.classList.contains('verb-drag-item')) {
+        if (e.target.classList.contains('verb-drag-item')) {
             dataValue = e.target.dataset.verb;
         } else if (e.target.classList.contains('phrase-drag-item')) {
             dataValue = e.target.dataset.id;
@@ -453,12 +644,12 @@
             e.dataTransfer.setData('text/plain', dataValue);
             e.dataTransfer.effectAllowed = 'move';
         }
-        setTimeout(() => {if(draggedItem) draggedItem.style.opacity = '0.5'}, 0);
+        setTimeout(() => { if (draggedItem) draggedItem.style.opacity = '0.5' }, 0);
     }
 
     function handleDragEnd(e) {
         if (draggedItem) {
-             draggedItem.style.opacity = '1';
+            draggedItem.style.opacity = '1';
         }
         draggedItem = null;
         document.querySelectorAll('.verb-drop-zone.over, .phrase-drop-zone.over').forEach(zone => zone.classList.remove('over'));
@@ -466,26 +657,26 @@
 
     function handleDragOver(e) {
         e.preventDefault();
-         if (e.dataTransfer) {
+        if (e.dataTransfer) {
             e.dataTransfer.dropEffect = 'move';
-         }
-         const dropZone = e.target.closest('.verb-drop-zone, .phrase-drop-zone');
-         if (dropZone && draggedItem) {
-             const isVerbItem = draggedItem.classList.contains('verb-drag-item');
-             const isVerbZone = dropZone.classList.contains('verb-drop-zone');
-             const isPhraseItem = draggedItem.classList.contains('phrase-drag-item');
-             const isPhraseZone = dropZone.classList.contains('phrase-drop-zone');
+        }
+        const dropZone = e.target.closest('.verb-drop-zone, .phrase-drop-zone');
+        if (dropZone && draggedItem) {
+            const isVerbItem = draggedItem.classList.contains('verb-drag-item');
+            const isVerbZone = dropZone.classList.contains('verb-drop-zone');
+            const isPhraseItem = draggedItem.classList.contains('phrase-drag-item');
+            const isPhraseZone = dropZone.classList.contains('phrase-drop-zone');
 
-             if ((isVerbItem && isVerbZone && !dropZone.classList.contains('filled')) ||
-                 (isPhraseItem && isPhraseZone && !dropZone.querySelector('.dropped-phrase'))) {
-                 dropZone.classList.add('over');
-             }
-         }
+            if ((isVerbItem && isVerbZone && !dropZone.classList.contains('filled')) ||
+                (isPhraseItem && isPhraseZone && !dropZone.querySelector('.dropped-phrase'))) {
+                dropZone.classList.add('over');
+            }
+        }
     }
 
-     function handleDragLeave(e) {
-         e.target.closest('.verb-drop-zone, .phrase-drop-zone')?.classList.remove('over');
-     }
+    function handleDragLeave(e) {
+        e.target.closest('.verb-drop-zone, .phrase-drop-zone')?.classList.remove('over');
+    }
 
     function handleDrop(e) {
         e.preventDefault();
@@ -494,7 +685,6 @@
 
         dropZone.classList.remove('over');
 
-        // Handle Verb Drop
         if (dropZone.classList.contains('verb-drop-zone') && draggedItem.classList.contains('verb-drag-item')) {
             if (dropZone.classList.contains('filled')) return;
             const draggedVerb = draggedItem.dataset.verb;
@@ -508,20 +698,18 @@
                 dropZone.classList.add('incorrect');
                 setTimeout(() => dropZone.classList.remove('incorrect'), 800);
             }
-        }
-        // Handle Phrase Drop
-        else if (dropZone.classList.contains('phrase-drop-zone') && draggedItem.classList.contains('phrase-drag-item')) {
+        } else if (dropZone.classList.contains('phrase-drop-zone') && draggedItem.classList.contains('phrase-drag-item')) {
             if (dropZone.querySelector('.dropped-phrase')) return;
             const draggedId = draggedItem.dataset.id;
             const targetId = dropZone.dataset.id;
 
             if (draggedId === targetId) {
-                 const droppedPhraseSpan = document.createElement('span');
-                 droppedPhraseSpan.className = 'dropped-phrase';
-                 droppedPhraseSpan.textContent = draggedItem.textContent;
-                 dropZone.appendChild(droppedPhraseSpan);
-                 dropZone.classList.add('correct');
-                 draggedItem.remove();
+                const droppedPhraseSpan = document.createElement('span');
+                droppedPhraseSpan.className = 'dropped-phrase';
+                droppedPhraseSpan.textContent = draggedItem.textContent;
+                dropZone.appendChild(droppedPhraseSpan);
+                dropZone.classList.add('correct');
+                draggedItem.remove();
             } else {
                 dropZone.classList.add('incorrect');
                 setTimeout(() => dropZone.classList.remove('incorrect'), 800);
@@ -529,163 +717,156 @@
         }
     }
 
-    // --- Touch Event Handlers ---
-     function handleTouchStart(e) {
-         if (e.target.classList.contains('verb-drag-item') || e.target.classList.contains('phrase-drag-item')) {
-             e.preventDefault();
-             draggedItem = e.target;
-             const touch = e.touches[0];
-             touchStartX = touch.clientX;
-             touchStartY = touch.clientY;
+    function handleTouchStart(e) {
+        if (e.target.classList.contains('verb-drag-item') || e.target.classList.contains('phrase-drag-item')) {
+            e.preventDefault();
+            draggedItem = e.target;
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
 
-             const clone = draggedItem.cloneNode(true);
-             clone.style.position = 'absolute';
-             clone.style.zIndex = '1000';
-             clone.style.opacity = '0.7';
-             clone.style.pointerEvents = 'none';
-             document.body.appendChild(clone);
-             draggedItem.clone = clone;
+            const clone = draggedItem.cloneNode(true);
+            clone.style.position = 'absolute';
+            clone.style.zIndex = '1000';
+            clone.style.opacity = '0.7';
+            clone.style.pointerEvents = 'none';
+            document.body.appendChild(clone);
+            draggedItem.clone = clone;
 
-             clone.style.left = touch.clientX - clone.offsetWidth / 2 + 'px';
-             clone.style.top = touch.clientY - clone.offsetHeight / 2 + 'px';
+            clone.style.left = touch.clientX - clone.offsetWidth / 2 + 'px';
+            clone.style.top = touch.clientY - clone.offsetHeight / 2 + 'px';
 
-             draggedItem.style.opacity = '0.5';
-         }
-     }
+            draggedItem.style.opacity = '0.5';
+        }
+    }
 
-     function handleTouchMove(e) {
-         if (!draggedItem || !draggedItem.clone) return;
-         e.preventDefault();
+    function handleTouchMove(e) {
+        if (!draggedItem || !draggedItem.clone) return;
+        e.preventDefault();
 
-         const touch = e.touches[0];
-         const clone = draggedItem.clone;
+        const touch = e.touches[0];
+        const clone = draggedItem.clone;
 
-         clone.style.left = touch.clientX - clone.offsetWidth / 2 + 'px';
-         clone.style.top = touch.clientY - clone.offsetHeight / 2 + 'px';
+        clone.style.left = touch.clientX - clone.offsetWidth / 2 + 'px';
+        clone.style.top = touch.clientY - clone.offsetHeight / 2 + 'px';
 
-         clone.style.display = 'none';
-         const elementUnderFinger = document.elementFromPoint(touch.clientX, touch.clientY);
-         clone.style.display = '';
+        clone.style.display = 'none';
+        const elementUnderFinger = document.elementFromPoint(touch.clientX, touch.clientY);
+        clone.style.display = '';
 
-         const droppableBelow = elementUnderFinger?.closest('.verb-drop-zone, .phrase-drop-zone');
+        const droppableBelow = elementUnderFinger?.closest('.verb-drop-zone, .phrase-drop-zone');
 
-         if (currentDroppable !== droppableBelow) {
-             currentDroppable?.classList.remove('over');
-             if (droppableBelow && draggedItem) {
-                  const isVerbItem = draggedItem.classList.contains('verb-drag-item');
-                  const isVerbZone = droppableBelow.classList.contains('verb-drop-zone');
-                  const isPhraseItem = draggedItem.classList.contains('phrase-drag-item');
-                  const isPhraseZone = droppableBelow.classList.contains('phrase-drop-zone');
+        if (currentDroppable !== droppableBelow) {
+            currentDroppable?.classList.remove('over');
+            if (droppableBelow && draggedItem) {
+                const isVerbItem = draggedItem.classList.contains('verb-drag-item');
+                const isVerbZone = droppableBelow.classList.contains('verb-drop-zone');
+                const isPhraseItem = draggedItem.classList.contains('phrase-drag-item');
+                const isPhraseZone = droppableBelow.classList.contains('phrase-drop-zone');
 
-                  if (isVerbItem && isVerbZone && !droppableBelow.classList.contains('filled')) {
-                       droppableBelow.classList.add('over');
-                  } else if (isPhraseItem && isPhraseZone && !droppableBelow.querySelector('.dropped-phrase')) {
-                       droppableBelow.classList.add('over');
-                  } else {
-                       droppableBelow = null; // Incompatible drop
-                  }
-             } else {
-                  droppableBelow = null; // No valid zone
-             }
-             currentDroppable = droppableBelow;
-         }
-     }
+                if (isVerbItem && isVerbZone && !droppableBelow.classList.contains('filled')) {
+                    droppableBelow.classList.add('over');
+                } else if (isPhraseItem && isPhraseZone && !droppableBelow.querySelector('.dropped-phrase')) {
+                    droppableBelow.classList.add('over');
+                } else {
+                    droppableBelow = null;
+                }
+            } else {
+                droppableBelow = null;
+            }
+            currentDroppable = droppableBelow;
+        }
+    }
 
-     function handleTouchEnd(e) {
-         if (!draggedItem || !draggedItem.clone) return;
+    function handleTouchEnd(e) {
+        if (!draggedItem || !draggedItem.clone) return;
 
-         const clone = draggedItem.clone;
-         document.body.removeChild(clone);
-         draggedItem.clone = null;
-         draggedItem.style.opacity = '1';
+        const clone = draggedItem.clone;
+        document.body.removeChild(clone);
+        draggedItem.clone = null;
+        draggedItem.style.opacity = '1';
 
-         const dropZone = currentDroppable;
-         currentDroppable?.classList.remove('over');
+        const dropZone = currentDroppable;
+        currentDroppable?.classList.remove('over');
 
-         if (dropZone) {
-             if (dropZone.classList.contains('verb-drop-zone') && draggedItem.classList.contains('verb-drag-item')) {
-                 if (!dropZone.classList.contains('filled')) {
-                     const draggedVerb = draggedItem.dataset.verb;
-                     const targetVerb = dropZone.dataset.verb;
-                     if (draggedVerb === targetVerb) {
-                         dropZone.textContent = draggedItem.textContent;
-                         dropZone.className = 'verb-drop-zone correct filled';
-                         draggedItem.remove();
-                     } else {
-                         dropZone.classList.add('incorrect');
-                         setTimeout(() => { dropZone.classList.remove('incorrect'); }, 800);
-                     }
-                 }
-             }
-             else if (dropZone.classList.contains('phrase-drop-zone') && draggedItem.classList.contains('phrase-drag-item')) {
-                 if (!dropZone.querySelector('.dropped-phrase')) {
-                     const draggedId = draggedItem.dataset.id;
-                     const targetId = dropZone.dataset.id;
-                     if (draggedId === targetId) {
-                         const droppedPhraseSpan = document.createElement('span');
-                         droppedPhraseSpan.className = 'dropped-phrase';
-                         droppedPhraseSpan.textContent = draggedItem.textContent;
-                         dropZone.appendChild(droppedPhraseSpan);
-                         dropZone.classList.add('correct');
-                         draggedItem.remove();
-                     } else {
-                         dropZone.classList.add('incorrect');
-                         setTimeout(() => { dropZone.classList.remove('incorrect'); }, 800);
-                     }
-                 }
-             }
-         }
+        if (dropZone) {
+            if (dropZone.classList.contains('verb-drop-zone') && draggedItem.classList.contains('verb-drag-item')) {
+                if (!dropZone.classList.contains('filled')) {
+                    const draggedVerb = draggedItem.dataset.verb;
+                    const targetVerb = dropZone.dataset.verb;
+                    if (draggedVerb === targetVerb) {
+                        dropZone.textContent = draggedItem.textContent;
+                        dropZone.className = 'verb-drop-zone correct filled';
+                        draggedItem.remove();
+                    } else {
+                        dropZone.classList.add('incorrect');
+                        setTimeout(() => { dropZone.classList.remove('incorrect'); }, 800);
+                    }
+                }
+            } else if (dropZone.classList.contains('phrase-drop-zone') && draggedItem.classList.contains('phrase-drag-item')) {
+                if (!dropZone.querySelector('.dropped-phrase')) {
+                    const draggedId = draggedItem.dataset.id;
+                    const targetId = dropZone.dataset.id;
+                    if (draggedId === targetId) {
+                        const droppedPhraseSpan = document.createElement('span');
+                        droppedPhraseSpan.className = 'dropped-phrase';
+                        droppedPhraseSpan.textContent = draggedItem.textContent;
+                        dropZone.appendChild(droppedPhraseSpan);
+                        dropZone.classList.add('correct');
+                        draggedItem.remove();
+                    } else {
+                        dropZone.classList.add('incorrect');
+                        setTimeout(() => { dropZone.classList.remove('incorrect'); }, 800);
+                    }
+                }
+            }
+        }
 
-         draggedItem = null;
-         currentDroppable = null;
-     }
-
+        draggedItem = null;
+        currentDroppable = null;
+    }
 
     function resetActivity() {
-        // Reset both drag-drop areas
         initializeVerbDragDrop();
-        // Reset phrase matching area to initial state
-        phraseDragDropArea.innerHTML = ''; // Clear it
+        phraseDragDropArea.innerHTML = '';
         phraseDragDropArea.classList.add('hidden');
-        phraseReadingArea.classList.remove('hidden'); // Show reading area again
-        phraseResetBtnContainer.classList.add('hidden'); // Hide reset button
+        phraseReadingArea.classList.remove('hidden');
+        phraseResetBtnContainer.classList.add('hidden');
     }
 
-    // === Meanings Overlay Logic ===
     function populateVerbMeanings() {
-         verbMeaningsList.innerHTML = ''; // Clear previous
-         reviewVerbs.forEach(item => {
-             const li = document.createElement('li');
-             li.innerHTML = `<span class="emoji">${item.emoji}</span> ${item.verb} - ${item.meaning}`;
-             verbMeaningsList.appendChild(li);
-         });
+        verbMeaningsList.innerHTML = '';
+        reviewVerbs.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="emoji">${item.emoji}</span> ${item.verb} - ${item.meaning}`;
+            verbMeaningsList.appendChild(li);
+        });
     }
+
     function showMeanings() {
-        populateVerbMeanings(); // Populate before showing
+        populateVerbMeanings();
         meaningsOverlay.classList.add('show');
     }
+
     function hideMeanings() {
         meaningsOverlay.classList.remove('show');
     }
 
-    // === Initialization ===
     document.addEventListener('DOMContentLoaded', () => {
-        initializeVerbDragDrop(); // Initialize verb drag/drop on load
-        // Phrase matching is initialized on button click
+        initializeVerbDragDrop();
 
-         // Close overlay event listeners
-         meaningsOverlay.addEventListener('click', (e) => {
-            if (e.target === meaningsOverlay) { // Check if click is on the overlay itself
+        meaningsOverlay.addEventListener('click', (e) => {
+            if (e.target === meaningsOverlay) {
                 hideMeanings();
             }
         });
-         document.addEventListener('keydown', (e) => {
-             if (e.key === 'Escape' && meaningsOverlay.classList.contains('show')) {
-                 hideMeanings();
-             }
-         });
-    });
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && meaningsOverlay.classList.contains('show')) {
+                hideMeanings();
+            }
+        });
+    });
 </script>
 </body>
 </html>
