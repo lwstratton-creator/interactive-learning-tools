@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Question Phrases - Drag and Drop</title>
+    <title>Key Question Phrases - Match Game</title>
     <style>
         * {
             margin: 0;
@@ -37,7 +37,7 @@
         }
 
         .goal-section {
-            background: white;
+            background: #f9f9f9;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
@@ -72,97 +72,107 @@
             color: #00994D;
             font-size: 1em;
             margin-bottom: 8px;
-            border-bottom: 2px solid #F2CB05;
-            padding-bottom: 4px;
-        }
-
-        h2 {
-            color: #00994D;
-            font-size: 1.1em;
-            margin-bottom: 10px;
             text-align: center;
-            border-bottom: 2px solid #F2CB05;
-            padding-bottom: 5px;
         }
 
         .instructions {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #555;
             font-style: italic;
             margin-bottom: 15px;
             text-align: center;
+            background: rgba(242, 203, 5, 0.2);
+            padding: 8px;
+            border-radius: 6px;
         }
 
-        .drag-drop-area {
+        .game-area {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             padding: 15px;
             background: #f5f5f5;
             border-radius: 8px;
             min-height: 200px;
         }
 
-        .drop-zones,
-        .drag-items {
+        .emoji-row, .word-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
-        .drag-item {
-            background: white;
-            padding: 10px;
-            border: 2px dashed #ccc;
-            border-radius: 6px;
-            cursor: move;
-            user-select: none;
+        .emoji-card, .word-card {
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
             font-weight: bold;
-            font-size: 0.95em;
-            min-height: 45px;
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            user-select: none;
         }
 
-        .drag-item:hover {
-            background: #f0f0f0;
-        }
-
-        .drop-zone {
-            border: 2px solid #ddd;
+        .emoji-card {
             background: white;
-            border-radius: 6px;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 3px solid #ddd;
             font-size: 1.8em;
         }
 
-        .drop-zone.over {
-            background: #e3f2fd;
-            border-color: #00994D;
+        .word-card {
+            background: white;
+            border: 3px solid #ddd;
+            font-size: 0.95em;
         }
 
-        .drop-zone.correct {
+        .emoji-card:hover, .word-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .emoji-card.selected, .word-card.selected {
+            background: #F2CB05;
+            border-color: #00994D;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,153,77,0.3);
+        }
+
+        .emoji-card.matched, .word-card.matched {
             background: #e0ffe0;
             border-color: #4CAF50;
-            font-size: 0.95em;
-            font-weight: bold;
+            cursor: default;
+            animation: success 0.6s ease;
         }
 
-        .drop-zone.incorrect {
+        .emoji-card.matched:hover, .word-card.matched:hover {
+            transform: none;
+        }
+
+        .emoji-card.wrong, .word-card.wrong {
             background: #ffe0e0;
             border-color: #f44336;
-            animation: shake 0.4s;
+            animation: shake 0.5s;
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        @keyframes success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
         }
 
         .button {
@@ -174,22 +184,120 @@
             cursor: pointer;
             font-size: 0.9em;
             font-weight: bold;
-            margin-top: 15px;
-            display: block;
-            width: 100%;
-            max-width: 200px;
-            margin-left: auto;
-            margin-right: auto;
+            transition: all 0.3s;
         }
 
         .button:hover {
             background: #007a3d;
+            transform: translateY(-2px);
+        }
+
+        .meanings-button {
+            background: #F2CB05;
+            color: #333;
+        }
+
+        .meanings-button:hover {
+            background: #e0b804;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #00994D;
+            margin-bottom: 10px;
+        }
+
+        .celebration {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #F2CB05 0%, #00994D 100%);
+            border-radius: 8px;
+            margin-top: 15px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            animation: fadeIn 0.5s;
+        }
+
+        .celebration.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .meanings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .meanings-overlay.show {
+            display: flex;
+        }
+
+        .meanings-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .meanings-content h3 {
+            color: #00994D;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .meanings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+
+        .meanings-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95em;
+        }
+
+        .close-button {
+            display: block;
+            width: 100%;
+            background: #00994D;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         @media (max-width: 600px) {
-            .drop-zones,
-            .drag-items {
+            .emoji-row, .word-row {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .emoji-card {
+                font-size: 1.5em;
+            }
+            
+            .word-card {
+                font-size: 0.85em;
             }
         }
     </style>
@@ -209,11 +317,39 @@
     
     <div class="activity-box">
         <h2>📋 Match Concepts to Emojis</h2>
-        <p class="instructions">Drag each word to its matching emoji</p>
+        <p class="instructions">Click an emoji, then click its matching word!</p>
         
-        <div class="drag-drop-area" id="dragDropArea"></div>
+        <div class="score" id="score">Matched: 0/6</div>
         
-        <button class="button" onclick="reset()">Reset</button>
+        <div class="game-area">
+            <div class="emoji-row" id="emojiRow"></div>
+            <div class="word-row" id="wordRow"></div>
+        </div>
+        
+        <div class="celebration" id="celebration">
+            🎉 ¡Excelente! You matched them all! 🎉
+        </div>
+        
+        <div class="button-group">
+            <button class="button" onclick="reset()">Reset Game</button>
+            <button class="button meanings-button" onclick="showMeanings()">Show Meanings</button>
+        </div>
+    </div>
+</div>
+
+<!-- Meanings Overlay -->
+<div id="meaningsOverlay" class="meanings-overlay" onclick="if(event.target===this) hideMeanings()">
+    <div class="meanings-content">
+        <h3>Keyword Meanings</h3>
+        <ul class="meanings-list">
+            <li>🔍 Qué - What</li>
+            <li>❓ Por qué - Why</li>
+            <li>💰 Cuánto - How much/many</li>
+            <li>🙏 Podrías - Could you (informal)</li>
+            <li>📢 Explicarlo - Explain it</li>
+            <li>👉 Referirse - To refer to</li>
+        </ul>
+        <button onclick="hideMeanings()" class="close-button">Close</button>
     </div>
 </div>
 
@@ -227,6 +363,10 @@ const items = [
     { word: 'Referirse', emoji: '👉' }
 ];
 
+let selectedEmoji = null;
+let selectedWord = null;
+let matchedCount = 0;
+
 function shuffle(array) {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -237,87 +377,136 @@ function shuffle(array) {
 }
 
 function init() {
-    const area = document.getElementById('dragDropArea');
-    area.innerHTML = '';
+    const emojiRow = document.getElementById('emojiRow');
+    const wordRow = document.getElementById('wordRow');
     
-    const dropZones = document.createElement('div');
-    dropZones.className = 'drop-zones';
+    emojiRow.innerHTML = '';
+    wordRow.innerHTML = '';
     
-    const dragItems = document.createElement('div');
-    dragItems.className = 'drag-items';
+    selectedEmoji = null;
+    selectedWord = null;
+    matchedCount = 0;
+    updateScore();
     
-    area.appendChild(dropZones);
-    area.appendChild(dragItems);
+    document.getElementById('celebration').classList.remove('show');
     
-    // Create drop zones (shuffled)
+    // Create emoji cards (shuffled)
     shuffle(items).forEach(item => {
-        const zone = document.createElement('div');
-        zone.className = 'drop-zone';
-        zone.textContent = item.emoji;
-        zone.dataset.word = item.word;
-        
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            if (!zone.classList.contains('correct')) {
-                zone.classList.add('over');
-            }
-        });
-        
-        zone.addEventListener('dragleave', () => {
-            zone.classList.remove('over');
-        });
-        
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            zone.classList.remove('over');
-            
-            if (zone.classList.contains('correct')) return;
-            
-            const draggedWord = e.dataTransfer.getData('text');
-            const targetWord = zone.dataset.word;
-            
-            if (draggedWord === targetWord) {
-                zone.textContent = draggedWord;
-                zone.classList.add('correct');
-                // Remove dragged item
-                const item = document.querySelector(`[data-word="${draggedWord}"].drag-item`);
-                if (item) item.remove();
-            } else {
-                zone.classList.add('incorrect');
-                setTimeout(() => zone.classList.remove('incorrect'), 600);
-            }
-        });
-        
-        dropZones.appendChild(zone);
+        const card = document.createElement('div');
+        card.className = 'emoji-card';
+        card.textContent = item.emoji;
+        card.dataset.word = item.word;
+        card.onclick = () => selectEmoji(card, item.word);
+        emojiRow.appendChild(card);
     });
     
-    // Create drag items (shuffled)
+    // Create word cards (shuffled)
     shuffle(items).forEach(item => {
-        const dragItem = document.createElement('div');
-        dragItem.className = 'drag-item';
-        dragItem.textContent = item.word;
-        dragItem.draggable = true;
-        dragItem.dataset.word = item.word;
-        
-        dragItem.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text', item.word);
-            setTimeout(() => dragItem.style.opacity = '0.5', 0);
-        });
-        
-        dragItem.addEventListener('dragend', () => {
-            dragItem.style.opacity = '1';
-        });
-        
-        dragItems.appendChild(dragItem);
+        const card = document.createElement('div');
+        card.className = 'word-card';
+        card.textContent = item.word;
+        card.dataset.word = item.word;
+        card.onclick = () => selectWord(card, item.word);
+        wordRow.appendChild(card);
     });
+}
+
+function selectEmoji(card, word) {
+    if (card.classList.contains('matched')) return;
+    
+    // Deselect previous emoji
+    if (selectedEmoji && selectedEmoji !== card) {
+        selectedEmoji.classList.remove('selected');
+    }
+    
+    selectedEmoji = card;
+    card.classList.add('selected');
+    
+    // Check if we have both selected
+    if (selectedWord) {
+        checkMatch();
+    }
+}
+
+function selectWord(card, word) {
+    if (card.classList.contains('matched')) return;
+    
+    // Deselect previous word
+    if (selectedWord && selectedWord !== card) {
+        selectedWord.classList.remove('selected');
+    }
+    
+    selectedWord = card;
+    card.classList.add('selected');
+    
+    // Check if we have both selected
+    if (selectedEmoji) {
+        checkMatch();
+    }
+}
+
+function checkMatch() {
+    const emojiWord = selectedEmoji.dataset.word;
+    const wordWord = selectedWord.dataset.word;
+    
+    if (emojiWord === wordWord) {
+        // Correct match!
+        selectedEmoji.classList.remove('selected');
+        selectedWord.classList.remove('selected');
+        selectedEmoji.classList.add('matched');
+        selectedWord.classList.add('matched');
+        
+        matchedCount++;
+        updateScore();
+        
+        selectedEmoji = null;
+        selectedWord = null;
+        
+        // Check if all matched
+        if (matchedCount === items.length) {
+            setTimeout(() => {
+                document.getElementById('celebration').classList.add('show');
+            }, 500);
+        }
+    } else {
+        // Wrong match
+        selectedEmoji.classList.add('wrong');
+        selectedWord.classList.add('wrong');
+        
+        setTimeout(() => {
+            selectedEmoji.classList.remove('selected', 'wrong');
+            selectedWord.classList.remove('selected', 'wrong');
+            selectedEmoji = null;
+            selectedWord = null;
+        }, 600);
+    }
+}
+
+function updateScore() {
+    document.getElementById('score').textContent = `Matched: ${matchedCount}/${items.length}`;
 }
 
 function reset() {
     init();
 }
 
+function showMeanings() {
+    document.getElementById('meaningsOverlay').classList.add('show');
+}
+
+function hideMeanings() {
+    document.getElementById('meaningsOverlay').classList.remove('show');
+}
+
 // Start on load
 document.addEventListener('DOMContentLoaded', init);
+
+// Close overlay on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        hideMeanings();
+    }
+});
 </script>
 </body>
 </html>
