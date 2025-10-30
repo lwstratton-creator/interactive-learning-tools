@@ -5,68 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spanish Subjunctive Practice - Soccer Chat</title>
     <style>
-        :root {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: transparent;
+            overflow-x: hidden;
+        }
+
+        .practice-module {
             --primary-color: #F2CB05;
             --secondary-color: #00994D;
             --accent-color: #C72C27;
             --text-color: #333;
             --background-color: #f9f9f9;
-            --alt-background-color: #fff;
-            --font-family: 'Arial', sans-serif;
             --highlight-color: rgba(242, 203, 5, 0.2);
             --ziggy-highlight: #FFDAB9;
             --success-color: #4CAF50;
             --error-color: #f44336;
             --soccer-green: #2E8B57;
             --soccer-white: #FFFFFF;
+            --shadow-soft: 0 4px 6px rgba(0,0,0,0.1);
+            
+            font-family: Arial, sans-serif;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            border: 3px solid var(--secondary-color);
+            border-radius: 12px;
+            background: white;
+            box-shadow: var(--shadow-soft);
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-family);
-        }
-
-        .interactive-activity-container {
-            font-family: var(--font-family);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 800px;
-            margin: 20px auto;
-            box-sizing: border-box;
-        }
-
-        .activity-section {
-            margin-bottom: 24px;
-            background-color: var(--alt-background-color);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .activity-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .activity-header h2 {
+        .section-title {
             color: var(--secondary-color);
-            margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 3px solid var(--secondary-color);
+            text-align: center;
         }
 
         .instructions {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--secondary-color);
-            line-height: 1.5;
+            background: var(--background-color);
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            line-height: 1.3;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .instructions p {
+            margin-bottom: 6px;
+        }
+
+        .instructions ul {
+            margin: 6px 0 0 18px;
+        }
+
+        .instructions li {
+            margin-bottom: 3px;
         }
 
         .typo-reference {
@@ -74,88 +78,83 @@
             color: var(--error-color);
             text-decoration: underline;
             text-decoration-style: wavy;
-            position: relative;
         }
 
-        .progress-indicator {
-            background-color: #f8f9fa;
-            height: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        .soccer-field {
+            margin: 10px 0;
+            height: 8px;
+            background: var(--soccer-green);
+            border-radius: 4px;
+            position: relative;
             overflow: hidden;
         }
 
-        .progress-bar {
-            height: 100%;
-            background-color: var(--secondary-color);
-            border-radius: 5px;
-            width: 0%;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .exercise-container {
-            margin-bottom: 24px;
-            padding: 16px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
+        .soccer-ball {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--soccer-white);
+            border-radius: 50%;
+            top: -5px;
+            left: 0;
+            transition: left 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
 
         .chat-container {
-            background-color: #f1f1f1;
+            background: #f1f1f1;
             border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 12px;
+            margin: 10px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             position: relative;
-            max-width: 500px;
+            max-width: 450px;
             margin-left: auto;
             margin-right: auto;
         }
-        
+
         .chat-container::before {
             content: "⚽";
             position: absolute;
-            top: -15px;
-            left: 20px;
-            font-size: 24px;
-            background-color: white;
-            padding: 5px;
+            top: -12px;
+            left: 15px;
+            font-size: 20px;
+            background: white;
+            padding: 4px;
             border-radius: 50%;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-        }
-
-        .message {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .message-left {
-            justify-content: flex-start;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .message-header {
             font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            margin-left: 15px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            margin-left: 12px;
             color: #606060;
-            font-size: 0.9rem;
+            font-size: 0.85em;
+        }
+
+        .message-header:first-of-type {
+            margin-top: 5px;
+        }
+
+        .message {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
         }
 
         .bubble {
-            max-width: 85%;
-            padding: 12px 15px;
-            border-radius: 18px;
-            font-size: 1rem;
+            max-width: 90%;
+            padding: 10px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
             line-height: 1.4;
-            position: relative;
-            margin-bottom: 8px;
-        }
-
-        .bubble-left {
-            background-color: white;
-            border-bottom-left-radius: 5px;
+            background: white;
+            border-bottom-left-radius: 4px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
@@ -164,17 +163,16 @@
             color: var(--error-color);
             text-decoration: underline;
             text-decoration-style: wavy;
-            position: relative;
         }
 
         .correction-input {
             display: inline-block;
-            width: 100px;
-            padding: 5px 8px;
+            width: 90px;
+            padding: 4px 7px;
             border: 2px solid #ddd;
             border-radius: 4px;
-            font-size: 0.9rem;
-            margin: 0 5px;
+            font-size: 0.85em;
+            margin: 0 4px;
             transition: all 0.3s ease;
         }
 
@@ -186,79 +184,39 @@
 
         .correction-input.correct {
             border-color: var(--success-color);
-            background-color: #e8f5e9;
+            background: #e8f5e9;
         }
 
         .correction-input.incorrect {
             border-color: var(--error-color);
-            background-color: #ffebee;
-        }
-
-        .soccer-field {
-            margin: 20px 0;
-            height: 10px;
-            background-color: var(--soccer-green);
-            border-radius: 5px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .soccer-ball {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: var(--soccer-white);
-            border-radius: 50%;
-            top: -5px;
-            left: 0;
-            transition: left 0.5s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+            background: #ffebee;
         }
 
         .check-all-button {
-            background-color: var(--secondary-color);
+            background: var(--secondary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 8px 20px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 20px auto;
+            margin: 12px auto;
             display: block;
-            font-size: 1.1rem;
+            font-size: 0.9em;
+            font-weight: bold;
         }
 
         .check-all-button:hover {
-            background-color: #006633;
-            opacity: 0.9;
-        }
-
-        .grammar-box {
-            background-color: var(--highlight-color);
-            padding: 16px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .grammar-box h3 {
-            color: var(--secondary-color);
-            margin-top: 0;
-        }
-
-        .grammar-box ul {
-            margin-bottom: 0;
-            line-height: 1.6;
+            background: #006633;
+            transform: translateY(-2px);
         }
 
         .celebration {
             text-align: center;
-            padding: 20px;
-            background-color: #f8f8f8;
+            padding: 12px;
+            background: #f8f8f8;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-top: 12px;
             display: none;
         }
 
@@ -267,148 +225,179 @@
         }
 
         .celebration-emoji {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .celebration h2 {
+            margin: 8px 0;
+            font-size: 1.2em;
+            color: var(--secondary-color);
+        }
+
+        .celebration p {
+            font-size: 0.85em;
+            margin: 4px 0;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
         .floating-emoji {
             animation: float 2s ease-in-out infinite;
             display: inline-block;
+            margin: 0 4px;
+        }
+
+        .grammar-box {
+            background: var(--highlight-color);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .grammar-box h3 {
+            color: var(--secondary-color);
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        .grammar-box ul {
+            margin-left: 18px;
+            line-height: 1.4;
+            font-size: 0.85em;
+        }
+
+        .grammar-box li {
+            margin-bottom: 3px;
+        }
+
+        .grammar-box ul ul {
+            margin-top: 3px;
+            margin-bottom: 6px;
         }
 
         .ziggy-highlight-text {
-            background-color: var(--ziggy-highlight);
-            padding: 2px 5px;
+            background: var(--ziggy-highlight);
+            padding: 2px 4px;
             border-radius: 3px;
             font-weight: bold;
         }
 
-        .mobile-instructions {
-            display: none;
+        .help-text {
+            text-align: center;
+            margin-top: 12px;
+            color: #777;
+            font-size: 0.8em;
+            line-height: 1.3;
         }
 
-        @media (max-width: 768px) {
-            .mobile-instructions {
-                display: block;
-                font-size: .8rem;
-                margin-top: 10px;
-                color: #777;
+        @media (max-width: 400px) {
+            .practice-module {
+                padding: 12px;
             }
-            
+
             .bubble {
-                max-width: 80%;
+                max-width: 85%;
             }
-            
+
             .correction-input {
-                width: 90px;
-                font-size: 0.85rem;
+                width: 80px;
+                font-size: 0.8em;
             }
         }
     </style>
 </head>
 <body>
-<div class="interactive-activity-container">
-    <div class="activity-section">
-        <div class="activity-header">
-            <h2>🏋️‍♀️ Practice Drills: El Subjuntivo</h2>
-        </div>
+<div class="practice-module">
+    <div class="section-title">🏋️‍♀️ Practice Drills: El Subjuntivo</div>
 
-        <div class="instructions">
-            <p>A couple of friends, who are absolute soccer fans, are chatting about the next soccer match they will watch together. There are some typos that make it hard to understand them.</p>
-            <ul>
-                <li>Correct the <span class="typo-reference">typos</span> using the correct subjunctive forms</li>
-                <li>Type your corrections in the input fields</li>
-                <li>Click "Check All Answers" when you're done</li>
-            </ul>
-        </div>
+    <div class="instructions">
+        <p>A couple of friends, who are absolute soccer fans, are chatting about the next soccer match they will watch together. There are some typos that make it hard to understand them.</p>
+        <ul>
+            <li>Correct the <span class="typo-reference">typos</span> using the correct subjunctive forms</li>
+            <li>Type your corrections in the input fields</li>
+            <li>Click "Check All Answers" when you're done</li>
+        </ul>
+    </div>
 
-        <div class="progress-indicator">
-            <div class="soccer-field">
-                <div class="soccer-ball" id="soccer-ball">⚽</div>
+    <div class="soccer-field">
+        <div class="soccer-ball" id="soccer-ball">⚽</div>
+    </div>
+
+    <div class="chat-container">
+        <div class="message-header">Julieta 👧</div>
+        <div class="message">
+            <div class="bubble">
+                ¿Cómo crees que va a quedar el partido del viernes? ⚽
             </div>
         </div>
-
-        <div class="exercise-container">
-            <div class="chat-container">
-                <div class="message-header">Julieta 👧</div>
-                <div class="message message-left">
-                    <div class="bubble bubble-left">
-                        ¿Cómo crees que va a quedar el partido del viernes? ⚽
-                    </div>
-                </div>
-                
-                <div class="message-header">Isabel 👩</div>
-                <div class="message message-left">
-                    <div class="bubble bubble-left">
-                        Pues ojalá <span class="typo-text">gae</span> <input type="text" class="correction-input" id="correction-1" placeholder="Correct form"> el Junior 🔵⚪
-                    </div>
-                </div>
-                
-                <div class="message-header">Julieta 👧</div>
-                <div class="message message-left">
-                    <div class="bubble bubble-left">
-                        Yo solo quiero que Gerrard no <span class="typo-text">coete</span> <input type="text" class="correction-input" id="correction-2" placeholder="Correct form"> ninguna falta. 🙏
-                    </div>
-                </div>
-                
-                <div class="message-header">Isabel 👩</div>
-                <div class="message message-left">
-                    <div class="bubble bubble-left">
-                        Yo quiero que el Junior no <span class="typo-text">perda</span> <input type="text" class="correction-input" id="correction-3" placeholder="Correct form"> ni una sola oportunidad de hacer gol. ⚽🥅
-                    </div>
-                </div>
-                
-                <div class="message-header">Julieta 👧</div>
-                <div class="message message-left">
-                    <div class="bubble bubble-left">
-                        Pues que <span class="typo-text">gne</span> <input type="text" class="correction-input" id="correction-4" placeholder="Correct form"> el mejor. 🏆
-                    </div>
-                </div>
-            </div>
-
-            <button class="check-all-button" onclick="checkAllAnswers()">Check All Answers</button>
-
-            <div class="celebration" id="celebration">
-                <div class="celebration-emoji">
-                    <span class="floating-emoji">⚽</span>
-                    <span class="floating-emoji">🏆</span>
-                    <span class="floating-emoji">🎉</span>
-                </div>
-                <h2>¡GOOOOOL! 🥅</h2>
-                <p>You've scored with your knowledge of the subjunctive!</p>
-                <p>Now you can understand what these soccer fans are hoping for in their match.</p>
+        
+        <div class="message-header">Isabel 👩</div>
+        <div class="message">
+            <div class="bubble">
+                Pues ojalá <span class="typo-text">gae</span> <input type="text" class="correction-input" id="correction-1" placeholder="Correct form"> el Junior 🔵⚪
             </div>
         </div>
-
-        <div class="grammar-box">
-            <h3>💡 Remember:</h3>
-            <ul>
-                <li><strong>Present subjunctive forms:</strong>
-                    <ul>
-                        <li>-ar verbs: change -ar to -e (hablar → hable)</li>
-                        <li>-er/-ir verbs: change to -a (comer → coma, vivir → viva)</li>
-                    </ul>
-                </li>
-                <li>Structure: Ojalá/Espero que + (no) + [verb in present subjunctive]</li>
-                <li>"Ojalá" comes from Arabic and expresses a strong wish or hope</li>
-                <li>Watch out for stem-changing verbs! They usually change in subjunctive too</li>
-            </ul>
+        
+        <div class="message-header">Julieta 👧</div>
+        <div class="message">
+            <div class="bubble">
+                Yo solo quiero que Gerrard no <span class="typo-text">coete</span> <input type="text" class="correction-input" id="correction-2" placeholder="Correct form"> ninguna falta. 🙏
+            </div>
         </div>
-
-        <div style="text-align: center; margin-top: 20px; color: #777;">
-            🆘 Need Extra Help? Type <span class="ziggy-highlight-text">Ayuda, Ziggy!</span> and tell Ziggy what you don't understand.
-            <p class="mobile-instructions">💡 <strong>Tip:</strong> Type the correct subjunctive form in each blank.</p>
+        
+        <div class="message-header">Isabel 👩</div>
+        <div class="message">
+            <div class="bubble">
+                Yo quiero que el Junior no <span class="typo-text">perda</span> <input type="text" class="correction-input" id="correction-3" placeholder="Correct form"> ni una sola oportunidad de hacer gol. ⚽🥅
+            </div>
         </div>
+        
+        <div class="message-header">Julieta 👧</div>
+        <div class="message">
+            <div class="bubble">
+                Pues que <span class="typo-text">gne</span> <input type="text" class="correction-input" id="correction-4" placeholder="Correct form"> el mejor. 🏆
+            </div>
+        </div>
+    </div>
+
+    <button class="check-all-button" onclick="checkAllAnswers()">Check All Answers</button>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-emoji">
+            <span class="floating-emoji">⚽</span>
+            <span class="floating-emoji">🏆</span>
+            <span class="floating-emoji">🎉</span>
+        </div>
+        <h2>¡GOOOOOL! 🥅</h2>
+        <p>You've scored with your knowledge of the subjunctive!</p>
+        <p>Now you can understand what these soccer fans are hoping for in their match.</p>
+    </div>
+
+    <div class="grammar-box">
+        <h3>💡 Remember:</h3>
+        <ul>
+            <li><strong>Present subjunctive forms:</strong>
+                <ul>
+                    <li>-ar verbs: change -ar to -e (hablar → hable)</li>
+                    <li>-er/-ir verbs: change to -a (comer → coma, vivir → viva)</li>
+                </ul>
+            </li>
+            <li>Structure: Ojalá/Espero que + (no) + [verb in present subjunctive]</li>
+            <li>"Ojalá" comes from Arabic and expresses a strong wish or hope</li>
+            <li>Watch out for stem-changing verbs! They usually change in subjunctive too</li>
+        </ul>
+    </div>
+
+    <div class="help-text">
+        🆘 Need Extra Help? Type <span class="ziggy-highlight-text">Ayuda, Ziggy!</span> and tell Ziggy what you don't understand.
     </div>
 </div>
 
 <script>
-// Track completed exercises
 let completedExercises = {
     1: false,
     2: false,
@@ -416,7 +405,6 @@ let completedExercises = {
     4: false
 };
 
-// Correct answers
 const correctAnswers = {
     'correction-1': 'gane',
     'correction-2': 'cometa',
@@ -425,14 +413,9 @@ const correctAnswers = {
 };
 
 function updateProgress() {
-    // Count completed exercises
     const completedCount = Object.values(completedExercises).filter(value => value).length;
     const totalExercises = Object.keys(completedExercises).length;
-    
-    // Calculate percentage
     const percentage = (completedCount / totalExercises) * 100;
-    
-    // Move the soccer ball
     document.getElementById('soccer-ball').style.left = `${percentage}%`;
 }
 
@@ -443,7 +426,7 @@ function checkAnswer(inputId) {
     const questionNumber = inputId.split('-')[1];
     
     if (!userAnswer) {
-        return false; // Skip empty inputs
+        return false;
     }
     
     const isCorrect = userAnswer === correctAnswer;
@@ -465,7 +448,6 @@ function checkAnswer(inputId) {
 }
 
 function checkAllAnswers() {
-    // Check if any inputs are empty
     let allFilled = true;
     let allCorrect = true;
     let correctCount = 0;
@@ -503,31 +485,25 @@ function checkAllAnswers() {
     }
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize progress visual
     updateProgress();
     
-    // Add Enter key support
     document.querySelectorAll('.correction-input').forEach(input => {
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 checkAnswer(input.id);
                 
-                // Find next input to focus
                 const currentId = parseInt(input.id.split('-')[1]);
                 if (currentId < 4) {
                     const nextInput = document.getElementById(`correction-${currentId + 1}`);
                     if (nextInput) nextInput.focus();
                 } else {
-                    // If last input, check all answers
                     checkAllAnswers();
                 }
             }
         });
         
-        // Clear incorrect styling when typing
         input.addEventListener('input', () => {
             input.classList.remove('incorrect');
         });
