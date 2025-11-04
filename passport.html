@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Passport Challenge - Module 5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Start of Spanish Passport Challenge Widget -->
+<div id="spanish-passport-widget-container">
+  <style>
+    /* Scoped styles for the Spanish Passport Challenge Widget */
+    #spanish-passport-widget-container {
+      /* Color variables - Latin American theme */
+      --spanish-primary: #019e4b;
+      --brand-color: #051c2c;
+      --spanish-accent-1: #ffd700;
+      --spanish-accent-2: #ff6b35;
+      --spanish-secondary: #00a8cc;
+      --text-light: #ffffff;
+      --text-dark: #333333;
+      --feedback-correct: #28a745;
+      --feedback-incorrect: #dc3545;
+      --feedback-try-again: #ff9500;
+      --passport-bg: #fff9e6;
+      --passport-ink: #8B4513;
+      --passport-fail: #8B0000;
+
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, var(--brand-color) 0%, #0a2a40 100%);
+      color: var(--text-light);
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 1em auto;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      position: relative;
+      min-height: 550px;
+    }
+
+    /* --- Start Screen --- */
+    #spanish-passport-widget-container #spw-start-screen { 
+      text-align: center; 
+      padding: 10px 0 25px;
+    }
+    #spanish-passport-widget-container #spw-start-screen h2.spw-main-title {
+      font-family: 'Poppins', sans-serif; 
+      color: var(--spanish-accent-2); 
+      font-size: 2.8rem;
+      font-weight: 700; 
+      margin-top: 0.8em;
+      margin-bottom: 0.4em;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    #spanish-passport-widget-container #spw-start-screen .spw-subtitle {
+      font-family: 'Poppins', sans-serif; 
+      color: var(--spanish-accent-1); 
+      font-size: 1.9rem;
+      font-weight: 700; 
+      margin-top: 0.2em;
+      margin-bottom: 0.8em;
+    }
+    #spanish-passport-widget-container #spw-start-screen .spw-flag-container {
+      position: relative;
+      width: 4.5rem;
+      height: 4.5rem;
+      margin: 0.5em auto 0.8em auto;
+      perspective: 1200px;
+    }
+    
+    #spanish-passport-widget-container #spw-start-screen .spw-emoji-large {
+      display: block; 
+      font-size: 4.5rem;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      backface-visibility: hidden;
+    }
+    
+    #spanish-passport-widget-container #spw-start-screen .spw-flag-latam {
+      animation: spw-wave-flag 3s ease-in-out infinite;
+    }
+    
+    #spanish-passport-widget-container #spw-start-screen p.spw-intro-guide {
+      font-size: 1.2rem;
+      font-weight: bold; 
+      color: var(--spanish-primary);
+      margin-bottom: 2em;
+      margin-top: 1em;
+    }
+    #spanish-passport-widget-container #spw-start-button {
+      background-color: var(--spanish-primary); 
+      font-size: 1.3rem;
+      padding: 16px 30px;
+      margin-top: 30px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    #spanish-passport-widget-container #spw-start-button:hover,
+    #spanish-passport-widget-container #spw-start-button:focus {
+      background-color: #017a3c;
+      transform: scale(1.03);
+    }
+    #spanish-passport-widget-container #spw-start-button:active { 
+      transform: scale(0.97); 
+    }
+
+    /* --- Ready Screen --- */
+    #spanish-passport-widget-container #spw-ready-screen {
+      text-align: center;
+      padding: 20px 0;
+    }
+    #spanish-passport-widget-container .spw-ready-content {
+      padding: 20px;
+    }
+    #spanish-passport-widget-container .spw-ready-title {
+      font-family: 'Poppins', sans-serif;
+      color: var(--spanish-accent-1);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5em;
+    }
+    #spanish-passport-widget-container .spw-ready-message {
+      font-size: 1.3rem;
+      color: var(--text-light);
+      margin-bottom: 1em;
+      line-height: 1.6;
+    }
+    #spanish-passport-widget-container .spw-ready-message strong {
+      color: var(--spanish-accent-2);
+      font-size: 1.4rem;
+    }
+    #spanish-passport-widget-container .spw-ready-tip {
+      font-size: 1.1rem;
+      color: var(--spanish-primary);
+      margin-bottom: 2em;
+      font-style: italic;
+    }
+    #spanish-passport-widget-container #spw-begin-button {
+      background-color: var(--spanish-accent-2);
+      font-size: 1.3rem;
+      padding: 16px 30px;
+      margin-top: 20px;
+    }
+
+    /* --- Countdown Screen --- */
+    #spanish-passport-widget-container #spw-countdown-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 25px;
+    }
+    #spanish-passport-widget-container .spw-countdown-container {
+      text-align: center;
+      width: 100%;
+    }
+    #spanish-passport-widget-container .spw-countdown-number {
+      font-family: 'Poppins', sans-serif;
+      font-size: 5rem;
+      font-weight: 700;
+      color: var(--spanish-accent-1);
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      animation: spw-countdownPulse 1s ease-out;
+    }
+    #spanish-passport-widget-container .spw-countdown-go {
+      font-size: 4rem;
+      color: var(--spanish-primary);
+      animation: spw-countdownExplode 0.6s ease-out;
+    }
+
+    /* --- General Elements --- */
+    #spanish-passport-widget-container h3 { 
+      color: var(--spanish-primary); 
+      text-align: center; 
+      margin-bottom: 1em; 
+    }
+    #spanish-passport-widget-container p { 
+      line-height: 1.6; 
+      margin-bottom: 1em; 
+      font-size: 1rem; 
+    }
+    #spanish-passport-widget-container .spw-screen { 
+      display: none; 
+      animation: spw-fadeIn 0.5s ease-in-out;
+    }
+    #spanish-passport-widget-container .spw-screen.spw-active { 
+      display: block; 
+    }
+    #spanish-passport-widget-container .spw-button {
+      display: block; 
+      width: 100%; 
+      padding: 12px 20px; 
+      margin: 10px 0; 
+      font-size: 1rem; 
+      font-weight: bold;
+      color: var(--text-light); 
+      background-color: var(--spanish-accent-2); 
+      border: none; 
+      border-radius: 5px;
+      cursor: pointer; 
+      transition: background-color 0.3s ease, transform 0.1s ease; 
+      text-align: center; 
+      box-sizing: border-box;
+      pointer-events: auto;
+      position: relative;
+      z-index: 10;
+    }
+    #spanish-passport-widget-container .spw-button:hover,
+    #spanish-passport-widget-container .spw-button:focus { 
+      background-color: var(--spanish-accent-1); 
+      color: var(--text-dark);
+      outline: none; 
+    }
+    #spanish-passport-widget-container .spw-button:active { 
+      transform: scale(0.98); 
+    }
+
+    /* --- Question Screen --- */
+    #spanish-passport-widget-container #spw-timer {
+      font-size: 1.2rem; 
+      font-weight: bold; 
+      color: var(--spanish-accent-1); 
+      text-align: right; 
+      margin-bottom: 10px;
+      padding: 5px 10px; 
+      background-color: rgba(0,0,0,0.2); 
+      border-radius: 5px; 
+      min-height: 1.5em;
+    }
+    #spanish-passport-widget-container #spw-timer.spw-low-time { 
+      color: var(--spanish-accent-2); 
+      animation: spw-pulse 1s infinite; 
+    }
+    
+    /* --- Progress Bar --- */
+    #spanish-passport-widget-container #spw-progress-container {
+      margin-bottom: 15px;
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      height: 30px;
+    }
+    #spanish-passport-widget-container #spw-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--spanish-primary) 0%, var(--spanish-secondary) 100%);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+      width: 0%;
+      box-shadow: 0 2px 8px rgba(1, 158, 75, 0.4);
+    }
+    #spanish-passport-widget-container #spw-progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+    
+    #spanish-passport-widget-container #spw-question-area {
+      background-color: rgba(255, 255, 255, 0.1); 
+      padding: 15px; 
+      border-radius: 8px; 
+      margin-bottom: 15px;
+      border-left: 4px solid var(--spanish-primary);
+    }
+    #spanish-passport-widget-container #spw-question-text {
+      font-size: 1.1rem; 
+      font-weight: bold; 
+      margin-bottom: 15px; 
+      color: var(--spanish-accent-1);
+    }
+    #spanish-passport-widget-container #spw-question-text strong { 
+      color: var(--text-light); 
+    }
+    #spanish-passport-widget-container #spw-options-list { 
+      list-style: none; 
+      padding: 0; 
+      margin: 0; 
+    }
+    #spanish-passport-widget-container .spw-option-button {
+      display: block; 
+      width: 100%; 
+      padding: 10px 15px; 
+      margin-bottom: 8px; 
+      font-size: 1rem; 
+      color: var(--brand-color);
+      background-color: var(--text-light); 
+      border: 2px solid transparent; 
+      border-radius: 5px; 
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease; 
+      text-align: left; 
+      box-sizing: border-box;
+      pointer-events: auto;
+      position: relative;
+      z-index: 100;
+    }
+    #spanish-passport-widget-container .spw-option-button:hover:not(:disabled),
+    #spanish-passport-widget-container .spw-option-button:focus:not(:disabled) { 
+      background-color: #f0f0f0; 
+      border-color: var(--spanish-primary); 
+      outline: none; 
+    }
+    #spanish-passport-widget-container .spw-option-button.spw-correct { 
+      background-color: var(--feedback-correct); 
+      color: var(--text-light); 
+      border-color: var(--feedback-correct); 
+      font-weight: bold; 
+    }
+    #spanish-passport-widget-container .spw-option-button.spw-incorrect { 
+      background-color: var(--feedback-incorrect); 
+      color: var(--text-light); 
+      border-color: var(--feedback-incorrect); 
+      opacity: 0.6; 
+      cursor: not-allowed; 
+    }
+    #spanish-passport-widget-container .spw-option-button:disabled { 
+      cursor: not-allowed; 
+    }
+
+    /* --- Next Button --- */
+    #spanish-passport-widget-container #spw-next-button {
+      visibility: hidden;
+      min-height: 46px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    #spanish-passport-widget-container #spw-next-button.spw-visible {
+      visibility: visible;
+    }
+
+    /* --- Inline Feedback --- */
+    #spanish-passport-widget-container #spw-feedback-inline { 
+      margin-top: 15px; 
+      padding: 10px; 
+      border-radius: 5px; 
+      font-weight: bold; 
+      text-align: center; 
+      display: none; 
+      color: var(--text-light); 
+      min-height: 1.5em; 
+    }
+    #spanish-passport-widget-container #spw-feedback-inline.spw-try-again { 
+      background-color: var(--feedback-try-again); 
+      color: var(--text-dark); 
+      display: block; 
+    }
+
+    /* --- Pop-up Feedback --- */
+    #spanish-passport-widget-container #spw-feedback-popup {
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%) scale(0); 
+      background-color: var(--feedback-correct); 
+      color: var(--text-light); 
+      padding: 30px 45px; 
+      border-radius: 15px; 
+      border: 4px solid white;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(255, 255, 255, 0.2);
+      text-align: center; 
+      font-size: 1.6rem; 
+      font-weight: bold; 
+      z-index: 10000; 
+      display: flex; 
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center; 
+      opacity: 0; 
+      pointer-events: none;
+      transition: opacity 0.3s ease-out;
+      line-height: 1.5;
+      min-width: 280px;
+    }
+    #spanish-passport-widget-container #spw-feedback-popup.spw-showing {
+      opacity: 1; 
+      pointer-events: auto; 
+      animation: spw-celebrationBurst 0.5s ease-out forwards;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    #spanish-passport-widget-container #spw-feedback-popup.spw-hiding {
+      opacity: 0;
+      pointer-events: none;
+      animation: spw-slideAway 0.4s ease-in forwards;
+    }
+
+    /* --- Passport Stamp Page --- */
+    #spanish-passport-widget-container .spw-passport-page { 
+      background-color: var(--passport-bg); 
+      color: var(--text-dark); 
+      padding: 25px; 
+      border-radius: 8px; 
+      border: 1px solid #d4a574; 
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1); 
+      position: relative;
+      text-align: center;
+    }
+    #spanish-passport-widget-container .spw-passport-page h3 { 
+      font-family: 'Poppins', sans-serif; 
+      color: var(--brand-color); 
+      margin-bottom: 15px; 
+      font-size: 1.5rem; 
+      text-align: center; 
+      border-bottom: 2px solid var(--passport-ink); 
+      padding-bottom: 8px; 
+    }
+    #spanish-passport-widget-container .spw-stamp { 
+      border: 5px double var(--passport-ink); 
+      border-radius: 50%; 
+      width: 160px;
+      height: 160px;
+      margin: 20px auto; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      text-align: center; 
+      color: var(--passport-ink); 
+      background-color: rgba(255, 255, 255, 0.6); 
+      transform: rotate(-10deg); 
+      animation: spw-stampAnimation 0.8s ease-out; 
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+      padding: 8px;
+    }
+    #spanish-passport-widget-container .spw-stamp.spw-failed { 
+      border-color: var(--passport-fail); 
+      color: var(--passport-fail); 
+      transform: rotate(5deg); 
+    }
+    #spanish-passport-widget-container .spw-stamp-icon { 
+      font-size: 2.5rem; 
+      margin-bottom: 8px;
+      display: block;
+    }
+    #spanish-passport-widget-container .spw-stamp-text { 
+      font-family: 'Poppins', sans-serif; 
+      font-weight: 700; 
+      font-size: 0.65rem; 
+      line-height: 1.0;
+      text-transform: uppercase; 
+      max-width: 85%;
+      word-wrap: break-word;
+      margin-top: 8px;
+      margin-bottom: 5px;
+    }
+    #spanish-passport-widget-container .spw-stamp-module { 
+      font-size: 0.6rem; 
+      font-weight: 400; 
+      margin-top: 5px;
+      max-width: 85%;
+      line-height: 1.0;
+    }
+    #spanish-passport-widget-container .spw-completion-message { 
+      font-style: normal; 
+      margin: 30px auto 1.5em;
+      text-align: center; 
+      font-size: 1.1rem; 
+      color: var(--brand-color); 
+      line-height: 1.8;
+      max-width: 90%;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      display: block;
+      width: 80%;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    #spanish-passport-widget-container .spw-completion-message strong { 
+      color: var(--spanish-primary); 
+    }
+
+    /* --- Animations --- */
+    @keyframes spw-fadeIn { 
+      from { opacity: 0; } 
+      to { opacity: 1; } 
+    }
+    
+    @keyframes spw-wave-flag {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      25% { transform: translateX(-50%) rotate(-5deg); }
+      75% { transform: translateX(-50%) rotate(5deg); }
+    }
+    
+    @keyframes spw-celebrationBurst {
+      0% { 
+        transform: translate(-50%, -50%) scale(0); 
+        opacity: 0; 
+        border-radius: 50%; 
+        box-shadow: 0 0 0 0 rgba(255, 255, 0, 0.8), 0 0 0 0 rgba(255, 255, 255, 0.2); 
+      }
+      70% { 
+        transform: translate(-50%, -50%) scale(1.05); 
+        opacity: 1; 
+        border-radius: 25px; 
+        box-shadow: 0 0 20px 10px rgba(1, 158, 75, 0.4), 0 0 0 8px rgba(255, 255, 255, 0.3); 
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 1; 
+        border-radius: 15px; 
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(255, 255, 255, 0.2); 
+      }
+    }
+    
+    @keyframes spw-slideAway {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -150%) scale(0.4);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes spw-stampAnimation {
+      0% { transform: scale(2) rotate(-30deg); opacity: 0; } 
+      60% { transform: scale(0.9) rotate(5deg); opacity: 1; }
+      80% { transform: scale(1.05) rotate(-12deg); } 
+      100% { transform: scale(1) rotate(-10deg); opacity: 1; }
+    }
+    
+    @keyframes spw-pulse {
+      0% { transform: scale(1); opacity: 1; } 
+      50% { transform: scale(1.05); opacity: 0.7; } 
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes spw-countdownPulse {
+      0% { 
+        transform: scale(0.5); 
+        opacity: 0;
+      }
+      50% { 
+        transform: scale(1.2); 
+        opacity: 1;
+      }
+      100% { 
+        transform: scale(1); 
+        opacity: 1;
+      }
+    }
+
+    @keyframes spw-countdownExplode {
+      0% { 
+        transform: scale(0.8); 
+        opacity: 0;
+      }
+      50% { 
+        transform: scale(1.3); 
+        opacity: 1;
+        text-shadow: 0 0 50px rgba(1, 158, 75, 0.8);
+      }
+      100% { 
+        transform: scale(1); 
+        opacity: 1;
+      }
+    }
+
+    /* --- Mobile Responsiveness --- */
+    @media (max-width: 480px) {
+      #spanish-passport-widget-container { padding: 20px; }
+      #spanish-passport-widget-container #spw-start-screen h2.spw-main-title { 
+        font-size: 2.2rem; 
+        margin-bottom: 0.3em; 
+      }
+      #spanish-passport-widget-container #spw-start-screen .spw-subtitle { 
+        font-size: 1.5rem; 
+        margin-bottom: 0.4em; 
+      }
+      #spanish-passport-widget-container #spw-start-screen .spw-flag-container { 
+        height: 4rem;
+        width: 4rem;
+        margin: 0.3em auto 0.5em auto;
+      }
+      #spanish-passport-widget-container #spw-start-screen .spw-emoji-large { 
+        font-size: 4rem; 
+      }
+      #spanish-passport-widget-container #spw-start-screen p.spw-intro-guide { 
+        font-size: 1.1rem; 
+        margin-bottom: 1.5em; 
+      }
+      #spanish-passport-widget-container #spw-start-button { 
+        font-size: 1.1rem; 
+        padding: 12px 20px; 
+        margin-top: 15px; 
+      }
+      #spanish-passport-widget-container .spw-ready-title {
+        font-size: 1.8rem;
+      }
+      #spanish-passport-widget-container .spw-ready-message {
+        font-size: 1.1rem;
+      }
+      #spanish-passport-widget-container .spw-ready-message strong {
+        font-size: 1.2rem;
+      }
+      #spanish-passport-widget-container .spw-ready-tip {
+        font-size: 1rem;
+      }
+      #spanish-passport-widget-container #spw-begin-button {
+        font-size: 1.1rem;
+        padding: 12px 20px;
+      }
+      #spanish-passport-widget-container .spw-countdown-number {
+        font-size: 5rem;
+      }
+      #spanish-passport-widget-container .spw-countdown-go {
+        font-size: 4rem;
+      }
+      #spanish-passport-widget-container #spw-progress-container {
+        height: 25px;
+        margin-bottom: 12px;
+      }
+      #spanish-passport-widget-container #spw-progress-text {
+        font-size: 0.8rem;
+      }
+      #spanish-passport-widget-container h3 { font-size: 1.1rem; }
+      #spanish-passport-widget-container .spw-passport-page h3 { font-size: 1.3rem; }
+      #spanish-passport-widget-container .spw-button { padding: 10px 15px; font-size: 0.95rem; }
+      #spanish-passport-widget-container #spw-next-button { min-height: 42px; }
+      #spanish-passport-widget-container #spw-question-text { font-size: 1rem; }
+      #spanish-passport-widget-container .spw-option-button { padding: 8px 12px; font-size: 0.9rem; }
+      #spanish-passport-widget-container #spw-timer { font-size: 1rem; }
+      #spanish-passport-widget-container .spw-stamp { width: 130px; height: 130px; }
+      #spanish-passport-widget-container .spw-stamp-icon { font-size: 2.1rem; margin-bottom: 6px; }
+      #spanish-passport-widget-container .spw-stamp-text { font-size: 0.58rem; line-height: 1.0; margin-top: 6px; }
+      #spanish-passport-widget-container .spw-stamp-module { font-size: 0.55rem; }
+      #spanish-passport-widget-container .spw-stamp-module { font-size: 0.7rem; }
+      #spanish-passport-widget-container .spw-completion-message { 
+        font-size: 0.95rem; 
+        line-height: 1.6; 
+        padding: 12px;
+        max-width: 95%;
+        width: 90%;
+      }
+      #spanish-passport-widget-container #spw-feedback-popup { 
+        font-size: 1.2rem; 
+        padding: 15px 20px; 
+        width: 80%; 
+        min-width: 250px;
+      }
+    }
+  </style>
+
+  <!-- HTML Structure -->
+  <div id="spw-start-screen" class="spw-screen spw-active">
+    <h2 class="spw-main-title">JOURNEYS</h2>
+    <div class="spw-flag-container">
+      <span class="spw-emoji-large spw-flag-latam">🌎</span>
+    </div>
+    <h3 class="spw-subtitle">Passport Challenge</h3>
+    <p class="spw-intro-guide">¡Buenos días! Ana here with daily routines! ☀️</p>
+    <button id="spw-start-button" class="spw-button">🚀 Let's Go! ¡Vamos!</button>
+  </div>
+
+  <div id="spw-ready-screen" class="spw-screen">
+    <div class="spw-ready-content">
+      <h2 class="spw-ready-title">Ready for the Challenge?</h2>
+      <p class="spw-ready-message">⏱️ You have <strong>2 minutes</strong> to complete this challenge!</p>
+      <p class="spw-ready-tip">Answer all questions correctly before time runs out.</p>
+      <button id="spw-begin-button" class="spw-button">Begin Challenge! 🎯</button>
+    </div>
+  </div>
+
+  <div id="spw-countdown-screen" class="spw-screen">
+    <div class="spw-countdown-container">
+      <div id="spw-countdown-number" class="spw-countdown-number"></div>
+    </div>
+  </div>
+
+  <div id="spw-question-screen" class="spw-screen">
+    <div id="spw-timer">Time Left: 2:00</div>
+    <div id="spw-progress-container">
+      <div id="spw-progress-bar"></div>
+      <div id="spw-progress-text">Question 1 of 10</div>
+    </div>
+    <div id="spw-question-area">
+      <p id="spw-question-text"><strong>Ana asks:</strong> [Question text goes here]</p>
+      <ul id="spw-options-list"></ul>
+    </div>
+    <div id="spw-feedback-inline" role="alert" aria-live="assertive"></div>
+    <button id="spw-next-button" class="spw-button">Next Question ▶️</button>
+  </div>
+
+  <div id="spw-completion-screen" class="spw-screen">
+    <div class="spw-passport-page">
+      <h3>Journeys Passport Control</h3>
+      <div id="spw-stamp-area"></div>
+      <p id="spw-completion-message">[Completion message placeholder]</p>
+      <button id="spw-restart-button" class="spw-button">🔄 Review Again?</button>
+    </div>
+  </div>
+
+  <div id="spw-feedback-popup" role="alert" aria-live="assertive"></div>
+
+  <script>
+    // Scoped JavaScript
+    (function() {
+      // Variable declarations
+      const widgetContainer = document.getElementById('spanish-passport-widget-container'); 
+      if (!widgetContainer) return; 
+      const startScreen = widgetContainer.querySelector('#spw-start-screen'); 
+      const readyScreen = widgetContainer.querySelector('#spw-ready-screen');
+      const countdownScreen = widgetContainer.querySelector('#spw-countdown-screen');
+      const questionScreen = widgetContainer.querySelector('#spw-question-screen'); 
+      const completionScreen = widgetContainer.querySelector('#spw-completion-screen'); 
+      const startButton = widgetContainer.querySelector('#spw-start-button'); 
+      const beginButton = widgetContainer.querySelector('#spw-begin-button');
+      const nextButton = widgetContainer.querySelector('#spw-next-button'); 
+      const restartButton = widgetContainer.querySelector('#spw-restart-button'); 
+      const questionTextEl = widgetContainer.querySelector('#spw-question-text'); 
+      const optionsListEl = widgetContainer.querySelector('#spw-options-list'); 
+      const feedbackInlineEl = widgetContainer.querySelector('#spw-feedback-inline'); 
+      const feedbackPopupEl = widgetContainer.querySelector('#spw-feedback-popup'); 
+      const timerEl = widgetContainer.querySelector('#spw-timer'); 
+      const stampAreaEl = widgetContainer.querySelector('#spw-stamp-area'); 
+      const completionMessageEl = widgetContainer.querySelector('#spw-completion-message');
+      const progressBarEl = widgetContainer.querySelector('#spw-progress-bar');
+      const progressTextEl = widgetContainer.querySelector('#spw-progress-text');
+      const countdownNumberEl = widgetContainer.querySelector('#spw-countdown-number');
+      
+      // Configuration
+      const quizTimeLimit = 120; 
+      const lowTimeThreshold = 30; 
+      const completionEmoji = '🎉'; 
+      const popupAppearDuration = 500; 
+      const popupFlyOffDuration = 400; 
+      const popupVisibleDuration = 1200;
+      
+      // Varied congratulatory messages in Spanish
+      const congratulatoryMessages = [
+        "🎉 ¡Correcto! ¡Excelente! 🎉",
+        "🎉 ¡Muy bien! Great work! 🎉",
+        "🎉 ¡Perfecto! Perfect! 🎉",
+        "🎉 ¡Increíble! Amazing! 🎉",
+        "🎉 ¡Genial! Awesome! 🎉"
+      ];
+      let congratsIndex = 0;
+      
+      // Quiz Data - Spanish 1 Module 5: Daily Routine (High-frequency verbs)
+      const quizData = [
+        {
+          question: "How do you say 'I wake up' in Spanish?",
+          options: ["Me despierto", "Me ducho", "Yo desayuno", "Salgo"],
+          correctAnswer: "Me despierto"
+        },
+        {
+          question: "What does 'desayuno' mean in English?",
+          options: ["I study", "I have breakfast", "I wake up", "I shower"],
+          correctAnswer: "I have breakfast"
+        },
+        {
+          question: "How do you say 'to go' in Spanish?",
+          options: ["Ir", "Salir", "Hacer", "Leer"],
+          correctAnswer: "Ir"
+        },
+        {
+          question: "What is the 'yo' (I) form of 'ir' (to go)?",
+          options: ["Voy", "Vas", "Va", "Vamos"],
+          correctAnswer: "Voy"
+        },
+        {
+          question: "How do you say 'I read' in Spanish?",
+          options: ["Leo", "Leer", "Escribo", "Estudio"],
+          correctAnswer: "Leo"
+        },
+        {
+          question: "What does 'salir' mean in English?",
+          options: ["To study", "To read", "To go out / to leave", "To wake up"],
+          correctAnswer: "To go out / to leave"
+        },
+        {
+          question: "How do you say 'I study' in Spanish?",
+          options: ["Estudio", "Estudiar", "Leo", "Escribo"],
+          correctAnswer: "Estudio"
+        },
+        {
+          question: "What is the 'yo' (I) form of 'escribir' (to write)?",
+          options: ["Escribo", "Escribir", "Leo", "Leer"],
+          correctAnswer: "Escribo"
+        },
+        {
+          question: "How do you say 'you go' (informal) in Spanish?",
+          options: ["Yo voy", "Tú vas", "Él va", "Ella va"],
+          correctAnswer: "Tú vas"
+        },
+        {
+          question: "What does 'me ducho' mean in English?",
+          options: ["I wake up", "I have breakfast", "I take a shower", "I go out"],
+          correctAnswer: "I take a shower"
+        }
+      ];
+      
+      // State Variables
+      let currentQuestionIndex = 0; 
+      let shuffledQuestions = []; 
+      let timerInterval = null; 
+      let timeLeft = quizTimeLimit; 
+      let challengeCompletedSuccessfully = false; 
+      let feedbackTimeout = null;
+
+      // --- Utility & Timer Functions ---
+      function shuffleArray(array) { 
+        for (let i = array.length - 1; i > 0; i--) { 
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]]; 
+        } 
+        return array; 
+      }
+      
+      function formatTime(seconds) { 
+        const minutes = Math.floor(seconds / 60); 
+        const remainingSeconds = seconds % 60; 
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`; 
+      }
+      
+      function updateTimerDisplay() { 
+        timerEl.textContent = `Time Left: ${formatTime(timeLeft)}`; 
+        if (timeLeft <= lowTimeThreshold && timeLeft > 0) { 
+          timerEl.classList.add('spw-low-time'); 
+        } else { 
+          timerEl.classList.remove('spw-low-time'); 
+        } 
+        if (timeLeft <= 0) { 
+          timerEl.textContent = "Time's Up!"; 
+          timerEl.classList.remove('spw-low-time'); 
+        } 
+      }
+      
+      function startTimer() { 
+        clearInterval(timerInterval); 
+        timeLeft = quizTimeLimit; 
+        challengeCompletedSuccessfully = false; 
+        updateTimerDisplay(); 
+        timerInterval = setInterval(() => { 
+          timeLeft--; 
+          updateTimerDisplay(); 
+          if (timeLeft <= 0) { 
+            clearInterval(timerInterval); 
+            if(questionScreen.classList.contains('spw-active')) { 
+              endChallenge(true); 
+            }
+          }
+        }, 1000); 
+      }
+      
+      function pauseTimer() { 
+        clearInterval(timerInterval); 
+      }
+      
+      function resumeTimer() { 
+        if (timeLeft <= 0) return; 
+        clearInterval(timerInterval); 
+        timerInterval = setInterval(() => { 
+          timeLeft--; 
+          updateTimerDisplay(); 
+          if (timeLeft <= 0) { 
+            clearInterval(timerInterval); 
+            if(questionScreen.classList.contains('spw-active')) { 
+              endChallenge(true); 
+            }
+          }
+        }, 1000); 
+      }
+
+      // --- Feedback Functions ---
+      function showPopupFeedback(message) {
+        clearTimeout(feedbackTimeout);
+        feedbackPopupEl.innerHTML = message;
+        feedbackPopupEl.classList.remove('spw-hiding');
+        feedbackPopupEl.classList.add('spw-showing');
+
+        feedbackTimeout = setTimeout(() => {
+          hidePopupFeedback();
+        }, popupVisibleDuration);
+      }
+
+      function hidePopupFeedback() {
+        clearTimeout(feedbackTimeout);
+        feedbackPopupEl.classList.remove('spw-showing');
+      }
+
+      function triggerPopupFlyOff(callback) {
+        clearTimeout(feedbackTimeout);
+        if (feedbackPopupEl.classList.contains('spw-showing')) {
+          feedbackPopupEl.classList.remove('spw-showing');
+          feedbackPopupEl.classList.add('spw-hiding');
+
+          setTimeout(() => {
+            feedbackPopupEl.classList.remove('spw-hiding');
+            if (callback) callback();
+          }, popupFlyOffDuration);
+        } else {
+          if (callback) callback();
+        }
+      }
+
+      function showInlineFeedback(message) {
+        feedbackInlineEl.textContent = message; 
+        feedbackInlineEl.className = 'spw-feedback-inline spw-try-again'; 
+        feedbackInlineEl.style.display = 'block';
+      }
+
+      function hideAllFeedback() {
+        feedbackInlineEl.style.display = 'none';
+        hidePopupFeedback();
+        feedbackPopupEl.classList.remove('spw-hiding');
+      }
+
+      // --- Progress Bar Functions ---
+      function updateProgress() {
+        const progressPercent = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+        progressBarEl.style.width = `${progressPercent}%`;
+        progressTextEl.textContent = `Question ${currentQuestionIndex + 1} of ${shuffledQuestions.length}`;
+      }
+
+      // --- Countdown Functions ---
+      function startCountdown() {
+        const countdownNumbers = [
+          { spanish: 'CINCO', number: '5' },
+          { spanish: 'CUATRO', number: '4' },
+          { spanish: 'TRES', number: '3' },
+          { spanish: 'DOS', number: '2' },
+          { spanish: 'UNO', number: '1' },
+          { spanish: '¡VAMOS!', english: "Let's Go!", isGo: true }
+        ];
+        
+        let currentIndex = 0;
+        
+        function showNextNumber() {
+          if (currentIndex < countdownNumbers.length) {
+            const current = countdownNumbers[currentIndex];
+            
+            if (current.isGo) {
+              countdownNumberEl.innerHTML = `
+                <div style="color: var(--spanish-primary); font-size: 1em; margin-bottom: 30px;">${current.spanish}</div>
+                <div style="color: var(--spanish-accent-2); font-size: 0.7em;">${current.english}</div>
+              `;
+              countdownNumberEl.className = 'spw-countdown-number spw-countdown-go';
+            } else {
+              countdownNumberEl.innerHTML = `
+                <div style="color: var(--spanish-accent-1); margin-bottom: 50px;">${current.spanish}</div>
+                <div style="font-size: 1.3em; color: var(--spanish-accent-2);">${current.number}</div>
+              `;
+              countdownNumberEl.className = 'spw-countdown-number';
+              void countdownNumberEl.offsetWidth;
+            }
+            
+            currentIndex++;
+            setTimeout(showNextNumber, 1000);
+          } else {
+            countdownNumberEl.innerHTML = '';
+            setTimeout(() => {
+              countdownScreen.classList.remove('spw-active');
+              questionScreen.classList.add('spw-active');
+              startTimer();
+              loadQuestion();
+            }, 100);
+          }
+        }
+        
+        showNextNumber();
+      }
+
+      // --- Quiz Logic Functions ---
+      function loadQuestion() {
+        hideAllFeedback();
+        nextButton.classList.remove('spw-visible');
+        updateProgress();
+
+        const currentQuestion = shuffledQuestions[currentQuestionIndex];
+        questionTextEl.innerHTML = `<strong>Ana asks:</strong> ${currentQuestion.question}`;
+        optionsListEl.innerHTML = '';
+        currentQuestion.options.forEach((option) => {
+          const li = document.createElement('li'); 
+          const button = document.createElement('button'); 
+          button.textContent = option; 
+          button.classList.add('spw-option-button');
+          button.onclick = () => {
+            selectAnswer(button, option, currentQuestion.correctAnswer, optionsListEl);
+          };
+          li.appendChild(button); 
+          optionsListEl.appendChild(li);
+        });
+      }
+
+      function selectAnswer(button, selectedOption, correctAnswer, optionsList) {
+        if (button.classList.contains('spw-incorrect') || button.classList.contains('spw-correct')) { 
+          return; 
+        }
+        feedbackInlineEl.style.display = 'none';
+
+        if (selectedOption === correctAnswer) {
+          pauseTimer(); 
+          button.classList.add('spw-correct');
+          
+          // Use varied congratulatory messages
+          const congratsMessage = congratulatoryMessages[congratsIndex];
+          congratsIndex = (congratsIndex + 1) % congratulatoryMessages.length;
+          showPopupFeedback(congratsMessage);
+
+          const allOptionButtons = optionsList.querySelectorAll('.spw-option-button');
+          allOptionButtons.forEach(btn => { 
+            btn.disabled = true; 
+            if (btn !== button && !btn.classList.contains('spw-incorrect')) { 
+              btn.style.opacity = '0.6'; 
+            } 
+          });
+
+          setTimeout(() => {
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+              nextButton.classList.add('spw-visible');
+              if(timeLeft > 0) resumeTimer();
+            } else {
+              showPopupFeedback("🏆 ¡Qué bien! You did it! 🏆");
+              challengeCompletedSuccessfully = true;
+              setTimeout(() => endChallenge(false), popupVisibleDuration + 200);
+            }
+          }, popupAppearDuration - 100);
+
+        } else {
+          button.classList.add('spw-incorrect'); 
+          button.disabled = true;
+          showInlineFeedback(`🤔 Intenta otra vez. Try another option!`);
+        }
+      }
+      
+      function nextQuestion() {
+        nextButton.classList.remove('spw-visible');
+
+        triggerPopupFlyOff(() => {
+          currentQuestionIndex++;
+          loadQuestion();
+        });
+      }
+
+      // --- Challenge End Functions ---
+      function createStampHTML(isSuccess) { 
+        const stampClass = isSuccess ? 'spw-stamp' : 'spw-stamp spw-failed'; 
+        const stampIcon = isSuccess ? '☀️' : '❌'; // Sun for morning routine/daily activities
+        
+        if (isSuccess) {
+          const stampTextTop = 'PASSPORT'; 
+          const stampTextBottom = 'STAMP'; 
+          const stampModule = 'Spanish 1 Module 5';
+          return `<div class="${stampClass}">
+            <div class="spw-stamp-icon">${stampIcon}</div>
+            <div class="spw-stamp-text">${stampTextTop}<br>${stampTextBottom}</div>
+            <div class="spw-stamp-module">${stampModule}</div>
+          </div>`; 
+        } else {
+          return `<div class="${stampClass}">
+            <div class="spw-stamp-icon">${stampIcon}</div>
+            <div class="spw-stamp-text" style="margin-top: 8px;">CHALLENGE<br>FAILED</div>
+            <div class="spw-stamp-module" style="margin-top: 8px;">Time Ran Out</div>
+          </div>`; 
+        }
+      }
+      
+      function endChallenge(timeRanOut) { 
+        clearInterval(timerInterval); 
+        questionScreen.classList.remove('spw-active'); 
+        completionScreen.classList.add('spw-active'); 
+        const success = challengeCompletedSuccessfully && !timeRanOut; 
+        stampAreaEl.innerHTML = createStampHTML(success); 
+        
+        if (success) { 
+          completionMessageEl.innerHTML = `<strong>Ana says:</strong><br>"¡Maravilloso! You passed the challenge!<br>You earned your <strong>Module 5 stamp!</strong><br>Now you can talk about your daily routine! ☀️" 🥳`; 
+        } else if (timeRanOut) { 
+          completionMessageEl.innerHTML = `<strong>Ana says:</strong><br>"¡Ánimo! Time ran out!<br>Daily practice makes perfect.<br>Let's try the challenge again!" 😊`; 
+        } else { 
+          completionMessageEl.innerHTML = `Challenge ended.<br>Please try again!`; 
+        } 
+        
+        setTimeout(() => { 
+          const stampElement = stampAreaEl.querySelector('.spw-stamp'); 
+          if (stampElement) { 
+            stampElement.style.animation = 'none'; 
+            stampElement.offsetHeight; 
+            stampElement.style.animation = null; 
+            stampElement.style.transform = success ? 'rotate(-10deg)' : 'rotate(5deg)'; 
+          }
+        }, 50); 
+      }
+
+      // --- Initialization Functions ---
+      function showReadyScreen() {
+        startScreen.classList.remove('spw-active');
+        readyScreen.classList.add('spw-active');
+      }
+
+      function startChallenge() { 
+        currentQuestionIndex = 0; 
+        shuffledQuestions = shuffleArray([...quizData]); 
+        hideAllFeedback(); 
+        readyScreen.classList.remove('spw-active');
+        completionScreen.classList.remove('spw-active'); 
+        countdownScreen.classList.add('spw-active');
+        congratsIndex = 0; // Reset congratulatory message rotation
+        startCountdown();
+      }
+      
+      function restartChallenge() { 
+        completionScreen.classList.remove('spw-active'); 
+        startScreen.classList.add('spw-active'); 
+        hideAllFeedback(); 
+        timerEl.textContent = `Time Left: ${formatTime(quizTimeLimit)}`; 
+        timerEl.classList.remove('spw-low-time'); 
+      }
+
+      // --- Event Listeners ---
+      if (startButton) {
+        startButton.addEventListener('click', showReadyScreen);
+      }
+      if (beginButton) {
+        beginButton.addEventListener('click', startChallenge);
+      }
+      if (nextButton) {
+        nextButton.addEventListener('click', nextQuestion);
+      }
+      if (restartButton) {
+        restartButton.addEventListener('click', restartChallenge);
+      }
+    })();
+  </script>
+</div>
+<!-- End of Spanish Passport Challenge Widget -->
+
+</body>
+</html>
