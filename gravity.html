@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Catching Game</title>
+<style>
+/* Scoped styles to prevent parent page interference */
+.gravity-module {
+  all: initial;
+  display: block;
+}
+
+.gravity-module * {
+  all: unset;
+  box-sizing: border-box;
+}
+
+.gravity-module {
+  --primary-color: #C41E3A;
+  --secondary-color: #FFD700;
+  --success-color: #0C8918;
+  --error-color: #8B0000;
+  --text-color: #234E52;
+  --bg-light: #F7F9FC;
+  --neutral-color: #FFFFFF;
+  --shadow-soft: 0 4px 6px rgba(139, 0, 0, 0.1);
+  --shadow-hover: 0 6px 8px rgba(139, 0, 0, 0.15);
+  
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 25px;
+  display: block;
+}
+
+.gravity-module .section-title {
+  display: block;
+  color: var(--primary-color);
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--primary-color);
+  text-align: center;
+}
+
+.gravity-module .instructions {
+  display: block;
+  background: var(--bg-light);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  color: #666;
+  border: 2px solid var(--primary-color);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.gravity-module .target-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: white;
+  color: var(--primary-color);
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 1.5em;
+  text-align: center;
+  margin: 20px 0;
+  font-weight: bold;
+  border: 4px solid var(--primary-color);
+  box-shadow: var(--shadow-soft);
+}
+
+.gravity-module .target-label {
+  font-size: 1em;
+  color: var(--text-color);
+  font-weight: normal;
+}
+
+.gravity-module .target-emoji {
+  font-size: 2em;
+  line-height: 1;
+}
+
+.gravity-module .target-meaning {
+  font-size: 1em;
+  color: var(--text-color);
+  font-weight: normal;
+}
+
+.gravity-module .round-display {
+  display: block;
+  text-align: center;
+  font-size: 1.3em;
+  margin: 15px 0;
+  color: var(--text-color);
+  font-weight: bold;
+  padding: 10px;
+  background: var(--bg-light);
+  border-radius: 8px;
+}
+
+.gravity-module .score-display {
+  display: block;
+  text-align: center;
+  font-size: 1.5em;
+  margin: 20px 0;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.gravity-module .game-area {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: var(--bg-light);
+  border: 4px solid var(--primary-color);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.gravity-module .falling-character {
+  position: absolute;
+  font-size: 3em;
+  color: var(--primary-color);
+  background: white;
+  border: 3px solid var(--primary-color);
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: var(--shadow-soft);
+  line-height: 1;
+}
+
+.gravity-module .falling-character:hover {
+  transform: scale(1.1);
+}
+
+.gravity-module .falling-character.wrong-shake {
+  animation: shake 0.5s ease;
+}
+
+.gravity-module .explosion-particle {
+  position: absolute;
+  font-size: 2.5em;
+  color: var(--primary-color);
+  font-weight: bold;
+  pointer-events: none;
+  animation: explode 1.5s ease-out forwards;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  background: white;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 2px solid var(--primary-color);
+}
+
+@keyframes explode {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(var(--vx), var(--vy)) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--vx), var(--vy)) scale(0.8);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-10px) rotate(-5deg); }
+  50% { transform: translateX(10px) rotate(5deg); }
+  75% { transform: translateX(-10px) rotate(-5deg); }
+}
+
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.gravity-module .game-controls {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.gravity-module .control-button {
+  display: inline-block;
+  padding: 12px 30px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.gravity-module .start-button {
+  background: var(--primary-color);
+  color: white;
+}
+
+.gravity-module .start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.gravity-module .start-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gravity-module .reset-button {
+  background: #666;
+  color: white;
+}
+
+.gravity-module .reset-button:hover {
+  background: #555;
+  transform: translateY(-2px);
+}
+
+.gravity-module .feedback {
+  display: block;
+  text-align: center;
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 1.3em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  line-height: 1.4;
+  font-family: Arial, sans-serif;
+}
+
+.gravity-module .feedback.show {
+  opacity: 1;
+}
+
+.gravity-module .feedback.success {
+  background: var(--success-color);
+}
+
+.gravity-module .feedback.error {
+  background: var(--error-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .gravity-module {
+    padding: 15px;
+  }
+
+  .gravity-module .section-title {
+    font-size: 1.5em;
+  }
+
+  .gravity-module .game-area {
+    height: 350px;
+  }
+
+  .gravity-module .falling-character {
+    font-size: 2.5em;
+    width: 60px;
+    height: 60px;
+  }
+
+  .gravity-module .target-display {
+    font-size: 1.2em;
+    padding: 15px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gravity-module .game-area {
+    height: 300px;
+  }
+
+  .gravity-module .falling-character {
+    font-size: 2em;
+    width: 50px;
+    height: 50px;
+  }
+
+  .gravity-module .target-display {
+    font-size: 1em;
+    padding: 12px;
+    gap: 6px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="gravity-module">
+  <div class="section-title">Catch the Character! ⬇️</div>
+  <div class="instructions">
+    👉 Click on the falling characters that match the target! Be quick!
+  </div>
+  <div class="round-display" id="roundDisplay">
+    Round 1: Practice Speed 🐢
+  </div>
+
+  <div class="score-display">
+    Score: <span id="score">0</span>
+  </div>
+  <div class="target-display" id="targetDisplay">
+    <span class="target-label">Click to catch:</span>
+    <span class="target-emoji" id="targetEmoji">🦅</span>
+    <span class="target-meaning" id="targetMeaning">bird</span>
+  </div>
+
+
+  <div class="game-area" id="gameArea">
+    <!-- Falling characters will appear here -->
+  </div>
+
+  <div class="game-controls">
+    <button class="control-button start-button" id="startButton" onclick="toggleGame()">▶️ Start Game</button>
+    <button class="control-button reset-button" onclick="resetGame()">🔄 Reset</button>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+const characters = [
+  { char: '鸟', image: '🦅', pinyin: 'niǎo', meaning: 'bird' },
+  { char: '虫', image: '🪱', pinyin: 'chóng', meaning: 'worm' },
+  { char: '网', image: '🕸️', pinyin: 'wǎng', meaning: 'net' }
+];
+
+let gameState = {
+  score: 0,
+  isRunning: false,
+  gameInterval: null,
+  spawnInterval: null,
+  targetChar: null,
+  fallingChars: [],
+  round: 1,
+  roundScore: 0,
+  catchesThisRound: 0
+};
+
+function setNewTarget() {
+  gameState.targetChar = characters[Math.floor(Math.random() * characters.length)];
+  document.getElementById('targetEmoji').textContent = gameState.targetChar.image;
+  document.getElementById('targetMeaning').textContent = gameState.targetChar.meaning;
+}
+
+function createFallingCharacter() {
+  const gameArea = document.getElementById('gameArea');
+  const randomChar = characters[Math.floor(Math.random() * characters.length)];
+  
+  const element = document.createElement('div');
+  element.className = 'falling-character';
+  element.textContent = randomChar.char;
+  element.dataset.char = randomChar.char;
+  
+  const maxLeft = gameArea.offsetWidth - 70;
+  element.style.left = Math.random() * maxLeft + 'px';
+  element.style.top = '0px';
+  
+  element.onclick = () => handleCharacterClick(element, randomChar);
+  
+  gameArea.appendChild(element);
+  
+  // Speed based on round: Round 1 = slower, Round 2 = faster
+  const baseSpeed = gameState.round === 1 ? 1.5 : 2.5;
+  const speedVariation = gameState.round === 1 ? 1 : 1.5;
+  
+  gameState.fallingChars.push({
+    element: element,
+    char: randomChar,
+    speed: baseSpeed + Math.random() * speedVariation
+  });
+}
+
+function handleCharacterClick(element, char) {
+  if (!gameState.isRunning) return;
+  
+  if (char.char === gameState.targetChar.char) {
+    // Correct! Create explosion effect
+    gameState.score += 10;
+    gameState.catchesThisRound++;
+    document.getElementById('score').textContent = gameState.score;
+    
+    // Get element position for explosion
+    const rect = element.getBoundingClientRect();
+    const gameRect = document.getElementById('gameArea').getBoundingClientRect();
+    
+    // Create explosion of pinyin
+    createExplosion(
+      rect.left - gameRect.left + rect.width / 2,
+      rect.top - gameRect.top + rect.height / 2,
+      char.pinyin
+    );
+    
+    // Remove the element
+    element.remove();
+    const index = gameState.fallingChars.findIndex(fc => fc.element === element);
+    if (index > -1) {
+      gameState.fallingChars.splice(index, 1);
+    }
+    
+    showFeedback('✨ Perfect! ' + char.pinyin + '!', 'success');
+    
+    // Check if ready for round 2
+    if (gameState.round === 1 && gameState.catchesThisRound >= 5) {
+      // Advance to round 2
+      setTimeout(() => {
+        advanceToRound2();
+      }, 1500);
+    } else {
+      // Set new target
+      setNewTarget();
+    }
+  } else {
+    // Wrong! Shake animation
+    element.classList.add('wrong-shake');
+    setTimeout(() => {
+      element.classList.remove('wrong-shake');
+    }, 500);
+    
+    showFeedback('❌ Try again! Look for ' + gameState.targetChar.char, 'error');
+  }
+}
+
+function advanceToRound2() {
+  gameState.round = 2;
+  gameState.catchesThisRound = 0;
+  
+  // Update display
+  document.getElementById('roundDisplay').innerHTML = 'Round 2: Speed Challenge! 🚀';
+  showFeedback('🎉 Round 2 unlocked! Faster characters!', 'success');
+  
+  // Brief pause then continue
+  setTimeout(() => {
+    document.getElementById('feedback').classList.remove('show');
+  }, 2000);
+}
+
+function createExplosion(x, y, pinyin) {
+  const gameArea = document.getElementById('gameArea');
+  
+  // Create multiple pinyin particles
+  for (let i = 0; i < 6; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'explosion-particle';
+    particle.textContent = pinyin;
+    particle.style.left = x + 'px';
+    particle.style.top = y + 'px';
+    
+    // Random angle for explosion
+    const angle = (Math.PI * 2 * i) / 6;
+    const velocity = 80 + Math.random() * 40;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity;
+    
+    particle.style.setProperty('--vx', vx + 'px');
+    particle.style.setProperty('--vy', vy + 'px');
+    
+    gameArea.appendChild(particle);
+    
+    // Remove after animation
+    setTimeout(() => {
+      particle.remove();
+    }, 1500);
+  }
+}
+
+function updateFallingCharacters() {
+  const gameArea = document.getElementById('gameArea');
+  const gameAreaHeight = gameArea.offsetHeight;
+  
+  gameState.fallingChars.forEach((fc, index) => {
+    const currentTop = parseFloat(fc.element.style.top);
+    const newTop = currentTop + fc.speed;
+    
+    if (newTop >= gameAreaHeight - 70) {
+      // Character reached bottom
+      fc.element.remove();
+      gameState.fallingChars.splice(index, 1);
+      
+      // Lose a point if it was the target
+      if (fc.char.char === gameState.targetChar.char) {
+        gameState.score = Math.max(0, gameState.score - 5);
+        document.getElementById('score').textContent = gameState.score;
+      }
+    } else {
+      fc.element.style.top = newTop + 'px';
+    }
+  });
+}
+
+function toggleGame() {
+  const button = document.getElementById('startButton');
+  
+  if (!gameState.isRunning) {
+    // Start game
+    gameState.isRunning = true;
+    button.textContent = '⏸️ Pause';
+    
+    setNewTarget();
+    
+    // Spawn characters every 1.5 seconds
+    gameState.spawnInterval = setInterval(() => {
+      createFallingCharacter();
+    }, 1500);
+    
+    // Update character positions every 50ms
+    gameState.gameInterval = setInterval(() => {
+      updateFallingCharacters();
+    }, 50);
+  } else {
+    // Pause game
+    pauseGame();
+  }
+}
+
+function pauseGame() {
+  gameState.isRunning = false;
+  const button = document.getElementById('startButton');
+  button.textContent = '▶️ Resume';
+  
+  clearInterval(gameState.spawnInterval);
+  clearInterval(gameState.gameInterval);
+}
+
+function resetGame() {
+  pauseGame();
+  
+  // Clear all falling characters
+  gameState.fallingChars.forEach(fc => fc.element.remove());
+  gameState.fallingChars = [];
+  
+  // Reset score and state
+  gameState.score = 0;
+  gameState.round = 1;
+  gameState.catchesThisRound = 0;
+  document.getElementById('score').textContent = '0';
+  document.getElementById('roundDisplay').innerHTML = 'Round 1: Practice Speed 🐢';
+  
+  const button = document.getElementById('startButton');
+  button.textContent = '▶️ Start Game';
+  
+  document.getElementById('targetEmoji').textContent = '🦅';
+  document.getElementById('targetMeaning').textContent = 'bird';
+  document.getElementById('feedback').classList.remove('show');
+}
+
+function showFeedback(message, type) {
+  const feedback = document.getElementById('feedback');
+  feedback.textContent = message;
+  feedback.className = `feedback ${type} show`;
+  
+  setTimeout(() => {
+    feedback.classList.remove('show');
+  }, 1500);
+}
+</script>
+</body>
+</html>
